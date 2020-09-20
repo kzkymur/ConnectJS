@@ -1,0 +1,95 @@
+.controllPanel{
+	display: block;
+	position: absolute;
+	background: rgb(70,70,70);
+	width: 420px;
+	height: 560px;
+	right: 0;
+	top: 0;
+	border: 1px black solid;
+	border-radius: 2px;
+}
+
+.headerContainer{
+	display: block;
+	width: 100%;
+	height: 30px;
+	overflow-x: scroll;
+	white-space: nowrap;
+	background: rgb(200,200,200);
+}
+.headerContainer::-webkit-scrollbar {
+    display: none;
+}
+.cpTabContainer{
+	display: inline-block;
+	height: 100%;
+	width: 100px;
+	box-sizing: border-box;
+	overflow: hidden;
+}
+.activeCPTabContainer{
+	background: rgb(70,70,70);
+	border: 1px solid rgb(70,70,70);
+	border-bottom-color: transparent;
+	border-top-left-radius: 2px;
+	border-top-right-radius: 2px;
+}
+.nameBoxInCP{
+	display: block;
+	background: #ffffff00;
+	width: 70px;
+	height: 100%;
+	border: none;
+	margin: 0px;
+	padding: 0px;
+	float: left;
+}
+.activeCPTabContainer > .nameBoxInCP{
+	color: white;
+}
+.activeCPTabContainer .nameBoxInCP:focus{
+	border: none;
+	background: white;
+	color: black;
+}
+.closeCPButton{
+	display: block;
+	width: 15px;
+	height: 100%;
+	float: left;
+	border: none;
+	background: #ffffff00;
+	color: rgb(70,70,70);
+}
+.closeCPButton:hover{
+	color: black;
+}
+.closeCPButton:focus{
+	color: black;
+}
+.activeCPTabContainer > .closeCPButton{
+	color: rgb(200,200,200);
+}
+.activeCPTabContainer .closeCPButton:focus{
+	color: white;
+}
+
+.inputContainer{
+	position: relative;
+	display: block;
+	float: left;
+	width: 200px;
+	top: 10px;
+	left: 10px;
+}
+
+.ioElm{
+	display: block;
+	background: rgb(100,100,100);
+	width: 60%;
+}
+.ioElm:focus{
+	background: white;
+}
+

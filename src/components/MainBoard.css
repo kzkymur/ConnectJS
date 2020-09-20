@@ -1,0 +1,21 @@
+.mainBoard{
+	position: relative;
+	display: block;
+	overflow: hidden;
+	height: 100vh;
+	width: 100vw;
+	z-index: 1;
+}
+
+.connection-panel{
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	z-index: -99999999999999999;
+}
+
+.connection-line{
+	fill: transparent;
+	stroke: blue;
+	stroke-width: 2;
+}
