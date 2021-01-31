@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { EditorModeNames, glEditor } from '../store/types';
-import { deleteAction, updateAction } from '../store/actions';
+import { updateAction } from '../store/actions';
 import Canvas from './Canvas';
 import NameBox from './NameBox';
 import './Base.scss';
@@ -10,15 +10,16 @@ type Props = {
 	property: glEditor;
 	fRef: React.RefObject<HTMLDivElement>;
 	startMoving: (startPosX: number, startPosY: number) => void;
-	createStartConnectionMoving: (isInput: boolean, channel: number, isConnected: boolean) => (e: React.MouseEvent<HTMLDivElement>)=>void;
+	createStartConnectionMoving: (isInput: boolean, channel: number, isConnected: boolean) => (e: React.MouseEvent<HTMLDivElement>) => void;
+	createAddConnection: (isInput: boolean, channel: number) => () => void;
 	openCP: () => void;
+	delete: () => void;
 }
 
 const Base: React.FC<Props> = props => {
 	let {fRef, property} = props;
 	let element: React.ReactNode;
 	const dispatch = useDispatch();
-	const deleteFunc = () => dispatch(deleteAction(property.baseId));
 	const updateFunc = (gle: glEditor) => dispatch(updateAction(gle));
 	let baseStyle: glEditor = property;
 	const checkPropNames: string[] = ['width', 'height', 'top', 'left'];
@@ -126,7 +127,7 @@ const Base: React.FC<Props> = props => {
 					name={property.name}
 					updateFunc={nameUpdate} 
 					onMouseDown={()=>setInNameBox(true)}/>
-				<button className={'deleteButton'}onClick={deleteFunc}>×</button>
+				<button className={'deleteButton'}onClick={props.delete}>×</button>
 			</div>
 			<div className={`base-main-optbar-${nOptBar}`} onMouseDown={startMoving}>
 				{element}
@@ -134,9 +135,11 @@ const Base: React.FC<Props> = props => {
 			<div className={`ioarea-container-${nOptBar}`}>
 				<div className={'io-area'}>
 					{property.inputs.map((input, i, inputs)=>(
-						<div className={`io-container ${nOptBar===inputs.length?'fill-':'margin-'}${i}${inputs.length}`}>
+						<div className={`io-container ${nOptBar===inputs.length?'fill-':'margin-'}${i}${inputs.length}`} key={i}>
 							<div className={`joint-container input ic-${i}`} 
-								onMouseDown={props.createStartConnectionMoving(true, i, input.oBaseId!==undefined)}>
+								onMouseDown={props.createStartConnectionMoving(true, i, input.oBaseId!==undefined)}
+								onMouseUp={props.createAddConnection(true, i)}
+								id={`iJoint-${property.baseId}-${i}`}>
 								<div className={'joint'} />
 							</div>
 							<NameBox className={'nameBoxInInput'}
@@ -147,9 +150,11 @@ const Base: React.FC<Props> = props => {
 				</div>
 				<div className={'io-area'}>
 					{property.outputs.map((output, i, outputs)=>(
-						<div className={`io-container ${nOptBar===outputs.length?'fill-':'margin-'}${i}${outputs.length}`}>
+						<div className={`io-container ${nOptBar===outputs.length?'fill-':'margin-'}${i}${outputs.length}`} key={i}>
 							<div className={`joint-container output oc-${i}`}
-								onMouseDown={props.createStartConnectionMoving(false, i, output.isConnected)}>
+								onMouseDown={props.createStartConnectionMoving(false, i, output.isConnected)}
+								onMouseUp={props.createAddConnection(false, i)}
+								id={`oJoint-${property.baseId}-${i}`}>
 								<div className={'joint'} />
 							</div>
 							<NameBox className={'nameBoxInOutput'}

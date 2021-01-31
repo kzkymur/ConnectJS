@@ -51,10 +51,10 @@ export type glEditors = glEditor[];
 
 export type Connection = {
 	type: OutputType,
-	iX: number,
-	iY: number,
-	oX: number,
-	oY: number,
+	iBaseId: number,
+	iChannel: number,
+	oBaseId: number,
+	oChannel: number,
 }
 
 
@@ -71,8 +71,10 @@ interface Update extends Action {
 	type: typeof ActionTypes.update;
 	payload: { glEditor: glEditor; }
 }
+
 interface Undo extends Action { type: typeof ActionTypes.undo; }
 interface Redo extends Action { type: typeof ActionTypes.redo; }
+
 interface OpenCP extends Action {
 	type: typeof ActionTypes.openCP;
 	payload: { id: number; }
@@ -82,5 +84,18 @@ interface CloseCP extends Action {
 	payload: { index: number; }
 }
 interface CloseAllCP extends Action { type: typeof ActionTypes.closeAllCP; }
-export type GlEditorActionTypes = Add | Delete | Update | Undo | Redo | OpenCP | CloseCP | CloseAllCP;
+
+interface AddConnection extends Action { 
+	type: typeof ActionTypes.addConnection; 
+	payload: Connection
+}
+interface UpdateConnection extends Action { 
+	type: typeof ActionTypes.updateConnection; 
+	payload: Connection
+}
+interface DeleteConnection extends Action { 
+	type: typeof ActionTypes.deleteConnection; 
+	payload: { index: number; }
+}
+export type GlEditorActionTypes = Add | Delete | Update | Undo | Redo | OpenCP | CloseCP | CloseAllCP | AddConnection | UpdateConnection | DeleteConnection; 
 

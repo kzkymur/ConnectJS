@@ -87,10 +87,10 @@ const ControlPanel: React.FC<Props> = props => {
 	return (
 		<div className={'controllPanel'}>
 			<div className={'headerContainer'}>
-				{props.properties.map(property=>{
+				{props.properties.map((property)=>{
 					i++;
 					return(
-						<div className={`cpTabContainer ${i===index ? 'activeCPTabContainer' : undefined}`}>
+						<div className={`cpTabContainer ${i===index ? 'activeCPTabContainer' : undefined}`} key={i}>
 							<NameBox className={'nameBoxInCP'}
 								name={property.name}
 								updateFunc={nameUpdate}
@@ -104,14 +104,14 @@ const ControlPanel: React.FC<Props> = props => {
 					<button onClick={addInput}>Add</button>
 						{props.properties[index].inputs.map((input)=>{
 							i++;
-							return <input className={'ioElm'}type='text'value={i}/>
+							return <input className={'ioElm'}type='text' defaultValue={i} key={i}/>
 						})}
 				</div>
 				<div className={'inputContainer'}>
 					<button onClick={addOutput}>Add</button>
 						{props.properties[index].outputs.map((output)=>{
 							i++;
-							return <input className={'ioElm'}type='text'value={i}/>
+							return <input className={'ioElm'}type='text' defaultValue={i} key={i}/>
 						})}
 				</div>
 		</div>

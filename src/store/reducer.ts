@@ -61,6 +61,7 @@ export const glEditorReducer = (state = initialState, action: GlEditorActionType
 				nextState: undefined,
 			}
 		}
+
 		case ActionTypes.undo:{
 			if (state.preState === undefined) return state;
 			return {
@@ -74,6 +75,7 @@ export const glEditorReducer = (state = initialState, action: GlEditorActionType
 				...state.nextState,
 			};
 		}
+
 		case ActionTypes.openCP: {
 			if(state.cpIdsList[0].indexOf(action.payload.id)>-1) {
 				return state;
@@ -94,6 +96,18 @@ export const glEditorReducer = (state = initialState, action: GlEditorActionType
 			return {
 				...state,
 				cpIdsList: [[]],
+			}
+		}
+
+		case ActionTypes.addConnection: {
+			return {
+				...state,
+				connections: [
+					...state.connections,
+					{ ...action.payload }
+				],
+				preState: state,
+				nextState: undefined,
 			}
 		}
 		default:

@@ -1,5 +1,5 @@
 import { ActionTypes } from './actionTypes';
-import { GlEditorActionTypes, EditorModeType, glEditor } from './types';
+import { GlEditorActionTypes, EditorModeType, glEditor, Connection } from './types';
 
 export const addAction = (mode: EditorModeType): GlEditorActionTypes => {
 	return {
@@ -52,3 +52,23 @@ export const closeAllCPAction = (): GlEditorActionTypes => {
 	return { type: ActionTypes.closeAllCP, }
 }
 
+export const addConnectionAction = (param: Connection): GlEditorActionTypes => {
+	return { 
+		type: ActionTypes.addConnection, 
+		payload: param	
+	}
+}
+export const updateConnectionAction = (param: Connection): GlEditorActionTypes => {
+	return { 
+		type: ActionTypes.updateConnection, 
+		payload: param	
+	}
+}
+export const deleteConnectionAction = (index: number): GlEditorActionTypes => {
+	return {
+		type: ActionTypes.deleteConnection,
+		payload: {
+			index: index,
+		}
+	}
+}

@@ -32,10 +32,10 @@ const AddWindowForm: React.FC<Props> = ({addRequest}) => {
 
 	return (
 		<React.Fragment>
-		{refEMNs.map((refEMN: RefEMN)=>{
+    {refEMNs.map((refEMN: RefEMN, i: number)=>{
 			let name = refEMN.editorMode.name;
 			return (
-				<React.Fragment>
+				<React.Fragment key={i}>
 					<input type="radio" name="windowForm" ref={refEMN.ref} id={name}/>
 					<label htmlFor={name}>{name}</label>
 				</React.Fragment>
