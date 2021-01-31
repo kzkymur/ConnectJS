@@ -1,8 +1,8 @@
 .nameBox{
-	display: block;
-	background: gray;
-	text-overflow: ellipsis;
+  display: block;
+  background: gray;
+  text-overflow: ellipsis;
 }
 .nameBox:focus{
-	background: white;
+  background: white;
 }

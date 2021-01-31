@@ -18,7 +18,7 @@
     "isolatedModules": true,
     "noEmit": false,
     "jsx": "react",
-	"esModuleInterop": true
+    "esModuleInterop": true
   },
   "include": [
     "src"

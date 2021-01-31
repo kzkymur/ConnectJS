@@ -1,16 +1,16 @@
 export const ActionTypes = {
-	add: "ADD",
-	delete: "DELETE",
-	update: "UPDATE",
+  add: "ADD",
+  delete: "DELETE",
+  update: "UPDATE",
 
-	undo: "UNDO",
-	redo: "REDO",
+  undo: "UNDO",
+  redo: "REDO",
 
-	openCP: "OPENCP",
-	closeCP: "CLOSECP",
-	closeAllCP: "CLOSEALLCP",
+  openCP: "OPENCP",
+  closeCP: "CLOSECP",
+  closeAllCP: "CLOSEALLCP",
 
-	addConnection: "ADDCONNECTION",
-	updateConnection: "UPDATECONNECTION",
-	deleteConnection: "DELETECONNECTION",
+  addConnection: "ADDCONNECTION",
+  updateConnection: "UPDATECONNECTION",
+  deleteConnection: "DELETECONNECTION",
 } as const;
