@@ -5,7 +5,7 @@ import { deleteAction, openCPAction, addConnectionAction } from '../store/action
 import { glEditor, Connection, OutputTypes } from '../store/types';
 import Base from './Base';
 import ControllPanel from './ControllPanel';
-import './MainBoard.css';
+import style from '@/style/MainBoard.css';
 
 type BaseMetaInfoType = {
   id: number;
@@ -216,10 +216,10 @@ const MainBoard: React.FC = () => {
     console.log(connectionMoveBuffer);
     const [posX, posY] = connectionMoveBuffer.pos;
     const dList = ['M', posX, posY, 'Q', posX, posY, posX, posY, 'T', posX, posY];
-    element = <path className={'connection-line'} ref={connectionMoveRef} d={dList.join(' ')} />;
+    element = <path className={style.connectionLine} ref={connectionMoveRef} d={dList.join(' ')} />;
   }
   return (
-    <div className={'mainBoard'}>
+    <div className={style.mainBoard}>
       {baseMetaInfos.map((baseMetaInfo: BaseMetaInfoType)=>{
         // 構造の簡潔さ的には props.glEditor.map(... と書きたいところだが、
         // ドラッグ操作のパフォーマンスの都合上、MainBoard とBase で Base.div のref を共有、
@@ -227,6 +227,7 @@ const MainBoard: React.FC = () => {
         // だから baseMetaInfos.map(... になるし、deleteAction の dispatch 前に
         // baseMetaInfos を編集(削除)しなくちゃならない。
         const editor = props.glEditors.filter(gle=>gle.baseId === baseMetaInfo.id)[0];
+        if (editor===undefined) return null;
         const {cscm, cac} = createCreateFuncs(editor.baseId);
         const baseProps = {
           property: editor, 
@@ -253,7 +254,7 @@ const MainBoard: React.FC = () => {
         }
         return <ControllPanel {...cpProps} key={i}/>
       })}
-      <svg className="connection-panel">
+      <svg className={style.connectionPanel}>
         {props.connections.map((c, i)=>{
           const inputJoint = document.getElementById(`iJoint-${c.iBaseId}-${c.iChannel}`);
           const outputJoint = document.getElementById(`oJoint-${c.oBaseId}-${c.oChannel}`);
@@ -263,7 +264,7 @@ const MainBoard: React.FC = () => {
           const outputRect = outputJoint.getBoundingClientRect();
           const iX = inputRect.left + inputJoint.offsetWidth / 2, iY = inputRect.top + inputJoint.offsetHeight / 2;
           const oX = outputRect.left + outputJoint.offsetWidth / 2, oY = outputRect.top + outputJoint.offsetHeight / 2;
-          return <path className={'connection-line'} 
+          return <path className={style.connectionLine} 
             d={calcDList(oX, oY, iX, iY).join(' ')} key={i}/>	
         })}
         {element}

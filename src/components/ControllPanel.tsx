@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { glEditor, EditorModeNames, InputInfo, OutputInfo, OutputTypes, OutputType } from '../store/types';
 import { updateAction, closeCPAction, closeAllCPAction } from '../store/actions';
 import NameBox from './NameBox';
-import './ControllPanel.css';
+import style from '@/style/ControllPanel.css';
 
 type Props = {
   properties: glEditor[];
@@ -85,33 +85,33 @@ const ControlPanel: React.FC<Props> = props => {
 
   let i = -1;
   return (
-    <div className={'controllPanel'}>
-      <div className={'headerContainer'}>
+    <div className={style.controllPanel}>
+      <div className={style.headerContainer}>
         {props.properties.map((property)=>{
           i++;
           return(
-            <div className={`cpTabContainer ${i===index ? 'activeCPTabContainer' : undefined}`} key={i}>
-              <NameBox className={'nameBoxInCP'}
+            <div className={`${style.cpTabContainer} ${i===index ? style.activeCPTabContainer : ''}`} key={i}>
+              <NameBox className={style.nameBoxInCP}
                 name={property.name}
                 updateFunc={nameUpdate}
                 onMouseDown={createChangeIndexFunc(i)}/>
-              <button className={'closeCPButton'}onClick={createCloseFunc(i)}>×</button>
+              <button className={style.closeCPButton}onClick={createCloseFunc(i)}>×</button>
             </div>
           )
         })}
       </div>
-      <div className={'inputContainer'}>
+      <div className={style.inputContainer}>
         <button onClick={addInput}>Add</button>
         {props.properties[index].inputs.map((input)=>{
           i++;
-          return <input className={'ioElm'}type='text' defaultValue={i} key={i}/>
+          return <input className={style.ioElm}type='text' defaultValue={i} key={i}/>
         })}
       </div>
-      <div className={'inputContainer'}>
+      <div className={style.inputContainer}>
         <button onClick={addOutput}>Add</button>
         {props.properties[index].outputs.map((output)=>{
           i++;
-          return <input className={'ioElm'}type='text' defaultValue={i} key={i}/>
+          return <input className={style.ioElm}type='text' defaultValue={i} key={i}/>
         })}
       </div>
     </div>

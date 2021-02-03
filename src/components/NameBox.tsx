@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './NameBox.css';
+import style from '@/style/NameBox.css';
 
 type Props = {
   className?: string;
@@ -45,7 +45,7 @@ const NameBox: React.FC<Props> = props => {
     }
   })
   return (
-    <input className={`nameBox ${props.className}`}
+    <input className={`${style.nameBox} ${props.className}`}
       type='text'
       ref={ref} 
       value={name} 

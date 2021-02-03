@@ -4,7 +4,7 @@ import { EditorModeNames, glEditor } from '../store/types';
 import { updateAction } from '../store/actions';
 import Canvas from './Canvas';
 import NameBox from './NameBox';
-import './Base.scss';
+import style from '@/style/Base.scss';
 
 type Props = {
   property: glEditor;
@@ -121,46 +121,46 @@ const Base: React.FC<Props> = props => {
     elm.style.opacity = '1';
   }) 
   return (
-    <div className={'container'} ref={fRef} onMouseUp={updateState}>
-      <div className={'base-header'}>
-        <NameBox className={'nameBoxInBase'}
+    <div className={style.container} ref={fRef} onMouseUp={updateState}>
+      <div className={style.baseHeader}>
+        <NameBox className={style.nameBoxInBase}
           name={property.name}
           updateFunc={nameUpdate} 
           onMouseDown={()=>setInNameBox(true)}/>
-        <button className={'deleteButton'}onClick={props.delete}>×</button>
+        <button className={style.deleteButton}onClick={props.delete}>×</button>
       </div>
-      <div className={`base-main-optbar-${nOptBar}`} onMouseDown={startMoving}>
+      <div className={style.baseMainOptbar} onMouseDown={startMoving}>
         {element}
       </div>
-      <div className={`ioarea-container-${nOptBar}`}>
-        <div className={'io-area'}>
+      <div className={style.ioareaContainer}>
+        <div className={style.ioArea}>
           {property.inputs.map((input, i, inputs)=>(
-            <div className={`io-container ${nOptBar===inputs.length?'fill-':'margin-'}${i}${inputs.length}`} key={i}>
-              <div className={`joint-container input ic-${i}`} 
+            <div className={style.ioContainer} key={i}>
+              <div className={style.jointContainer+' '+'input'} 
                 onMouseDown={props.createStartConnectionMoving(true, i, input.oBaseId!==undefined)}
                 onMouseUp={props.createAddConnection(true, i)}
                 id={`iJoint-${property.baseId}-${i}`}>
-                <div className={'joint'} />
+                <div className={style.joint} />
               </div>
-              <NameBox className={'nameBoxInInput'}
+              <NameBox className={style.nameBoxInInput}
                 name={input.name}
                 updateFunc={createIONameUpdate(true, i)}/>
             </div>
           ))}
         </div>
-        <div className={'io-area'}>
+        <div className={style.ioArea}>
           {property.outputs.map((output, i, outputs)=>(
-            <div className={`io-container ${nOptBar===outputs.length?'fill-':'margin-'}${i}${outputs.length}`} key={i}>
-              <div className={`joint-container output oc-${i}`}
+            <div className={style.ioContainer} key={i}>
+              <div className={style.jointContainer+' '+output}
                 onMouseDown={props.createStartConnectionMoving(false, i, output.isConnected)}
                 onMouseUp={props.createAddConnection(false, i)}
                 id={`oJoint-${property.baseId}-${i}`}>
-                <div className={'joint'} />
+                <div className={style.joint} />
               </div>
-              <NameBox className={'nameBoxInOutput'}
+              <NameBox className={style.nameBoxInOutput}
                 name={output.name}
                 updateFunc={createIONameUpdate(false, i)}/>
-              <p className={'output-value'}> </p>
+              <p className={style.outputValue}> </p>
             </div>
           ))}
         </div>

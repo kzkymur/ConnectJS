@@ -16,29 +16,35 @@ export default {
   module: {
     rules: [
       {
-        test: /\.jsx$/,
-        exclude: /node_modules/,
-        loader: 'babel-loader'
-      },
-      {
         test: /\.(sa|sc|c)ss$/,
         exclude: /node_modules/,
         use: [
           'style-loader',
-          'css-loader',
+          {
+            loader: 'typings-for-css-modules-loader',
+            options: {
+              modules: true,
+              namedExport: true,
+              camelCase: true,
+            }
+          },
           'sass-loader'
         ]
       },
       {
-        test: /\.tsx?$/,
+        test: /\.(t|j)(s|sx)$/,
         exclude: /node_modules/,
-        use: 'ts-loader',
+        use: [
+          'babel-loader',
+          'ts-loader',
+        ],
       },
     ]
   },
 
   resolve: {
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
+    alias: { '@': src, }
   },
 
   plugins: [
