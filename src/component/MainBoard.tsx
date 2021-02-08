@@ -26,7 +26,7 @@ const MainBoard: React.FC = () => {
 
   const [startPos, setStartPos] = useState<number[]>([]);
   const [movingRef, setMovingRef] = useState<undefined | React.RefObject<HTMLDivElement>>();
-  const [connectionMoveRef, setConnectionMoveRef] = useState(useRef<SVGPathElement>(null));
+  const [connectionMoveRef] = useState(useRef<SVGPathElement>(null));
   const [connectionMoveBuffer, setConnectionMoveBuffer] = useState<undefined | ConnectionMoveBuffer>();
   const [isPreparingState, setIsPreparingState] = useState<boolean>(true);
 

@@ -1,0 +1,13 @@
+.container{
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+.package{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 50%;
+}
