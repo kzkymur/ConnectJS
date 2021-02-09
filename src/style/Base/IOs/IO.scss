@@ -8,6 +8,10 @@ $joint-width: 5px;
   width: 100%;
   display: flex;
   flex-direction: row;
+
+  &.output{
+    flex-direction: row-reverse;
+  }
 }
 
 .joint-container{

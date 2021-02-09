@@ -21,6 +21,7 @@ const IOs: React.FC<Props> = props => {
             startConnectionMoving: props.createStartConnectionMoving(true, i, input.oBaseId!==undefined),
             addConnection: props.createAddConnection(true, i),
             iONameUpdate: props.createIONameUpdate(true, i),
+            isOutput: false,
           }
           return <IO {...inputProps} key={i}/>
         })}
@@ -32,6 +33,7 @@ const IOs: React.FC<Props> = props => {
             startConnectionMoving: props.createStartConnectionMoving(false, i, output.isConnected),
             addConnection: props.createAddConnection(false, i),
             iONameUpdate: props.createIONameUpdate(false, i),
+            isOutput: true,
           }
           return <IO {...outputProps} key={i}/>
         })}

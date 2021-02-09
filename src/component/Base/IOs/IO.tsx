@@ -8,12 +8,13 @@ type Props = {
   startConnectionMoving: (e: React.MouseEvent<HTMLDivElement>) => void;
   addConnection: () => void;
   iONameUpdate: (name: string) => void;
+  isOutput: boolean;
 }
 
 const IO: React.FC<Props> = props => {
   return (
-    <div className={style.container}>
-      <div className={style.jointContainer+' '+'input'} 
+    <div className={`${style.container} ${props.isOutput ? style.output : ''}`}>
+      <div className={style.jointContainer} 
         onMouseDown={props.startConnectionMoving}
         onMouseUp={props.addConnection}>
         <div className={style.joint} />
