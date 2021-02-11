@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { glEditor, EditorModeNames, InputInfo, OutputInfo, OutputTypes, OutputType } from '../store/types';
 import { updateAction, closeCPAction, closeAllCPAction } from '../store/actions';
-import NameBox from './NameBox';
+import NameBox from './atom/NameBox';
 import style from '@/style/ControllPanel.css';
 
 type Props = {
