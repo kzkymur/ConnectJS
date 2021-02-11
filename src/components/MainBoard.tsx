@@ -44,10 +44,6 @@ const MainBoard: React.FC = () => {
   }
   const addBIR = (id: number) => [...baseIdRefs, {baseId: id, ref: React.createRef<HTMLDivElement>()}];
   const removeBIR = (id: number) => baseIdRefs.filter(bmi=>bmi.baseId!==id);
-  // const removeBMI = (id: number) => {
-  //   const newBMIs = baseIdRefs.filter(bmi=>bmi.id!==id);
-  //   setBaseIdRefs([...newBMIs])
-  // }
   const createDeleteFunc = (id: number) => () => dispatch(deleteAction(id));
 
   // Drag操作系
@@ -132,7 +128,14 @@ const MainBoard: React.FC = () => {
       setConnectionMoveBuffer(undefined);
     }
   }
-
+  useEffect(()=>{ 
+    window.addEventListener('mousemove', moving); 
+    window.addEventListener('mouseup', endMoving); 
+    return () =>  { 
+      window.removeEventListener('mousemove', moving); 
+      window.removeEventListener('mouseup', endMoving); 
+    }
+  });
 
   // controlPanel系
   const createOpenCP = (id: number) => {
@@ -151,7 +154,6 @@ const MainBoard: React.FC = () => {
     const setCPIndex = (newIndex: number) => {setCPIndexes( cpIndexes.map( (oldIndex, i) => i === cpIndex ? newIndex : oldIndex ))}
     return setCPIndex
   }
-
 
   // 状態確認系
   useEffect(()=>{
@@ -175,14 +177,7 @@ const MainBoard: React.FC = () => {
     }
   }, [props.cpIdsList]);
 
-  useEffect(()=>{ 
-    window.addEventListener('mousemove', moving); 
-    window.addEventListener('mouseup', endMoving); 
-    return () =>  { 
-      window.removeEventListener('mousemove', moving); 
-      window.removeEventListener('mouseup', endMoving); 
-    }
-  });
+  // svg系
   let element;
   if (connectionMoveBuffer !== undefined) {
     console.log(connectionMoveBuffer);
