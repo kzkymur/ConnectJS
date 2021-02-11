@@ -7,8 +7,8 @@ import Base from './Base';
 import ControllPanel from './ControllPanel';
 import style from '@/style/MainBoard.css';
 
-type BaseMetaInfoType = {
-  id: number;
+type BaseIdRefType = {
+  baseId: number;
   ref: React.RefObject<HTMLDivElement>;
 }
 type ConnectionMoveBuffer = {
@@ -20,15 +20,13 @@ type ConnectionMoveBuffer = {
 
 const MainBoard: React.FC = () => {
   const props = useSelector((state: RootState) => state);
-  const [outputs, setOutputs] = useState<number | number[]>([]);
-  const [baseMetaInfos, setBaseMetaInfos] = useState<BaseMetaInfoType[]>([]);
+  const [baseIdRefs, setBaseIdRefs] = useState<BaseIdRefType[]>([]);
   const [cpIndexes, setCPIndexes] = useState<number[]>([]);
 
   const [startPos, setStartPos] = useState<number[]>([]);
   const [movingRef, setMovingRef] = useState<undefined | React.RefObject<HTMLDivElement>>();
-  const [connectionMoveRef, setConnectionMoveRef] = useState(useRef<SVGPathElement>(null));
+  const [connectionMoveRef] = useState(useRef<SVGPathElement>(null));
   const [connectionMoveBuffer, setConnectionMoveBuffer] = useState<undefined | ConnectionMoveBuffer>();
-  const [isPreparingState, setIsPreparingState] = useState<boolean>(true);
 
   const dispatch = useDispatch();
   const openCPFunc = (id: number) => dispatch(openCPAction(id));
@@ -36,40 +34,27 @@ const MainBoard: React.FC = () => {
 
 
   // refのsetup
-  const getIndexOfBMIs = (bmis: BaseMetaInfoType[], id: number): number => {
+  const getIndex = (objs: BaseIdRefType[]|glEditor[], id: number): number => {
     let i = -1;
-    for (let baseMetaInfo of bmis) {
+    for (let baseIdRef of objs) {
       i++;
-      if (baseMetaInfo.id === id) return i;
+      if (baseIdRef.baseId === id) return i;
     }
     return -1;
   }
-  const addBMI = (id: number) => {
-    const newBMI: BaseMetaInfoType = {
-      id: id,
-      // MainBoard と Base で共有するため、useRef だとエラーが吐かれる
-      ref: React.createRef<HTMLDivElement>(),
-    }
-    const newBMIs = [...baseMetaInfos, newBMI];
-    setBaseMetaInfos(newBMIs);
-  }
-  const removeBMI = (id: number) => {
-    const newBMIs = baseMetaInfos.filter(bmi=>bmi.id!==id);
-    setBaseMetaInfos([...newBMIs])
-  }
-  const createDeleteFunc = (id: number) => {
-    return () => {
-      removeBMI(id);
-      dispatch(deleteAction(id));
-    }
-  }
-
+  const addBIR = (id: number) => [...baseIdRefs, {baseId: id, ref: React.createRef<HTMLDivElement>()}];
+  const removeBIR = (id: number) => baseIdRefs.filter(bmi=>bmi.baseId!==id);
+  // const removeBMI = (id: number) => {
+  //   const newBMIs = baseIdRefs.filter(bmi=>bmi.id!==id);
+  //   setBaseIdRefs([...newBMIs])
+  // }
+  const createDeleteFunc = (id: number) => () => dispatch(deleteAction(id));
 
   // Drag操作系
   const createStartMoving = (id: number) => {
     const startMoving = (startPosX: number, startPosY: number) => {
-      const movingNodeIndex = getIndexOfBMIs(baseMetaInfos, id);
-      setMovingRef(baseMetaInfos[movingNodeIndex].ref);
+      const movingNodeIndex = getIndex(baseIdRefs, id);
+      setMovingRef(baseIdRefs[movingNodeIndex].ref);
       setStartPos([startPosX, startPosY]);
     }
     return startMoving;
@@ -169,39 +154,26 @@ const MainBoard: React.FC = () => {
 
 
   // 状態確認系
-  const checkStateFunc = () => {
-    let baseMetaInfosForCheck = [...baseMetaInfos];
-    for (const gle of props.glEditors) {
-      const i = getIndexOfBMIs(baseMetaInfosForCheck, gle.baseId);
-      if (i === -1) {
-        return addBMI(gle.baseId);
-      }
-      baseMetaInfosForCheck.splice(i, 1);
-    }
-    if (baseMetaInfosForCheck.length !== 0) {
-      return removeBMI(baseMetaInfos[0].id);
-    }
-
+  useEffect(()=>{
+    let newBaseIdRefs = [...baseIdRefs];
+    let flag = false;
+    props.glEditors.forEach(gle=>{
+      const i = getIndex(newBaseIdRefs, gle.baseId);
+      if (i === -1) { flag = true; newBaseIdRefs = addBIR(gle.baseId); }
+    });
+    newBaseIdRefs.forEach(bir=>{
+      const i = getIndex(props.glEditors, bir.baseId);
+      if (i === -1) { flag = true; newBaseIdRefs = removeBIR(bir.baseId); }
+    });
+    if (flag) setBaseIdRefs(newBaseIdRefs);
+  }, [props.glEditors]);
+  useEffect(()=>{
     for (const i in props.cpIdsList) {
       if (cpIndexes[i] === undefined) {
         return setCPIndexes([...cpIndexes, 0]);
       }
     }
-    return true;
-  }
-  useEffect(()=>{
-    console.log('useEffect');
-    if (isPreparingState) {
-      if (checkStateFunc()) {
-        setIsPreparingState(false);
-      }
-    } else {
-      setIsPreparingState(false);
-    }
-  }, [isPreparingState, baseMetaInfos, cpIndexes]);
-  useEffect(()=>{
-    setIsPreparingState(true);
-  }, [props.glEditors, props.cpIdsList]);
+  }, [props.cpIdsList]);
 
   useEffect(()=>{ 
     window.addEventListener('mousemove', moving); 
@@ -220,18 +192,13 @@ const MainBoard: React.FC = () => {
   }
   return (
     <div className={style.mainBoard}>
-      {baseMetaInfos.map((baseMetaInfo: BaseMetaInfoType)=>{
-        // 構造の簡潔さ的には props.glEditor.map(... と書きたいところだが、
-        // ドラッグ操作のパフォーマンスの都合上、MainBoard とBase で Base.div のref を共有、
-        // つまりレンダリング時に base の ref を持った state がないといけない。
-        // だから baseMetaInfos.map(... になるし、deleteAction の dispatch 前に
-        // baseMetaInfos を編集(削除)しなくちゃならない。
-        const editor = props.glEditors.filter(gle=>gle.baseId === baseMetaInfo.id)[0];
+      {baseIdRefs.map((baseIdRef: BaseIdRefType)=>{
+        const editor = props.glEditors.filter(gle=>gle.baseId === baseIdRef.baseId)[0];
         if (editor===undefined) return null;
         const {cscm, cac} = createCreateFuncs(editor.baseId);
         const baseProps = {
           property: editor, 
-          fRef: baseMetaInfo.ref,
+          fRef: baseIdRef.ref,
           startMoving: createStartMoving(editor.baseId),
           createStartConnectionMoving: cscm,
           createAddConnection: cac,
