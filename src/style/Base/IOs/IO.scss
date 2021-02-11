@@ -1,0 +1,46 @@
+$base-color: gray;
+$optionalbar-height: 20px;
+
+$joint-width: 5px;
+
+.container{
+  height: $optionalbar-height;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+
+  &.output{
+    flex-direction: row-reverse;
+  }
+}
+
+.joint-container{
+  position: relative;
+  display: block;
+  width: $optionalbar-height;
+  height: $optionalbar-height;
+
+  .joint{
+    position: absolute;
+    display: inline-block;
+    width: $joint-width;
+    height: $joint-width;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    background: orange;
+    border: solid 2px $base-color;
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px orange;
+  }
+}
+
+.name-box{
+  display: block;
+  height: 100%;
+  width: calc(100% - #{$optionalbar-height});
+  border: 0;
+  padding: 0;
+}

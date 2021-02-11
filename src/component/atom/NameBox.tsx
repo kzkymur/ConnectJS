@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import style from '@/style/NameBox.css';
+import style from '@/style/atom/NameBox.css';
 
 type Props = {
   className?: string;
