@@ -1,5 +1,6 @@
 import { ActionTypes } from './actionTypes';
-import { GlEditorActionTypes, glEditors, Connection } from './types';
+import { glEditors, Connection } from './types';
+import { GlEditorActionTypes } from './actionTypes';
 
 interface State {
 	glEditors: glEditors;
@@ -114,4 +115,3 @@ export const glEditorReducer = (state = initialState, action: GlEditorActionType
 			return state; // 描画しない〜〜
 	}
 }
-

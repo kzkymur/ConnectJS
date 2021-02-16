@@ -1,5 +1,6 @@
 import { ActionTypes } from './actionTypes';
-import { GlEditorActionTypes, EditorModeType, glEditor, Connection } from './types';
+import { EditorModeType, glEditor, Connection } from './types';
+import { GlEditorActionTypes } from './actionTypes';
 
 export const addAction = (mode: EditorModeType): GlEditorActionTypes => {
   return {
