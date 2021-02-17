@@ -1,10 +1,11 @@
 import { Action } from 'redux';
 import { EditorModeType } from './types';
-import { glEditor, Connection } from './types';
+import { Content, Connection } from './types';
 
 export const ActionTypes = {
   add: "ADD",
   delete: "DELETE",
+  reverseDelete: "REVERSEDELETE",
   update: "UPDATE",
 
   undo: "UNDO",
@@ -30,7 +31,7 @@ interface Delete extends Action {
 }
 interface Update extends Action {
   type: typeof ActionTypes.update;
-  payload: { glEditor: glEditor; }
+  payload: { content: Content; }
 }
 
 interface Undo extends Action { type: typeof ActionTypes.undo; }
@@ -58,4 +59,4 @@ interface DeleteConnection extends Action {
   type: typeof ActionTypes.deleteConnection; 
   payload: { index: number; }
 }
-export type GlEditorActionTypes = Add | Delete | Update | Undo | Redo | OpenCP | CloseCP | CloseAllCP | AddConnection | UpdateConnection | DeleteConnection; 
+export type GUIAction = Add | Delete | Update | Undo | Redo | OpenCP | CloseCP | CloseAllCP | AddConnection | UpdateConnection | DeleteConnection; 

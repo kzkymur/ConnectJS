@@ -26,7 +26,7 @@ export interface InputInfo {
 }
 
 interface Base {
-  baseId: number;
+  id: number;
   name: string;
   mode: EditorModeType;
   width: string,
@@ -42,9 +42,9 @@ interface Canvas extends Base {
 interface Processor extends Base {
 
 };
-export type glEditor = Canvas | Processor;
+export type Content = Canvas | Processor;
 
-export type glEditors = glEditor[];
+export type Contents = Content[];
 
 export type Connection = {
   type: OutputType,

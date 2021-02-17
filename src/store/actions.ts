@@ -1,75 +1,41 @@
-import { ActionTypes } from './actionTypes';
-import { EditorModeType, glEditor, Connection } from './types';
-import { GlEditorActionTypes } from './actionTypes';
+import { ActionTypes, GUIAction } from './actionTypes';
+import { EditorModeType, Content, Connection } from './types';
 
-export const addAction = (mode: EditorModeType): GlEditorActionTypes => {
-  return {
-    type: ActionTypes.add,
-    payload: {
-      mode: mode,
-    },
-  };
-};
-export const deleteAction = (baseId: number): GlEditorActionTypes => {
-  return {
-    type: ActionTypes.delete,
-    payload: {
-      id: baseId,
-    },
-  };
-};
-export const updateAction = (glEditor: glEditor): GlEditorActionTypes => {
-  return {
-    type: ActionTypes.update,
-    payload: {
-      glEditor: glEditor,
-    },
-  };
-};
-export const undoAction = (): GlEditorActionTypes => {
-  return { type: ActionTypes.undo, }
-}
-export const redoAction = (): GlEditorActionTypes => {
-  return { type: ActionTypes.redo, }
-}
+export const addAction = (mode: EditorModeType): GUIAction => ({
+  type: ActionTypes.add,
+  payload: { mode: mode, },
+});
+export const deleteAction = (baseId: number): GUIAction => ({
+  type: ActionTypes.delete,
+  payload: { id: baseId, },
+});
 
-export const openCPAction = (baseId: number): GlEditorActionTypes => {
-  return {
-    type: ActionTypes.openCP,
-    payload: {
-      id: baseId,
-    }
-  }
-}
-export const closeCPAction = (index: number): GlEditorActionTypes => {
-  return {
-    type: ActionTypes.closeCP,
-    payload: {
-      index: index,
-    }
-  }
-}
-export const closeAllCPAction = (): GlEditorActionTypes => {
-  return { type: ActionTypes.closeAllCP, }
-}
+export const updateAction = (content: Content): GUIAction => ({
+  type: ActionTypes.update,
+  payload: { content: content, },
+});
+export const undoAction = (): GUIAction => ({ type: ActionTypes.undo, });
+export const redoAction = (): GUIAction => ({ type: ActionTypes.redo, });
 
-export const addConnectionAction = (param: Connection): GlEditorActionTypes => {
-  return { 
-    type: ActionTypes.addConnection, 
-    payload: param	
-  }
-}
-export const updateConnectionAction = (param: Connection): GlEditorActionTypes => {
-  return { 
-    type: ActionTypes.updateConnection, 
-    payload: param	
-  }
-}
-export const deleteConnectionAction = (index: number): GlEditorActionTypes => {
-  return {
-    type: ActionTypes.deleteConnection,
-    payload: {
-      index: index,
-    }
-  }
-}
+export const openCPAction = (baseId: number): GUIAction => ({
+  type: ActionTypes.openCP,
+  payload: { id: baseId, }
+});
+export const closeCPAction = (index: number): GUIAction => ({
+  type: ActionTypes.closeCP,
+  payload: { index: index, }
+});
+export const closeAllCPAction = (): GUIAction => ({ type: ActionTypes.closeAllCP, });
+
+export const addConnectionAction = (param: Connection): GUIAction => ({
+  type: ActionTypes.addConnection, 
+  payload: param	
+});
+export const updateConnectionAction = (param: Connection): GUIAction => ({ 
+  type: ActionTypes.updateConnection, 
+  payload: param	
+});
+export const deleteConnectionAction = (index: number): GUIAction => ({
+  type: ActionTypes.deleteConnection,
+  payload: { index: index, }
+});

@@ -1,10 +1,10 @@
 import { combineReducers, createStore } from 'redux';
-import { glEditorReducer } from './reducer';
+import { GUIReducer } from './reducer';
 
 // const rootReducer = combineReducers({
 // 	glEditor: glEditorReducer
 // });
-const rootReducer = glEditorReducer;
+const rootReducer = GUIReducer;
 
 export type RootState = ReturnType<typeof rootReducer>;
 
