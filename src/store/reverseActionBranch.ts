@@ -3,6 +3,8 @@ import { GUIAction } from './actionTypes';
 interface Partition {
   prev?: Element;
   next?: Element;
+  right?: Partition;
+  left?: Partition;
 }
 interface Element {
   action: GUIAction;
@@ -49,11 +51,21 @@ export default class ReverseActionBranch {
       action: action,
       prev: this.current,
       next: {},
-    };
-    this.current.next = newElm; // ここで別のプロパティに登録できたらブランチに！
-    const newPartition: Partition = {
-      prev: newElm,
-    };
+    }; 
+    if (this.current.next !== undefined) {
+      let current = this.current;
+      while (current.right !== undefined) current = current.right;
+      if (this.current.prev !== undefined) {
+        this.current.prev.next = {
+          prev: this.current.prev,
+          left: current,
+        };
+        current.right = this.current.prev.next;
+        this.current = this.current.prev.next;
+      }
+    }
+    this.current.next = newElm;
+    const newPartition: Partition = { prev: newElm, };
     newElm.next = newPartition;
     this.current = newPartition;
   }
