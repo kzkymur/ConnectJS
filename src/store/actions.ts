@@ -1,9 +1,9 @@
 import { ActionTypes, GUIAction } from './actionTypes';
-import { EditorModeType, Content, Connection } from './types';
+import { Content, Connection } from './types';
 
-export const addAction = (mode: EditorModeType): GUIAction => ({
+export const addAction = (content: Content): GUIAction => ({
   type: ActionTypes.add,
-  payload: { mode: mode, },
+  payload: { content: content, },
 });
 export const deleteAction = (baseId: number): GUIAction => ({
   type: ActionTypes.delete,

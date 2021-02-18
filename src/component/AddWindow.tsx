@@ -1,28 +1,28 @@
 import React from 'react';
-import { EditorModeNames, EditorModeType } from '../store/types'
+import { NodeModeNames, NodeMode } from '../store/types'
 
 type Props = {
-  addRequest: (emt: EditorModeType) => void;
+  addRequest: (emt: NodeMode) => void;
 }
-type RefEMN = {
+type RefNM = {
   ref: React.RefObject<HTMLInputElement>;
-  editorMode: EditorModeType;
+  nodeMode: NodeMode;
 }
 
 const AddWindowForm: React.FC<Props> = ({addRequest}) => {
-  let refEMNs: RefEMN[] = [];
-  for (let editorMode of Object.values(EditorModeNames)){ 
-    refEMNs.push({ 
+  let refNMs: RefNM[] = [];
+  for (let nodeMode of Object.values(NodeModeNames)){ 
+    refNMs.push({ 
       ref: React.createRef(),
-      editorMode: { name: editorMode }
+      nodeMode: { name: nodeMode }
     })
   }
 
   const handleClick = (): void => {
-    for (let refEMN of refEMNs) {
-      if(refEMN.ref.current !== null){
-        if(refEMN.ref.current.checked){
-          addRequest(refEMN.editorMode);
+    for (let refNM of refNMs) {
+      if(refNM.ref.current !== null){
+        if(refNM.ref.current.checked){
+          addRequest(refNM.nodeMode);
         }
       } else {
         console.log("Error at WindowForm");
@@ -32,11 +32,11 @@ const AddWindowForm: React.FC<Props> = ({addRequest}) => {
 
   return (
     <React.Fragment>
-      {refEMNs.map((refEMN: RefEMN, i: number)=>{
-        let name = refEMN.editorMode.name;
+      {refNMs.map((refNM: RefNM, i: number)=>{
+        let name = refNM.nodeMode.name;
         return (
           <React.Fragment key={i}>
-            <input type="radio" name="windowForm" ref={refEMN.ref} id={name}/>
+            <input type="radio" name="windowForm" ref={refNM.ref} id={name}/>
             <label htmlFor={name}>{name}</label>
           </React.Fragment>
         )

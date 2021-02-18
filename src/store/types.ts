@@ -1,10 +1,10 @@
-export const EditorModeNames = {
+export const NodeModeNames = {
   Code: 'CODE',
   Canvas: 'CANVAS',
 } as const;
-interface CodeMode { name: typeof EditorModeNames.Code }
-interface CanvasMode { name: typeof EditorModeNames.Canvas }
-export type EditorModeType = CodeMode | CanvasMode;
+interface CodeMode { name: typeof NodeModeNames.Code }
+interface CanvasMode { name: typeof NodeModeNames.Canvas } 
+export type NodeMode = CodeMode | CanvasMode;
 
 export const OutputTypes = {
   Number: 'NUMBER',
@@ -25,10 +25,10 @@ export interface InputInfo {
   oChannel?: number,
 }
 
-interface Base {
+interface Node {
   id: number;
   name: string;
-  mode: EditorModeType;
+  mode: NodeMode;
   width: string,
   height: string,
   top: string,
@@ -36,10 +36,10 @@ interface Base {
   outputs: OutputInfo[],
   inputs: InputInfo[],
 }
-interface Canvas extends Base {
+interface Canvas extends Node {
 
 };
-interface Processor extends Base {
+interface Processor extends Node {
 
 };
 export type Content = Canvas | Processor;

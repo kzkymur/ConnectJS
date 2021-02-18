@@ -30,28 +30,36 @@ const initialState: State = {
 };
 
 type GUIReducerType = Reducer<State, GUIAction>;
-export const GUIReducer: GUIReducerType = (state = initialState, action: GUIAction) => {
+export const guiReducer: GUIReducerType = (state = initialState, action: GUIAction) => {
 	console.log(action);
 	switch (action.type) {
 		case ActionTypes.add: {
-	    const latestId = state.latestId + 1;
+      let latestId = state.latestId
+      let content = action.payload.content;
+      if (content.id === -1) {
+	      latestId += 1;
+        content = {
+          ...content,
+          id: latestId,
+          name: 'node' + String(latestId),
+        };
+      }
 			return {
 				...state,
 				latestId: latestId,
 				contents: [
 					...state.contents,
-					{
-						id: latestId,
-						mode: action.payload.mode,
-						name: 'node'+String(latestId),
-						width: '160px',
-						height: '120px',
-						top: String(40 + 20 * Math.random()) + '%',
-						left: String(40 + 20 * Math.random()) + '%',
-						outputs: [],
-						inputs: [],
-					}
+          content
 				],
+        // reverseActions: {
+        //   prev: {
+        //     action: {
+        //       type: ActionTypes.delete,
+        //       payload: { id: latestId },
+        //     },
+        //     prev: state.reverseActions,
+        //   }       
+        // }
 			}
 		}
 		case ActionTypes.delete:{
@@ -69,9 +77,15 @@ export const GUIReducer: GUIReducerType = (state = initialState, action: GUIActi
 		}
 
 		case ActionTypes.undo:{
-      return state;
+      if (state.reverseActions.prev===undefined) return state;
+      return {
+        ...state,
+        reverseActions: {
+        }
+      };
 		}
 		case ActionTypes.redo:{
+      if (state.reverseActions.next===undefined) return state;
       return state;
 		}
 
@@ -107,6 +121,6 @@ export const GUIReducer: GUIReducerType = (state = initialState, action: GUIActi
 				],
 			}
 		}
-    default: return state; // 描画しない〜〜
+    default: return state; // 再描画しない〜〜
 	}
 }

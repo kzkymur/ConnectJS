@@ -1,11 +1,9 @@
 import { Action } from 'redux';
-import { EditorModeType } from './types';
 import { Content, Connection } from './types';
 
 export const ActionTypes = {
   add: "ADD",
   delete: "DELETE",
-  reverseDelete: "REVERSEDELETE",
   update: "UPDATE",
 
   undo: "UNDO",
@@ -23,7 +21,7 @@ export const ActionTypes = {
 // Actionの型定義
 interface Add extends Action {
   type: typeof ActionTypes.add;
-  payload: { mode: EditorModeType; }
+  payload: { content: Content; }
 }
 interface Delete extends Action {
   type: typeof ActionTypes.delete;
