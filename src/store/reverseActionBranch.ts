@@ -22,6 +22,8 @@ export type OperationType =
   typeof OperationTypes.forward | 
   typeof OperationTypes.backward;
 
+export type ActionHistory = (GUIAction | ActionHistory)[];
+
 type OperatingMethod = (action: GUIAction) => void;
 type OperateType = (action: GUIAction, operationType: OperationType) => ReverseActionBranch;
 export default class ReverseActionBranch {
@@ -44,6 +46,40 @@ export default class ReverseActionBranch {
     }
     this.log();
     return this;
+  }
+  showBranch: () => ActionHistory = () => { 
+    let current = this.current;
+    while (current.prev !== undefined) current = current.prev.prev;
+    // return this.search(current);
+    return [];
+  };
+  checkout: (stepToRight: number) => void = (step) => {
+    let increment: (i:number) => number;
+    let swichBranch: () => void;
+    if (step > 0) {
+      increment = i => i-1;
+      swichBranch = () => {
+        if (this.current.right !== undefined) {
+          const tmp = this.current.next;
+          this.current.next = this.current.right.next;
+          this.current.right.next = tmp;
+        }
+      }
+    } else {
+      increment = i => i+1;
+      swichBranch = () => {
+        if (this.current.left !== undefined) {
+          const tmp = this.current.next;
+          this.current.next = this.current.left.next;
+          this.current.left.next = tmp;
+        }
+      }
+    }
+    let i = step;
+    while (i !== 0) {
+      i = increment(i);
+      swichBranch();
+    }
   }
 
   private branch: OperatingMethod = (action) => {
@@ -81,6 +117,24 @@ export default class ReverseActionBranch {
       this.current = this.current.next.next;
     }
   }
+  // private search: (p: Partition) => ActionHistory = (p) => {
+  //   let actionHistory: ActionHistory = [];
+  //   while (p.next !== undefined) {
+  //     let branches: ActionHistory[] = [];
+  //     let current = p;
+  //     while (current.left !== undefined) {
+  //       branches.push(this.search(current.left));
+  //       current = current.left;
+  //     }
+  //     current = p;
+  //     while (current.right !== undefined) {
+  //       branches.push(this.search(current.right));
+  //       current = current.right;
+  //     }
+  //     if (branches.length !== 0) actionHistory.push(...branches);
+  //   }
+  //   return actionHistory;
+  // }
   private log = () => {
     let current = this.current;
     let log = '';
