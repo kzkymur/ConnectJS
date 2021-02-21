@@ -1,5 +1,5 @@
 import { Reducer } from 'redux';
-import { ActionTypes, GUIAction } from './actionTypes';
+import Action, { ActionTypes } from './actionTypes';
 import { Contents, Connection } from './types';
 import ReverseActionBranch, { OperationTypes, OperationType } from './reverseActionBranch';
 
@@ -9,7 +9,6 @@ interface State {
   cpIdsList: number[][];
   connections: Connection[];
   reverseActionBranch: ReverseActionBranch;
-  curving: number;
 }
 const initialState: State = {
   contents: [],
@@ -17,18 +16,18 @@ const initialState: State = {
   cpIdsList: [[]],
   connections: [],
   reverseActionBranch: new ReverseActionBranch(),
-  curving: 0.5,
 };
 
-type GUIReducerType = Reducer<State, GUIAction>;
-export const guiReducer: GUIReducerType = (state = initialState, action) => {
+type ReducerType = Reducer<State, Action>;
+const reducer: ReducerType = (state = initialState, action) => {
   return reducerLogic(state, action, OperationTypes.branch);
 }
+export default reducer;
 
-type ReducerLogic = (state: State, action: GUIAction, operationType: OperationType) => State;
+type ReducerLogic = (state: State, action: Action, operationType: OperationType) => State;
 const reducerLogic: ReducerLogic = (state, action, operationType) => {
   console.log(action);
-  let reverseAction: GUIAction;
+  let reverseAction: Action;
   switch (action.type) {
     case ActionTypes.add: {
       let latestId = state.latestId;

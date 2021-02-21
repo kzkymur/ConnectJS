@@ -83,9 +83,10 @@ interface DeleteConnection extends Action {
   type: typeof ActionTypes.deleteConnection; 
   payload: { index: number; }
 }
-export type GUIAction = 
+type NodeAction = 
   Add | Delete | 
   Update | UpdateName | UpdateSize | UpdatePos |
   Undo | Redo | 
   OpenCP | CloseCP | CloseAllCP | 
   AddConnection | UpdateConnection | DeleteConnection; 
+export default NodeAction;

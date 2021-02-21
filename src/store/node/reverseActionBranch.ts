@@ -1,4 +1,4 @@
-import { GUIAction } from './actionTypes';
+import Action from './actionTypes';
 
 interface Partition {
   prev?: Element;
@@ -7,7 +7,7 @@ interface Partition {
   left?: Partition;
 }
 interface Element {
-  action: GUIAction;
+  action: Action;
   prev: Partition;
   next: Partition;
 }
@@ -22,10 +22,10 @@ export type OperationType =
   typeof OperationTypes.forward |
   typeof OperationTypes.backward;
 
-export type ActionHistory = (GUIAction | ActionHistory)[];
+export type ActionHistory = (Action | ActionHistory)[];
 
-type OperatingMethod = (action: GUIAction) => void;
-type OperateType = (action: GUIAction, operationType: OperationType) => ReverseActionBranch;
+type OperatingMethod = (action: Action) => void;
+type OperateType = (action: Action, operationType: OperationType) => ReverseActionBranch;
 export default class ReverseActionBranch {
   current: Partition = {};
   constructor (p?: Partition) { if (p !== undefined) { this.current = p; } };
