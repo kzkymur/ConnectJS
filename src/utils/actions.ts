@@ -1,8 +1,8 @@
-import Action from '@/store/node/actionTypes';
+import NodeAction from '@/store/node/actionTypes';
 import { addAction as originalAddAction } from '@/store/node/actions';
 import { NodeMode } from '@/store/node/types';
 
-type AddAction = (mode: NodeMode) => Action;
+type AddAction = (mode: NodeMode) => NodeAction;
 export const addAction: AddAction = (mode) => originalAddAction({
   id: -1,
   mode: mode,

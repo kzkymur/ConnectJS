@@ -120,4 +120,3 @@ const ControlPanel: React.FC<Props> = props => {
 }
 
 export default ControlPanel;
-

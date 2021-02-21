@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { Content } from '@/store/node/types';
-import { updateAction } from '@/store/node/actions';
+import { updateAction, updateSizeAction, updatePosAction } from '@/store/node/actions';
 import Header from './Header';
 import Main from './Main';
 import IOs from './IOs';
@@ -12,21 +12,21 @@ const optBarHeight = px2n(optionalbarHeight);
 type Props = {
   property: Content;
   fRef: React.RefObject<HTMLDivElement>;
-  startMoving: (startPosX: number, startPosY: number) => void;
-  createStartConnectionMoving: (isInput: boolean, channel: number, isConnected: boolean) => (e: React.MouseEvent<HTMLDivElement>) => void;
-  createAddConnection: (isInput: boolean, channel: number) => () => void;
+  startMoving: (id: number, startPosX: number, startPosY: number) => void;
+  createStartConnectionMoving: (id: number, isInput: boolean, channel: number, isConnected: boolean) => (e: React.MouseEvent<HTMLDivElement>) => void;
+  createAddConnection: (id: number, isInput: boolean, channel: number) => () => void;
   openCP: () => void;
-  delete: () => void;
 }
 
 const Base: React.FC<Props> = props => {
   let {fRef, property} = props;
+  const { id } = property;
   let element: React.ReactNode;
   const dispatch = useDispatch();
   const updateFunc = (c: Content) => dispatch(updateAction(c));
+  const updateSize = (width: string, height: string) => dispatch(updateSizeAction(id, width, height));
+  const updatePos = (top: string, left: string) => dispatch(updatePosAction(id, top, left));
   let baseStyle: Content = property;
-  const checkPropNames: string[] = ['width', 'height', 'top', 'left'];
-  const isProperty = (value: string): value is (keyof Content) => checkPropNames.includes(value);
   let inNameBox = false;
   const setInNameBox = (newInNameBox: boolean) => inNameBox = newInNameBox;
 
@@ -36,21 +36,14 @@ const Base: React.FC<Props> = props => {
     const height = elm.offsetHeight;
     const zIndex = String(-1 * width * height);
     elm.style.zIndex = zIndex;
-    const newBaseStyle: Content = {
-      ...property,
-      width: width + 'px',
-      height: (height - optBarHeight * (Math.max(property.inputs.length, property.outputs.length)+1)) + 'px',
-      top: elm.offsetTop + 'px',
-      left: elm.offsetLeft + 'px',
-    }
-    for (let key in baseStyle) {
-      if (isProperty(key)) {
-        if (baseStyle[key] !== newBaseStyle[key]) {
-          baseStyle = newBaseStyle;
-          return updateFunc(newBaseStyle);
-        }
-      }
-    }
+
+    const strWidth = width + 'px';
+    const strHeight = (height - optBarHeight * (Math.max(property.inputs.length, property.outputs.length)+1)) + 'px';
+    const strTop = elm.offsetTop + 'px';
+    const strLeft = elm.offsetLeft + 'px';
+    if (baseStyle.width !== strWidth || baseStyle.height !== strHeight) return updateSize(strWidth, strHeight);
+    else if (baseStyle.top !== strTop || baseStyle.left !== strLeft) return updatePos(strTop, strLeft);
+
     if (inNameBox) {
       setInNameBox(false);
     } else {
@@ -89,7 +82,7 @@ const Base: React.FC<Props> = props => {
 
   const startMoving = (e: React.MouseEvent) => {
     if (fRef.current === null) return; const elm = fRef.current;
-    props.startMoving(e.clientX - elm.offsetLeft, e.clientY - elm.offsetTop);
+    props.startMoving(id, e.clientX - elm.offsetLeft, e.clientY - elm.offsetTop);
     elm.style.zIndex = String(-1 * elm.offsetWidth * elm.offsetHeight + 1);
   }
 
@@ -110,24 +103,26 @@ const Base: React.FC<Props> = props => {
     elm.style.height = (height - optBarHeight * (Math.max(property.inputs.length, property.outputs.length)+1)) + 'px';
   }
   const headerProps = {
-    property,
-    updateFunc,
-    delete: props.delete,
-  }
+    id,
+    name: property.name,
+  };
   const mainProps = {
     startMoving,
     element,
     fRef: mainRef
-  }
+  };
   const IOsProps = {
+    id, 
     inputs: property.inputs,
     outputs: property.outputs,
     createStartConnectionMoving: props.createStartConnectionMoving,
     createAddConnection: props.createAddConnection,
     createIONameUpdate,
-  }
+  };
   return (
-    <div className={style.container} ref={fRef} onMouseMove={displayUpdate} onMouseUp={updateState}>
+    <div className={style.container} ref={fRef}
+      onMouseMove={displayUpdate}
+      onMouseUp={updateState}>
       <Header {...headerProps}/>
       <Main {...mainProps}/>
       <IOs {...IOsProps}/>
