@@ -17,9 +17,9 @@ export const OperationTypes = {
   forward: 'FORWARD',
   backward: 'BACKWARD',
 } as const;
-export type OperationType = 
-  typeof OperationTypes.branch | 
-  typeof OperationTypes.forward | 
+export type OperationType =
+  typeof OperationTypes.branch |
+  typeof OperationTypes.forward |
   typeof OperationTypes.backward;
 
 export type ActionHistory = (GUIAction | ActionHistory)[];

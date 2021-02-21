@@ -31,7 +31,7 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
   let reverseAction: GUIAction;
   switch (action.type) {
     case ActionTypes.add: {
-      let latestId = state.latestId
+      let latestId = state.latestId;
       let content = action.payload.content;
       if (content.id === -1) {
         latestId += 1;
@@ -54,33 +54,33 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
         payload: { id: content.id },
       };
       break;
-    };
-    case ActionTypes.delete:{
+    }
+    case ActionTypes.delete: {
       const deletedContent = state.contents.filter(c => c.id === action.payload.id)[0];
       if (deletedContent === undefined) return state;
+      state = {
+        ...state,
+        contents: state.contents.filter(c => c.id !== action.payload.id),
+        cpIdsList: [state.cpIdsList[0].filter(id => id !== action.payload.id)],
+      };
       reverseAction = {
         type: ActionTypes.add,
         payload: { content: deletedContent },
       };
-      state = {
-        ...state,
-        contents: state.contents.filter(c => c.id !== action.payload.id),
-          cpIdsList: [state.cpIdsList[0].filter(id => id !== action.payload.id)],
-      };
-        break;
+      break;
     }
-    case ActionTypes.update:{
+    case ActionTypes.update: {
       const updatedContent = state.contents.filter(c => c.id === action.payload.content.id)[0];
       if (updatedContent === undefined) return state;
-      reverseAction = {
-        type: ActionTypes.update,
-        payload: { content: updatedContent },
-      };
       state = {
         ...state,
         contents: state.contents.map(c => c.id === action.payload.content.id ? action.payload.content : c),
       };
-        break;
+      reverseAction = {
+        type: ActionTypes.update,
+        payload: { content: updatedContent },
+      };
+      break;
     }
 
     case ActionTypes.undo:{
