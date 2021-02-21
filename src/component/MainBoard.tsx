@@ -2,18 +2,18 @@ import React, { useRef, useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store';
 import { deleteAction, openCPAction, addConnectionAction } from '../store/actions';
-import { glEditor, Connection, OutputTypes } from '../store/types';
+import { Content, Connection, OutputTypes } from '../store/types';
 import Base from './Base';
 import ControllPanel from './ControllPanel';
 import style from '@/style/MainBoard.css';
 
 type BaseIdRefType = {
-  baseId: number;
+  id: number;
   ref: React.RefObject<HTMLDivElement>;
 }
 type ConnectionMoveBuffer = {
   isInput: boolean;
-  baseId: number;
+  id: number;
   channel: number;
   pos: number[];
 }
@@ -34,16 +34,16 @@ const MainBoard: React.FC = () => {
 
 
   // refのsetup
-  const getIndex = (objs: BaseIdRefType[]|glEditor[], id: number): number => {
+  const getIndex = (objs: BaseIdRefType[]|Content[], id: number): number => {
     let i = -1;
     for (let baseIdRef of objs) {
       i++;
-      if (baseIdRef.baseId === id) return i;
+      if (baseIdRef.id === id) return i;
     }
     return -1;
   }
-  const addBIR = (id: number) => [...baseIdRefs, {baseId: id, ref: React.createRef<HTMLDivElement>()}];
-  const removeBIR = (id: number) => baseIdRefs.filter(bmi=>bmi.baseId!==id);
+  const addBIR = (id: number) => [...baseIdRefs, {id: id, ref: React.createRef<HTMLDivElement>()}];
+  const removeBIR = (id: number) => baseIdRefs.filter(bmi=>bmi.id!==id);
   const createDeleteFunc = (id: number) => () => dispatch(deleteAction(id));
 
   // Drag操作系
@@ -60,7 +60,7 @@ const MainBoard: React.FC = () => {
       const startConnectionMoving = (e: React.MouseEvent<HTMLDivElement>) => {
         let newConnectionMoveBuffer = {
           isInput: isInput,
-          baseId: id,
+          id: id,
           channel: channel,
         }
         if (isConnected) {
@@ -83,10 +83,10 @@ const MainBoard: React.FC = () => {
       const newConnection: Connection = isInput ? {
         type: OutputTypes.Number,
         iBaseId: id, iChannel: channel,
-        oBaseId: connectionMoveBuffer.baseId, oChannel: connectionMoveBuffer.channel,
+        oBaseId: connectionMoveBuffer.id, oChannel: connectionMoveBuffer.channel,
       } : {
         type: OutputTypes.Number,
-        iBaseId: connectionMoveBuffer.baseId, iChannel: connectionMoveBuffer.channel,
+        iBaseId: connectionMoveBuffer.id, iChannel: connectionMoveBuffer.channel,
         oBaseId: id, oChannel: channel,
       }
       return ()=>addConnection(newConnection);
@@ -159,16 +159,16 @@ const MainBoard: React.FC = () => {
   useEffect(()=>{
     let newBaseIdRefs = [...baseIdRefs];
     let flag = false;
-    props.glEditors.forEach(gle=>{
-      const i = getIndex(newBaseIdRefs, gle.baseId);
-      if (i === -1) { flag = true; newBaseIdRefs = addBIR(gle.baseId); }
+    props.contents.forEach(c=>{
+      const i = getIndex(newBaseIdRefs, c.id);
+      if (i === -1) { flag = true; newBaseIdRefs = addBIR(c.id); }
     });
     newBaseIdRefs.forEach(bir=>{
-      const i = getIndex(props.glEditors, bir.baseId);
-      if (i === -1) { flag = true; newBaseIdRefs = removeBIR(bir.baseId); }
+      const i = getIndex(props.contents, bir.id);
+      if (i === -1) { flag = true; newBaseIdRefs = removeBIR(bir.id); }
     });
     if (flag) setBaseIdRefs(newBaseIdRefs);
-  }, [props.glEditors]);
+  }, [props.contents]);
   useEffect(()=>{
     for (const i in props.cpIdsList) {
       if (cpIndexes[i] === undefined) {
@@ -188,26 +188,26 @@ const MainBoard: React.FC = () => {
   return (
     <div className={style.mainBoard}>
       {baseIdRefs.map((baseIdRef: BaseIdRefType)=>{
-        const editor = props.glEditors.filter(gle=>gle.baseId === baseIdRef.baseId)[0];
+        const editor = props.contents.filter(c=>c.id === baseIdRef.id)[0];
         if (editor===undefined) return null;
-        const {cscm, cac} = createCreateFuncs(editor.baseId);
+        const {cscm, cac} = createCreateFuncs(editor.id);
         const baseProps = {
           property: editor, 
           fRef: baseIdRef.ref,
-          startMoving: createStartMoving(editor.baseId),
+          startMoving: createStartMoving(editor.id),
           createStartConnectionMoving: cscm,
           createAddConnection: cac,
-          delete: createDeleteFunc(editor.baseId),
-          openCP: createOpenCP(editor.baseId),
+          delete: createDeleteFunc(editor.id),
+          openCP: createOpenCP(editor.id),
         }
-        return <Base key={editor.baseId}{...baseProps}/>
+        return <Base key={editor.id}{...baseProps}/>
       })}
       {props.cpIdsList.map((ids: number[], i)=>{
         if(ids[0]===undefined) return;
-        let properties: glEditor[] = [];
+        let properties: Content[] = [];
         ids.forEach(id=>{
-          let gle = props.glEditors.filter(gle=>gle.baseId===id)[0];
-          properties.push(gle);
+          let c = props.contents.filter(c=>c.id===id)[0];
+          properties.push(c);
         })
         const cpProps = { 
           properties: properties, 

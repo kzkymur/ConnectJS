@@ -1,13 +1,10 @@
-import { Action } from 'redux';
-import { ActionTypes } from './actionTypes';
-
-export const EditorModeNames = {
+export const NodeModeNames = {
   Code: 'CODE',
   Canvas: 'CANVAS',
 } as const;
-interface CodeMode { name: typeof EditorModeNames.Code }
-interface CanvasMode { name: typeof EditorModeNames.Canvas }
-export type EditorModeType = CodeMode | CanvasMode;
+interface CodeMode { name: typeof NodeModeNames.Code }
+interface CanvasMode { name: typeof NodeModeNames.Canvas } 
+export type NodeMode = CodeMode | CanvasMode;
 
 export const OutputTypes = {
   Number: 'NUMBER',
@@ -28,10 +25,10 @@ export interface InputInfo {
   oChannel?: number,
 }
 
-interface Base {
-  baseId: number;
+interface Node {
+  id: number;
   name: string;
-  mode: EditorModeType;
+  mode: NodeMode;
   width: string,
   height: string,
   top: string,
@@ -39,15 +36,15 @@ interface Base {
   outputs: OutputInfo[],
   inputs: InputInfo[],
 }
-interface Canvas extends Base {
+interface Canvas extends Node {
 
 };
-interface Processor extends Base {
+interface Processor extends Node {
 
 };
-export type glEditor = Canvas | Processor;
+export type Content = Canvas | Processor;
 
-export type glEditors = glEditor[];
+export type Contents = Content[];
 
 export type Connection = {
   type: OutputType,
@@ -56,46 +53,3 @@ export type Connection = {
   oBaseId: number,
   oChannel: number,
 }
-
-
-// Actionの型定義
-interface Add extends Action {
-  type: typeof ActionTypes.add;
-  payload: { mode: EditorModeType; }
-}
-interface Delete extends Action {
-  type: typeof ActionTypes.delete;
-  payload: { id: number; }
-}
-interface Update extends Action {
-  type: typeof ActionTypes.update;
-  payload: { glEditor: glEditor; }
-}
-
-interface Undo extends Action { type: typeof ActionTypes.undo; }
-interface Redo extends Action { type: typeof ActionTypes.redo; }
-
-interface OpenCP extends Action {
-  type: typeof ActionTypes.openCP;
-  payload: { id: number; }
-}
-interface CloseCP extends Action {
-  type: typeof ActionTypes.closeCP;
-  payload: { index: number; }
-}
-interface CloseAllCP extends Action { type: typeof ActionTypes.closeAllCP; }
-
-interface AddConnection extends Action { 
-  type: typeof ActionTypes.addConnection; 
-  payload: Connection
-}
-interface UpdateConnection extends Action { 
-  type: typeof ActionTypes.updateConnection; 
-  payload: Connection
-}
-interface DeleteConnection extends Action { 
-  type: typeof ActionTypes.deleteConnection; 
-  payload: { index: number; }
-}
-export type GlEditorActionTypes = Add | Delete | Update | Undo | Redo | OpenCP | CloseCP | CloseAllCP | AddConnection | UpdateConnection | DeleteConnection; 
-

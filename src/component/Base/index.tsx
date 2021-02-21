@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import { glEditor } from '@/store/types';
+import { Content } from '@/store/types';
 import { updateAction } from '@/store/actions';
 import Header from './Header';
 import Main from './Main';
@@ -10,7 +10,7 @@ import style, { optionalbarHeight } from '@/style/Base.scss';
 const optBarHeight = px2n(optionalbarHeight);
 
 type Props = {
-  property: glEditor;
+  property: Content;
   fRef: React.RefObject<HTMLDivElement>;
   startMoving: (startPosX: number, startPosY: number) => void;
   createStartConnectionMoving: (isInput: boolean, channel: number, isConnected: boolean) => (e: React.MouseEvent<HTMLDivElement>) => void;
@@ -23,10 +23,10 @@ const Base: React.FC<Props> = props => {
   let {fRef, property} = props;
   let element: React.ReactNode;
   const dispatch = useDispatch();
-  const updateFunc = (gle: glEditor) => dispatch(updateAction(gle));
-  let baseStyle: glEditor = property;
+  const updateFunc = (c: Content) => dispatch(updateAction(c));
+  let baseStyle: Content = property;
   const checkPropNames: string[] = ['width', 'height', 'top', 'left'];
-  const isProperty = (value: string): value is (keyof glEditor) => checkPropNames.includes(value);
+  const isProperty = (value: string): value is (keyof Content) => checkPropNames.includes(value);
   let inNameBox = false;
   const setInNameBox = (newInNameBox: boolean) => inNameBox = newInNameBox;
 
@@ -36,7 +36,7 @@ const Base: React.FC<Props> = props => {
     const height = elm.offsetHeight;
     const zIndex = String(-1 * width * height);
     elm.style.zIndex = zIndex;
-    const newBaseStyle: glEditor = {
+    const newBaseStyle: Content = {
       ...property,
       width: width + 'px',
       height: (height - optBarHeight * (Math.max(property.inputs.length, property.outputs.length)+1)) + 'px',
@@ -59,7 +59,7 @@ const Base: React.FC<Props> = props => {
   }
   const createIONameUpdate = (isInput: boolean, index: number) => {
     const ioNameUpdate = (name: string) => {
-      const newProperty: glEditor = isInput ? {
+      const newProperty: Content = isInput ? {
         ...property,
         inputs: property.inputs.map((input, i) => {
           if (i===index) {

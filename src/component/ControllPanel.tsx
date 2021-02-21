@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { glEditor, EditorModeNames, InputInfo, OutputInfo, OutputTypes, OutputType } from '../store/types';
+import { Content, NodeModeNames, InputInfo, OutputInfo, OutputTypes, OutputType } from '../store/types';
 import { updateAction, closeCPAction, closeAllCPAction } from '../store/actions';
 import NameBox from './atom/NameBox';
 import style from '@/style/ControllPanel.css';
 
 type Props = {
-  properties: glEditor[];
+  properties: Content[];
   index: number;
   setIndex: (i: number) => void;
 }
@@ -14,12 +14,12 @@ type Props = {
 const ControlPanel: React.FC<Props> = props => {
   const dispatch = useDispatch();
   const index = props.index;
-  const updateFunc = (gle: glEditor) => dispatch(updateAction(gle));
+  const updateFunc = (c: Content) => dispatch(updateAction(c));
   useEffect(()=>{
   }) 
 
   const nameUpdate = (name: string) => {
-    const newBaseStyle: glEditor = {
+    const newBaseStyle: Content = {
       ...props.properties[index],
       name: name,
     };
@@ -49,7 +49,7 @@ const ControlPanel: React.FC<Props> = props => {
 
   let defaultOutputType: OutputType;
   switch (props.properties[index].mode.name) {
-    case EditorModeNames.Canvas: {
+    case NodeModeNames.Canvas: {
       defaultOutputType = OutputTypes.Framebuffer;
       break;
     }
@@ -63,7 +63,7 @@ const ControlPanel: React.FC<Props> = props => {
       type: defaultOutputType,
       name: 'value',
     }
-    const newProperty: glEditor = {
+    const newProperty: Content = {
       ...props.properties[index],
       inputs: [...props.properties[index].inputs, inputInfo]
     };
@@ -76,7 +76,7 @@ const ControlPanel: React.FC<Props> = props => {
       name: 'value',
       isConnected: false,
     }
-    const newProperty: glEditor = {
+    const newProperty: Content = {
       ...props.properties[index],
       outputs: [...props.properties[index].outputs, outputInfo]
     };

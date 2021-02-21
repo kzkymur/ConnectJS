@@ -1,18 +1,18 @@
 import React from 'react';
-import { glEditor } from '../../store/types';
+import { Content } from '../../store/types';
 import NameBox from '../atom/NameBox';
 import style from '@/style/Base/Header.scss';
 
 type Props = {
-  property: glEditor;
-  updateFunc: (gle: glEditor) => void;
+  property: Content;
+  updateFunc: (content: Content) => void;
   delete: () => void;
 }
 
 const Header: React.FC<Props> = props => {
   const property = props.property;
   const nameUpdate = (name: string) => {
-    const newBaseStyle: glEditor = {
+    const newBaseStyle: Content = {
       ...property,
       name: name,
     };
