@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { Content, NodeModeNames, InputInfo, OutputInfo, OutputTypes, OutputType } from '../store/types';
-import { updateAction, closeCPAction, closeAllCPAction } from '../store/actions';
+import { Content, NodeModeNames, InputInfo, OutputInfo, OutputTypes, OutputType } from '@/store/node/types';
+import { updateAction } from '@/store/node/actions';
+import { closeCPAction, closeAllCPAction } from '@/store/panel/actions';
 import NameBox from './atom/NameBox';
 import style from '@/style/ControllPanel.css';
 
@@ -119,4 +120,3 @@ const ControlPanel: React.FC<Props> = props => {
 }
 
 export default ControlPanel;
-

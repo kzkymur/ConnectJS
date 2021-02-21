@@ -1,5 +1,5 @@
 import React from 'react';
-import { NodeModeNames, NodeMode } from '../store/types'
+import { NodeModeNames, NodeMode } from '@/store/node/types'
 
 type Props = {
   addRequest: (emt: NodeMode) => void;

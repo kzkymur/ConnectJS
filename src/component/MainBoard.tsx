@@ -1,8 +1,9 @@
 import React, { useRef, useState, useEffect } from 'react'; 
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../store';
-import { deleteAction, openCPAction, addConnectionAction } from '../store/actions';
-import { Content, Connection, OutputTypes } from '../store/types';
+import { RootState } from '@/store';
+import { addConnectionAction } from '@/store/node/actions';
+import { openCPAction } from '@/store/panel/actions';
+import { Content, Connection, OutputTypes } from '@/store/node/types';
 import Base from './Base';
 import ControllPanel from './ControllPanel';
 import style from '@/style/MainBoard.css';
@@ -19,7 +20,8 @@ type ConnectionMoveBuffer = {
 }
 
 const MainBoard: React.FC = () => {
-  const props = useSelector((state: RootState) => state);
+  const props = useSelector((state: RootState) => state.nodeReducer);
+  const cpIdsList = useSelector((state: RootState) => state.panelReducer.cpIdsList);
   const [baseIdRefs, setBaseIdRefs] = useState<BaseIdRefType[]>([]);
   const [cpIndexes, setCPIndexes] = useState<number[]>([]);
 
@@ -44,54 +46,47 @@ const MainBoard: React.FC = () => {
   }
   const addBIR = (id: number) => [...baseIdRefs, {id: id, ref: React.createRef<HTMLDivElement>()}];
   const removeBIR = (id: number) => baseIdRefs.filter(bmi=>bmi.id!==id);
-  const createDeleteFunc = (id: number) => () => dispatch(deleteAction(id));
 
   // Drag操作系
-  const createStartMoving = (id: number) => {
-    const startMoving = (startPosX: number, startPosY: number) => {
-      const movingNodeIndex = getIndex(baseIdRefs, id);
-      setMovingRef(baseIdRefs[movingNodeIndex].ref);
-      setStartPos([startPosX, startPosY]);
-    }
-    return startMoving;
+  const startMoving = (id: number, startPosX: number, startPosY: number) => {
+    const movingNodeIndex = getIndex(baseIdRefs, id);
+    setMovingRef(baseIdRefs[movingNodeIndex].ref);
+    setStartPos([startPosX, startPosY]);
   }
-  const createCreateFuncs = (id: number) => {
-    const createStartConnectionMoving = (isInput: boolean, channel: number, isConnected: boolean) => {
-      const startConnectionMoving = (e: React.MouseEvent<HTMLDivElement>) => {
-        let newConnectionMoveBuffer = {
-          isInput: isInput,
-          id: id,
-          channel: channel,
-        }
-        if (isConnected) {
-          // すでに繋がれている状態の場合、固定点が始点でなくなる為注意
-          // setConnectionMoveBuffer(newConnectionMoveBuffer);
-        } else {
-          const joint = e.currentTarget;
-          const jointRect = joint.getBoundingClientRect();
-          setConnectionMoveBuffer({
-            ...newConnectionMoveBuffer,
-            pos: [jointRect.left + joint.offsetWidth / 2, jointRect.top + joint.offsetHeight / 2]
-          });
-        }
+  const createStartConnectionMoving = (id: number, isInput: boolean, channel: number, isConnected: boolean) => {
+    const startConnectionMoving = (e: React.MouseEvent<HTMLDivElement>) => {
+      let newConnectionMoveBuffer = {
+        isInput: isInput,
+        id: id,
+        channel: channel,
       }
-      return startConnectionMoving;
-    }
-    const createAddConnection = (isInput: boolean, channel: number) => {
-      if (connectionMoveBuffer === undefined ) return ()=>{};
-      if (connectionMoveBuffer.isInput === isInput) return ()=>{};
-      const newConnection: Connection = isInput ? {
-        type: OutputTypes.Number,
-        iBaseId: id, iChannel: channel,
-        oBaseId: connectionMoveBuffer.id, oChannel: connectionMoveBuffer.channel,
-      } : {
-        type: OutputTypes.Number,
-        iBaseId: connectionMoveBuffer.id, iChannel: connectionMoveBuffer.channel,
-        oBaseId: id, oChannel: channel,
+      if (isConnected) {
+        // すでに繋がれている状態の場合、固定点が始点でなくなる為注意
+        // setConnectionMoveBuffer(newConnectionMoveBuffer);
+      } else {
+        const joint = e.currentTarget;
+        const jointRect = joint.getBoundingClientRect();
+        setConnectionMoveBuffer({
+          ...newConnectionMoveBuffer,
+          pos: [jointRect.left + joint.offsetWidth / 2, jointRect.top + joint.offsetHeight / 2]
+        });
       }
-      return ()=>addConnection(newConnection);
     }
-    return {cscm: createStartConnectionMoving, cac: createAddConnection};
+    return startConnectionMoving;
+  }
+  const createAddConnection = (id: number, isInput: boolean, channel: number) => {
+    if (connectionMoveBuffer === undefined ) return ()=>{};
+    if (connectionMoveBuffer.isInput === isInput) return ()=>{};
+    const newConnection: Connection = isInput ? {
+      type: OutputTypes.Number,
+      iBaseId: id, iChannel: channel,
+      oBaseId: connectionMoveBuffer.id, oChannel: connectionMoveBuffer.channel,
+    } : {
+      type: OutputTypes.Number,
+      iBaseId: connectionMoveBuffer.id, iChannel: connectionMoveBuffer.channel,
+      oBaseId: id, oChannel: channel,
+    }
+    return ()=>addConnection(newConnection);
   }
   const moving = (e: MouseEvent) => {
     const ref = movingRef;
@@ -123,7 +118,7 @@ const MainBoard: React.FC = () => {
   }
   const endMoving = () => { 
     if (movingRef !== undefined) {
-      setMovingRef( undefined);
+      setMovingRef(undefined);
     } else if (connectionMoveBuffer !== undefined) {
       setConnectionMoveBuffer(undefined);
     }
@@ -140,10 +135,10 @@ const MainBoard: React.FC = () => {
   // controlPanel系
   const createOpenCP = (id: number) => {
     const openCP = () => {
-      const currentIndex = props.cpIdsList[0].indexOf(id);
+      const currentIndex = cpIdsList[0].indexOf(id);
       if (currentIndex === -1) {
         openCPFunc(id);
-        createSetCPIndex(0)(props.cpIdsList[0].length);
+        createSetCPIndex(0)(cpIdsList[0].length);
       } else if (currentIndex !== cpIndexes[0]){
         createSetCPIndex(0)(currentIndex);
       }
@@ -170,12 +165,12 @@ const MainBoard: React.FC = () => {
     if (flag) setBaseIdRefs(newBaseIdRefs);
   }, [props.contents]);
   useEffect(()=>{
-    for (const i in props.cpIdsList) {
+    for (const i in cpIdsList) {
       if (cpIndexes[i] === undefined) {
         return setCPIndexes([...cpIndexes, 0]);
       }
     }
-  }, [props.cpIdsList]);
+  }, [cpIdsList]);
 
   // svg系
   let element;
@@ -190,19 +185,17 @@ const MainBoard: React.FC = () => {
       {baseIdRefs.map((baseIdRef: BaseIdRefType)=>{
         const editor = props.contents.filter(c=>c.id === baseIdRef.id)[0];
         if (editor===undefined) return null;
-        const {cscm, cac} = createCreateFuncs(editor.id);
         const baseProps = {
           property: editor, 
           fRef: baseIdRef.ref,
-          startMoving: createStartMoving(editor.id),
-          createStartConnectionMoving: cscm,
-          createAddConnection: cac,
-          delete: createDeleteFunc(editor.id),
+          startMoving,
+          createStartConnectionMoving,
+          createAddConnection,
           openCP: createOpenCP(editor.id),
         }
         return <Base key={editor.id}{...baseProps}/>
       })}
-      {props.cpIdsList.map((ids: number[], i)=>{
+      {cpIdsList.map((ids: number[], i)=>{
         if(ids[0]===undefined) return;
         let properties: Content[] = [];
         ids.forEach(id=>{
@@ -236,4 +229,3 @@ const MainBoard: React.FC = () => {
 }
 
 export default MainBoard;
-

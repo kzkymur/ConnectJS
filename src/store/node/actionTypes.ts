@@ -12,10 +12,6 @@ export const ActionTypes = {
   undo: "UNDO",
   redo: "REDO",
 
-  openCP: "OPENCP",
-  closeCP: "CLOSECP",
-  closeAllCP: "CLOSEALLCP",
-
   addConnection: "ADDCONNECTION",
   updateConnection: "UPDATECONNECTION",
   deleteConnection: "DELETECONNECTION",
@@ -61,16 +57,6 @@ interface UpdatePos extends Action {
 interface Undo extends Action { type: typeof ActionTypes.undo; }
 interface Redo extends Action { type: typeof ActionTypes.redo; }
 
-interface OpenCP extends Action {
-  type: typeof ActionTypes.openCP;
-  payload: { id: number; }
-}
-interface CloseCP extends Action {
-  type: typeof ActionTypes.closeCP;
-  payload: { index: number; }
-}
-interface CloseAllCP extends Action { type: typeof ActionTypes.closeAllCP; }
-
 interface AddConnection extends Action { 
   type: typeof ActionTypes.addConnection; 
   payload: Connection
@@ -83,9 +69,9 @@ interface DeleteConnection extends Action {
   type: typeof ActionTypes.deleteConnection; 
   payload: { index: number; }
 }
-export type GUIAction = 
+type NodeAction = 
   Add | Delete | 
   Update | UpdateName | UpdateSize | UpdatePos |
   Undo | Redo | 
-  OpenCP | CloseCP | CloseAllCP | 
   AddConnection | UpdateConnection | DeleteConnection; 
+export default NodeAction;

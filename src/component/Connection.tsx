@@ -1,5 +1,5 @@
 import React from 'react';
-import { OutputType } from '../store/types';
+import { OutputType } from '@/store/node/types';
 
 type Props = {
   type: OutputType;

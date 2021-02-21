@@ -1,12 +1,11 @@
 import { Reducer } from 'redux';
-import { ActionTypes, GUIAction } from './actionTypes';
+import Action, { ActionTypes } from './actionTypes';
 import { Contents, Connection } from './types';
 import ReverseActionBranch, { OperationTypes, OperationType } from './reverseActionBranch';
 
 interface State {
   contents: Contents;
   latestId: number;
-  cpIdsList: number[][];
   connections: Connection[];
   reverseActionBranch: ReverseActionBranch;
   curving: number;
@@ -14,21 +13,21 @@ interface State {
 const initialState: State = {
   contents: [],
   latestId: 0,
-  cpIdsList: [[]],
   connections: [],
   reverseActionBranch: new ReverseActionBranch(),
   curving: 0.5,
 };
 
-type GUIReducerType = Reducer<State, GUIAction>;
-export const guiReducer: GUIReducerType = (state = initialState, action) => {
+type ReducerType = Reducer<State, Action>;
+const reducer: ReducerType = (state = initialState, action) => {
   return reducerLogic(state, action, OperationTypes.branch);
 }
+export default reducer;
 
-type ReducerLogic = (state: State, action: GUIAction, operationType: OperationType) => State;
+type ReducerLogic = (state: State, action: Action, operationType: OperationType) => State;
 const reducerLogic: ReducerLogic = (state, action, operationType) => {
   console.log(action);
-  let reverseAction: GUIAction;
+  let reverseAction: Action;
   switch (action.type) {
     case ActionTypes.add: {
       let latestId = state.latestId;
@@ -61,7 +60,6 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
       state = {
         ...state,
         contents: state.contents.filter(c => c.id !== action.payload.id),
-        cpIdsList: [state.cpIdsList[0].filter(id => id !== action.payload.id)],
       };
       reverseAction = {
         type: ActionTypes.add,
@@ -142,6 +140,16 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
       break;
     }
 
+    case ActionTypes.addConnection: {
+      return {
+        ...state,
+        connections: [
+          ...state.connections,
+          { ...action.payload }
+        ],
+      }
+    }
+
     case ActionTypes.undo:{
       const reverseElement = state.reverseActionBranch.current.prev;
       if (reverseElement===undefined) return state;
@@ -153,38 +161,6 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
       return state = reducerLogic(state, reverseElement.action, OperationTypes.forward);
     }
 
-    case ActionTypes.openCP: {
-      if(state.cpIdsList[0].indexOf(action.payload.id)>-1) {
-        return state;
-      } else {
-        return {
-          ...state,
-          cpIdsList: [state.cpIdsList[0].concat([action.payload.id])],
-        }
-      }
-    }
-    case ActionTypes.closeCP: {
-      return {
-        ...state,
-        cpIdsList: [state.cpIdsList[0].filter((_,i) => i !== action.payload.index)],
-      }
-    }
-    case ActionTypes.closeAllCP: {
-      return {
-        ...state,
-        cpIdsList: [[]],
-      }
-    }
-
-    case ActionTypes.addConnection: {
-      return {
-        ...state,
-        connections: [
-          ...state.connections,
-          { ...action.payload }
-        ],
-      }
-    }
     default: return state; // 再描画しない〜〜
   }
   return {
