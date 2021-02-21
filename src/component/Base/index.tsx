@@ -1,5 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useEffect, useState, useRef } from 'react'; import { useDispatch } from 'react-redux';
 import { Content } from '@/store/node/types';
 import { updateAction, updateSizeAction, updatePosAction } from '@/store/node/actions';
 import Header from './Header';
@@ -11,15 +10,14 @@ const optBarHeight = px2n(optionalbarHeight);
 
 type Props = {
   property: Content;
-  fRef: React.RefObject<HTMLDivElement>;
-  startMoving: (id: number, startPosX: number, startPosY: number) => void;
   createStartConnectionMoving: (id: number, isInput: boolean, channel: number, isConnected: boolean) => (e: React.MouseEvent<HTMLDivElement>) => void;
   createAddConnection: (id: number, isInput: boolean, channel: number) => () => void;
   openCP: () => void;
 }
 
 const Base: React.FC<Props> = props => {
-  let {fRef, property} = props;
+  let { property } = props;
+  let [ ref ] = useState<React.RefObject<HTMLDivElement>>(React.createRef<HTMLDivElement>());
   const { id } = property;
   let element: React.ReactNode;
   const dispatch = useDispatch();
@@ -29,9 +27,28 @@ const Base: React.FC<Props> = props => {
   let baseStyle: Content = property;
   let inNameBox = false;
   const setInNameBox = (newInNameBox: boolean) => inNameBox = newInNameBox;
+  let startX: number;
+  let startY: number;
 
+  const startMoving = (e: React.MouseEvent) => {
+    if (ref.current === null) return; const elm = ref.current;
+    startX = e.clientX - elm.offsetLeft;
+    startY = e.clientY - elm.offsetTop;
+    elm.style.zIndex = String(-1 * elm.offsetWidth * elm.offsetHeight + 1);
+    window.addEventListener('mousemove', moving);
+  }
+  const moving = (e: MouseEvent) => {
+    const elm = ref.current;
+    if (elm === null) return; 
+    elm.style.left = (e.clientX - startX) + 'px';
+    elm.style.top = (e.clientY - startY) + 'px';
+    const height = elm.offsetHeight;
+    if (mainRef.current === null) return;
+    mainRef.current.style.height = (height - optBarHeight * (Math.max(property.inputs.length, property.outputs.length)+1)) + 'px';
+  }
   const updateState = () => {
-    if (fRef.current === null) return; const elm = fRef.current;
+    window.removeEventListener('mousemove', moving);
+    if (ref.current === null) return; const elm = ref.current;
     const width = elm.offsetWidth;
     const height = elm.offsetHeight;
     const zIndex = String(-1 * width * height);
@@ -80,16 +97,10 @@ const Base: React.FC<Props> = props => {
     return ioNameUpdate;
   }
 
-  const startMoving = (e: React.MouseEvent) => {
-    if (fRef.current === null) return; const elm = fRef.current;
-    props.startMoving(id, e.clientX - elm.offsetLeft, e.clientY - elm.offsetTop);
-    elm.style.zIndex = String(-1 * elm.offsetWidth * elm.offsetHeight + 1);
-  }
-
   const [ mainRef ] = useState(useRef<HTMLDivElement>(null));
   useEffect(()=>{
     let elm;
-    if (fRef.current === null) return; elm = fRef.current;
+    if (ref.current === null) return; elm = ref.current;
     elm.style.width = property.width;
     elm.style.top = property.top;
     elm.style.left = property.left;
@@ -97,11 +108,6 @@ const Base: React.FC<Props> = props => {
     if (mainRef.current === null) return; elm = mainRef.current;
     elm.style.height = property.height;
   })
-  const displayUpdate = () => {
-    if (fRef.current === null) return; const height = fRef.current.offsetHeight;
-    if (mainRef.current === null) return; let elm = mainRef.current;
-    elm.style.height = (height - optBarHeight * (Math.max(property.inputs.length, property.outputs.length)+1)) + 'px';
-  }
   const headerProps = {
     id,
     name: property.name,
@@ -120,9 +126,9 @@ const Base: React.FC<Props> = props => {
     createIONameUpdate,
   };
   return (
-    <div className={style.container} ref={fRef}
-      onMouseMove={displayUpdate}
-      onMouseUp={updateState}>
+    <div className={style.container} ref={ref}
+      onMouseUp={updateState}
+      >
       <Header {...headerProps}/>
       <Main {...mainProps}/>
       <IOs {...IOsProps}/>
