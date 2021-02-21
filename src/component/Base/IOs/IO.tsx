@@ -1,5 +1,5 @@
 import React from 'react';
-import { InputInfo, OutputInfo } from '@/store/types';
+import { InputInfo, OutputInfo } from '@/store/node/types';
 import NameBox from '@/component/atom/NameBox';
 import style from '@/style/Base/IOs/IO.scss';
 

@@ -1,8 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react'; 
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../store';
-import { deleteAction, openCPAction, addConnectionAction } from '../store/actions';
-import { Content, Connection, OutputTypes } from '../store/types';
+import { RootState } from '@/store';
+import { deleteAction, openCPAction, addConnectionAction } from '@/store/node/actions';
+import { Content, Connection, OutputTypes } from '@/store/node/types';
 import Base from './Base';
 import ControllPanel from './ControllPanel';
 import style from '@/style/MainBoard.css';
@@ -19,7 +19,7 @@ type ConnectionMoveBuffer = {
 }
 
 const MainBoard: React.FC = () => {
-  const props = useSelector((state: RootState) => state);
+  const props = useSelector((state: RootState) => state.nodeReducer);
   const [baseIdRefs, setBaseIdRefs] = useState<BaseIdRefType[]>([]);
   const [cpIndexes, setCPIndexes] = useState<number[]>([]);
 

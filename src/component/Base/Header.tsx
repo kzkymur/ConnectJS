@@ -1,5 +1,5 @@
 import React from 'react';
-import { Content } from '../../store/types';
+import { Content } from '@/store/node/types';
 import NameBox from '../atom/NameBox';
 import style from '@/style/Base/Header.scss';
 

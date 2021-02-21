@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import { Content } from '@/store/types';
-import { updateAction } from '@/store/actions';
+import { Content } from '@/store/node/types';
+import { updateAction } from '@/store/node/actions';
 import Header from './Header';
 import Main from './Main';
 import IOs from './IOs';

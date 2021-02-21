@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { NodeMode } from '../store/types';
+import { NodeMode } from '@/store/node/types';
 import { addAction } from '@/utils/actions';
 import AddWindowForm from './AddWindow';
 import style from '@/style/Header.css';
