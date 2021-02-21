@@ -29,16 +29,6 @@ export const updatePosAction = (id: number, top: string, left: string): Action =
 export const undoAction = (): Action => ({ type: ActionTypes.undo, });
 export const redoAction = (): Action => ({ type: ActionTypes.redo, });
 
-export const openCPAction = (baseId: number): Action => ({
-  type: ActionTypes.openCP,
-  payload: { id: baseId, }
-});
-export const closeCPAction = (index: number): Action => ({
-  type: ActionTypes.closeCP,
-  payload: { index: index, }
-});
-export const closeAllCPAction = (): Action => ({ type: ActionTypes.closeAllCP, });
-
 export const addConnectionAction = (param: Connection): Action => ({
   type: ActionTypes.addConnection, 
   payload: param	

@@ -1,7 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react'; 
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store';
-import { deleteAction, openCPAction, addConnectionAction } from '@/store/node/actions';
+import { deleteAction, addConnectionAction } from '@/store/node/actions';
+import { openCPAction } from '@/store/panel/actions';
 import { Content, Connection, OutputTypes } from '@/store/node/types';
 import Base from './Base';
 import ControllPanel from './ControllPanel';
@@ -20,6 +21,7 @@ type ConnectionMoveBuffer = {
 
 const MainBoard: React.FC = () => {
   const props = useSelector((state: RootState) => state.nodeReducer);
+  const cpIdsList = useSelector((state: RootState) => state.panelReducer.cpIdsList);
   const [baseIdRefs, setBaseIdRefs] = useState<BaseIdRefType[]>([]);
   const [cpIndexes, setCPIndexes] = useState<number[]>([]);
 
@@ -140,10 +142,10 @@ const MainBoard: React.FC = () => {
   // controlPanel系
   const createOpenCP = (id: number) => {
     const openCP = () => {
-      const currentIndex = props.cpIdsList[0].indexOf(id);
+      const currentIndex = cpIdsList[0].indexOf(id);
       if (currentIndex === -1) {
         openCPFunc(id);
-        createSetCPIndex(0)(props.cpIdsList[0].length);
+        createSetCPIndex(0)(cpIdsList[0].length);
       } else if (currentIndex !== cpIndexes[0]){
         createSetCPIndex(0)(currentIndex);
       }
@@ -170,12 +172,12 @@ const MainBoard: React.FC = () => {
     if (flag) setBaseIdRefs(newBaseIdRefs);
   }, [props.contents]);
   useEffect(()=>{
-    for (const i in props.cpIdsList) {
+    for (const i in cpIdsList) {
       if (cpIndexes[i] === undefined) {
         return setCPIndexes([...cpIndexes, 0]);
       }
     }
-  }, [props.cpIdsList]);
+  }, [cpIdsList]);
 
   // svg系
   let element;
@@ -202,7 +204,7 @@ const MainBoard: React.FC = () => {
         }
         return <Base key={editor.id}{...baseProps}/>
       })}
-      {props.cpIdsList.map((ids: number[], i)=>{
+      {cpIdsList.map((ids: number[], i)=>{
         if(ids[0]===undefined) return;
         let properties: Content[] = [];
         ids.forEach(id=>{
