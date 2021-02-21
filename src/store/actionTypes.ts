@@ -5,6 +5,9 @@ export const ActionTypes = {
   add: "ADD",
   delete: "DELETE",
   update: "UPDATE",
+  updateName: "UPDATENAME",
+  updateSize: "UPDATESIZE",
+  updatePos: "UPDATEPOS",
 
   undo: "UNDO",
   redo: "REDO",
@@ -30,6 +33,29 @@ interface Delete extends Action {
 interface Update extends Action {
   type: typeof ActionTypes.update;
   payload: { content: Content; }
+}
+interface UpdateName extends Action {
+  type: typeof ActionTypes.updateName;
+  payload: {
+    id: number;
+    name: string;
+  };
+}
+interface UpdateSize extends Action {
+  type: typeof ActionTypes.updateSize;
+  payload: { 
+    id: number;
+    width: string;
+    height: string;
+  };
+}
+interface UpdatePos extends Action {
+  type: typeof ActionTypes.updatePos;
+  payload: { 
+    id: number;
+    top: string;
+    left: string;
+  };
 }
 
 interface Undo extends Action { type: typeof ActionTypes.undo; }
@@ -57,4 +83,9 @@ interface DeleteConnection extends Action {
   type: typeof ActionTypes.deleteConnection; 
   payload: { index: number; }
 }
-export type GUIAction = Add | Delete | Update | Undo | Redo | OpenCP | CloseCP | CloseAllCP | AddConnection | UpdateConnection | DeleteConnection; 
+export type GUIAction = 
+  Add | Delete | 
+  Update | UpdateName | UpdateSize | UpdatePos |
+  Undo | Redo | 
+  OpenCP | CloseCP | CloseAllCP | 
+  AddConnection | UpdateConnection | DeleteConnection; 

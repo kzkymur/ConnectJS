@@ -14,6 +14,18 @@ export const updateAction = (content: Content): GUIAction => ({
   type: ActionTypes.update,
   payload: { content: content, },
 });
+export const updateNameAction = (id: number, name: string): GUIAction => ({
+  type: ActionTypes.updateName,
+  payload: { id, name, },
+});
+export const updateSizeAction = (id: number, width: string, height: string): GUIAction => ({
+  type: ActionTypes.updateSize,
+  payload: { id, width, height, },
+});
+export const updatePosAction = (id: number, top: string, left: string): GUIAction => ({
+  type: ActionTypes.updatePos,
+  payload: { id, top, left, },
+});
 export const undoAction = (): GUIAction => ({ type: ActionTypes.undo, });
 export const redoAction = (): GUIAction => ({ type: ActionTypes.redo, });
 

@@ -69,16 +69,75 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
       };
       break;
     }
+
     case ActionTypes.update: {
-      const updatedContent = state.contents.filter(c => c.id === action.payload.content.id)[0];
-      if (updatedContent === undefined) return state;
+      const oldContent = state.contents.filter(c => c.id === action.payload.content.id)[0];
+      if (oldContent === undefined) return state;
       state = {
         ...state,
         contents: state.contents.map(c => c.id === action.payload.content.id ? action.payload.content : c),
       };
       reverseAction = {
         type: ActionTypes.update,
-        payload: { content: updatedContent },
+        payload: { content: oldContent },
+      };
+      break;
+    }
+    case ActionTypes.updateName: {
+      const oldContent = state.contents.filter(c => c.id === action.payload.id)[0];
+      if (oldContent === undefined) return state;
+      state = {
+        ...state,
+        contents: state.contents.map(c => c.id === action.payload.id ? {
+          ...c,
+          name: action.payload.name,
+        } : c),
+      };
+      reverseAction = {
+        type: ActionTypes.updateName,
+        payload: { id: action.payload.id, name: oldContent.name },
+      };
+      break;
+    }
+    case ActionTypes.updateSize: {
+      const oldContent = state.contents.filter(c => c.id === action.payload.id)[0];
+      if (oldContent === undefined) return state;
+      state = {
+        ...state,
+        contents: state.contents.map(c => c.id === action.payload.id ? {
+          ...c,
+          width: action.payload.width,
+          height: action.payload.height,
+        } : c),
+      };
+      reverseAction = {
+        type: ActionTypes.updateSize,
+        payload: { 
+          id: action.payload.id, 
+          width: oldContent.width,
+          height: oldContent.height,
+        },
+      };
+      break;
+    }
+    case ActionTypes.updatePos: {
+      const oldContent = state.contents.filter(c => c.id === action.payload.id)[0];
+      if (oldContent === undefined) return state;
+      state = {
+        ...state,
+        contents: state.contents.map(c => c.id === action.payload.id ? {
+          ...c,
+          top: action.payload.top,
+          left: action.payload.left,
+        } : c),
+      };
+      reverseAction = {
+        type: ActionTypes.updatePos,
+        payload: {
+          id: action.payload.id,
+          top: oldContent.top,
+          left: oldContent.left,
+        },
       };
       break;
     }
