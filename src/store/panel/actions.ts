@@ -8,4 +8,8 @@ export const closeCPAction = (index: number): Action => ({
   type: ActionTypes.closeCP,
   payload: { index: index, }
 });
+export const closeCPByIdAction = (id: number): Action => ({
+  type: ActionTypes.closeCPById,
+  payload: { id, }
+});
 export const closeAllCPAction = (): Action => ({ type: ActionTypes.closeAllCP, });
