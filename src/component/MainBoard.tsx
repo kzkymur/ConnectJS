@@ -25,8 +25,6 @@ const MainBoard: React.FC = () => {
   const [baseIdRefs, setBaseIdRefs] = useState<BaseIdRefType[]>([]);
   const [cpIndexes, setCPIndexes] = useState<number[]>([]);
 
-  const [startPos, setStartPos] = useState<number[]>([]);
-  const [movingRef, setMovingRef] = useState<undefined | React.RefObject<HTMLDivElement>>();
   const [connectionMoveRef] = useState(useRef<SVGPathElement>(null));
   const [connectionMoveBuffer, setConnectionMoveBuffer] = useState<undefined | ConnectionMoveBuffer>();
 
@@ -48,11 +46,6 @@ const MainBoard: React.FC = () => {
   const removeBIR = (id: number) => baseIdRefs.filter(bmi=>bmi.id!==id);
 
   // Drag操作系
-  const startMoving = (id: number, startPosX: number, startPosY: number) => {
-    const movingNodeIndex = getIndex(baseIdRefs, id);
-    setMovingRef(baseIdRefs[movingNodeIndex].ref);
-    setStartPos([startPosX, startPosY]);
-  }
   const createStartConnectionMoving = (id: number, isInput: boolean, channel: number, isConnected: boolean) => {
     const startConnectionMoving = (e: React.MouseEvent<HTMLDivElement>) => {
       let newConnectionMoveBuffer = {
@@ -89,13 +82,7 @@ const MainBoard: React.FC = () => {
     return ()=>addConnection(newConnection);
   }
   const moving = (e: MouseEvent) => {
-    const ref = movingRef;
-    if (ref !== undefined) {
-      const elm = ref.current;
-      if (elm === null) return; 
-      elm.style.left = (e.clientX - startPos[0]) + 'px';
-      elm.style.top = (e.clientY - startPos[1]) + 'px';
-    } else if (connectionMoveBuffer !== undefined) {
+    if (connectionMoveBuffer !== undefined) {
       const elm = connectionMoveRef.current;
       if (elm === null) return;
       const {pos, isInput} = connectionMoveBuffer;
@@ -116,21 +103,6 @@ const MainBoard: React.FC = () => {
     dList[6] = (Sx + Ex) / 2; dList[7] = (Sy + Ey) / 2;
     return dList;
   }
-  const endMoving = () => { 
-    if (movingRef !== undefined) {
-      setMovingRef(undefined);
-    } else if (connectionMoveBuffer !== undefined) {
-      setConnectionMoveBuffer(undefined);
-    }
-  }
-  useEffect(()=>{ 
-    window.addEventListener('mousemove', moving); 
-    window.addEventListener('mouseup', endMoving); 
-    return () =>  { 
-      window.removeEventListener('mousemove', moving); 
-      window.removeEventListener('mouseup', endMoving); 
-    }
-  });
 
   // controlPanel系
   const createOpenCP = (id: number) => {
@@ -183,17 +155,15 @@ const MainBoard: React.FC = () => {
   return (
     <div className={style.mainBoard}>
       {baseIdRefs.map((baseIdRef: BaseIdRefType)=>{
-        const editor = props.contents.filter(c=>c.id === baseIdRef.id)[0];
-        if (editor===undefined) return null;
+        const c = props.contents.filter(c=>c.id === baseIdRef.id)[0];
+        if (c===undefined) return null;
         const baseProps = {
-          property: editor, 
-          fRef: baseIdRef.ref,
-          startMoving,
+          property: c, 
           createStartConnectionMoving,
           createAddConnection,
-          openCP: createOpenCP(editor.id),
+          openCP: createOpenCP(c.id),
         }
-        return <Base key={editor.id}{...baseProps}/>
+        return <Base key={c.id}{...baseProps}/>
       })}
       {cpIdsList.map((ids: number[], i)=>{
         if(ids[0]===undefined) return;
