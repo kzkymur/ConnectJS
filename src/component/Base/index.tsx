@@ -10,15 +10,14 @@ import style, { optionalbarHeight } from '@/style/Base.scss';
 const optBarHeight = px2n(optionalbarHeight);
 
 type Handler = {
-  getJointPos: (isInput: boolean, index: number) => Vector;
-  getAllJointPos: () => Vector[];
+  getJointPos: (isInput: boolean, id: number) => Vector;
+  getAllJointPos: (isInput: boolean) => Vector[];
   getPos: () => Vector;
   getSize: () => Vector;
   updatePosStyle: (v: Vector) => void;
   updatePosState: (v: Vector) => boolean;
   updateSizeState: (v: Vector) => boolean;
 }
-
 type Props = {
   property: Content;
   openCP: () => void;
@@ -34,9 +33,9 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
   const updateSize = (width: string, height: string) => dispatch(updateSizeAction(id, width, height));
   const updatePos = (top: string, left: string) => dispatch(updatePosAction(id, top, left));
   let baseStyle: Content = property;
-  let inNameBox = false;
-  const setInNameBox = (newInNameBox: boolean) => inNameBox = newInNameBox;
-  let startX: number; let startY: number;
+  // let inNameBox = false;
+  // const setInNameBox = (newInNameBox: boolean) => inNameBox = newInNameBox;
+  // let startX: number; let startY: number;
 
   // const startMoving = (e: React.MouseEvent) => {
   //   if (ref.current === null) return; const elm = ref.current;
@@ -76,7 +75,7 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
   //   }
   // }
 
-  const getJointPos = (isInput: boolean, index: number) => {
+  const getJointPos = (isInput: boolean, id: number) => {
     return {x: 0, y: 0};
   }
   const getAllJointPos = () => {
@@ -121,6 +120,7 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
     }
     return false;
   }
+
   useImperativeHandle(fRef, ()=>({
     getJointPos,
     getAllJointPos,
