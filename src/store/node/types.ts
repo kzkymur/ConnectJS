@@ -6,23 +6,17 @@ interface CodeMode { name: typeof NodeModeNames.Code }
 interface CanvasMode { name: typeof NodeModeNames.Canvas } 
 export type NodeMode = CodeMode | CanvasMode;
 
-export const OutputTypes = {
+export const DataTypes = {
   Number: 'NUMBER',
   NumberList: 'NUMBER_LIST',
   Framebuffer: 'FRAMEBUFFER',
 } as const;
-export type OutputType = typeof OutputTypes.Number | typeof OutputTypes.NumberList | typeof OutputTypes.Framebuffer;
-export interface OutputInfo {
-  type: OutputType,
+export type DataType = typeof DataTypes.Number | typeof DataTypes.NumberList | typeof DataTypes.Framebuffer;
+export interface Socket {
+  type: DataType,
+  id: number,
   name: string,
-  value?: number | number[],
-  isConnected: boolean,
-}
-export interface InputInfo {
-  type: OutputType,
-  name: string,
-  oBaseId?: number,
-  oChannel?: number,
+  counterId: number,
 }
 
 interface Node {
@@ -33,8 +27,8 @@ interface Node {
   height: string,
   top: string,
   left: string,
-  outputs: OutputInfo[],
-  inputs: InputInfo[],
+  outputs: Socket[],
+  inputs: Socket[],
 }
 interface Canvas extends Node {
 
@@ -47,9 +41,9 @@ export type Content = Canvas | Processor;
 export type Contents = Content[];
 
 export type Connection = {
-  type: OutputType,
+  type: DataType,
   iBaseId: number,
-  iChannel: number,
+  iId: number,
   oBaseId: number,
-  oChannel: number,
+  oId: number,
 }

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { Content, NodeModeNames, InputInfo, OutputInfo, OutputTypes, OutputType } from '@/store/node/types';
+import { Content, NodeModeNames, Socket, DataTypes, DataType } from '@/store/node/types';
 import { updateAction } from '@/store/node/actions';
 import { closeCPAction, closeAllCPAction } from '@/store/panel/actions';
 import NameBox from './atom/NameBox';
@@ -48,21 +48,23 @@ const ControlPanel: React.FC<Props> = props => {
     return closeFunc;
   }
 
-  let defaultOutputType: OutputType;
+  let defaultOutputType: DataType;
   switch (props.properties[index].mode.name) {
     case NodeModeNames.Canvas: {
-      defaultOutputType = OutputTypes.Framebuffer;
+      defaultOutputType = DataTypes.Framebuffer;
       break;
     }
     default: {
-      defaultOutputType = OutputTypes.Number;
+      defaultOutputType = DataTypes.Number;
     }
   }
   const addInput = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    const inputInfo: InputInfo = {
+    const inputInfo: Socket = {
       type: defaultOutputType,
+      id: -1,
       name: 'value',
+      counterId: -1,
     }
     const newProperty: Content = {
       ...props.properties[index],
@@ -72,10 +74,11 @@ const ControlPanel: React.FC<Props> = props => {
   }
   const addOutput = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    const outputInfo: OutputInfo = {
+    const outputInfo: Socket = {
       type: defaultOutputType,
+      id: -1,
       name: 'value',
-      isConnected: false,
+      counterId: -1,
     }
     const newProperty: Content = {
       ...props.properties[index],
