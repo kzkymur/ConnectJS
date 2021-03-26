@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react'; 
+import React, { useState, useEffect, useRef, MutableRefObject } from 'react'; 
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store';
 import { addConnectionAction } from '@/store/node/actions';
 import { openCPAction } from '@/store/panel/actions';
 import { Content, Connection as ConnectionType } from '@/store/node/types';
-import Base from './Base';
+import Base, { Handler as BaseHandler } from './Base';
 import ControllPanel from './ControllPanel';
 import Connection from './Connection';
 import { getIndex } from '@/utils';
@@ -12,7 +12,7 @@ import style from '@/style/MainBoard.css';
 
 type BaseIdRefType = {
   id: number;
-  ref: React.RefObject<HTMLDivElement>;
+  ref: MutableRefObject<BaseHandler>;
 }
 
 const MainBoard: React.FC = () => {
@@ -26,7 +26,7 @@ const MainBoard: React.FC = () => {
   const addConnection = (c: ConnectionType) => dispatch(addConnectionAction(c));
 
   // refのsetup
-  const addBIR = (id: number) => [...baseIdRefs, {id: id, ref: React.createRef<HTMLDivElement>()}];
+  const addBIR = (id: number) => [...baseIdRefs, {id: id, ref: useRef({} as BaseHandler)}];
   const removeBIR = (id: number) => baseIdRefs.filter(bmi=>bmi.id!==id);
 
   // controlPanel系
@@ -78,7 +78,7 @@ const MainBoard: React.FC = () => {
           property: c, 
           openCP: createOpenCP(c.id),
         }
-        return <Base key={c.id}{...baseProps}/>
+        return <Base key={c.id}{...baseProps} ref={baseIdRef.ref}/>
       })}
       {cpIdsList.map((ids: number[], i)=>{
         if(ids[0]===undefined) return;
