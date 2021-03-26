@@ -2,6 +2,11 @@ import React, { useRef, useState, useImperativeHandle, forwardRef } from 'react'
 import { DataType } from '@/store/node/types';
 import style from '@/style/Connection.scss';
 
+type Handler = {
+  changeView: (Sx:number, Sy:number, Ex:number, Ey:number) => void;
+  setPos: (Sx:number, Sy:number, Ex:number, Ey:number) => void;
+  getPos: (isStartPos: boolean) => number[];
+}
 type Props = {
   type: DataType;
   curving: number;
@@ -9,12 +14,6 @@ type Props = {
   sY: number;
   eX: number;
   eY: number;
-}
-
-type Handler = {
-  changeView: (Sx:number, Sy:number, Ex:number, Ey:number) => void;
-  setPos: (Sx:number, Sy:number, Ex:number, Ey:number) => void;
-  getPos: (isStartPos: boolean) => number[];
 }
 
 const Connection = forwardRef<Handler, Props>((props, fRef) => {

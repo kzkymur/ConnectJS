@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store';
 import { addConnectionAction } from '@/store/node/actions';
 import { openCPAction } from '@/store/panel/actions';
-import { Content, Connection as ConnectionType } from '@/store/node/types';
+import { Content, ConnectionType } from '@/store/node/types';
 import Base, { Handler as BaseHandler } from './Base';
 import ControllPanel from './ControllPanel';
 import Connection from './Connection';

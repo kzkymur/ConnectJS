@@ -1,5 +1,5 @@
 import { Action } from 'redux';
-import { Content, Connection } from './types';
+import { Content, ConnectionType } from './types';
 
 export const ActionTypes = {
   add: "ADD",
@@ -20,15 +20,15 @@ export const ActionTypes = {
 // Actionの型定義
 interface Add extends Action {
   type: typeof ActionTypes.add;
-  payload: { content: Content; }
+  payload: { content: Content; };
 }
 interface Delete extends Action {
   type: typeof ActionTypes.delete;
-  payload: { id: number; }
+  payload: { id: number; };
 }
 interface Update extends Action {
   type: typeof ActionTypes.update;
-  payload: { content: Content; }
+  payload: { content: Content; };
 }
 interface UpdateName extends Action {
   type: typeof ActionTypes.updateName;
@@ -59,15 +59,15 @@ interface Redo extends Action { type: typeof ActionTypes.redo; }
 
 interface AddConnection extends Action { 
   type: typeof ActionTypes.addConnection; 
-  payload: Connection
+  payload: ConnectionType;
 }
 interface UpdateConnection extends Action { 
   type: typeof ActionTypes.updateConnection; 
-  payload: Connection
+  payload: ConnectionType;
 }
 interface DeleteConnection extends Action { 
   type: typeof ActionTypes.deleteConnection; 
-  payload: { index: number; }
+  payload: { index: number; };
 }
 type NodeAction = 
   Add | Delete | 

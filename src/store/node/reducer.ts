@@ -1,12 +1,12 @@
 import { Reducer } from 'redux';
 import Action, { ActionTypes } from './actionTypes';
-import { Contents, Connection } from './types';
+import { Contents, ConnectionType } from './types';
 import ReverseActionBranch, { OperationTypes, OperationType } from './reverseActionBranch';
 
 interface State {
   contents: Contents;
   latestId: number;
-  connections: Connection[];
+  connections: ConnectionType[];
   reverseActionBranch: ReverseActionBranch;
   curving: number;
 }

@@ -40,7 +40,7 @@ export type Content = Canvas | Processor;
 
 export type Contents = Content[];
 
-export type Connection = {
+export type ConnectionType = {
   type: DataType,
   iBaseId: number,
   iId: number,
