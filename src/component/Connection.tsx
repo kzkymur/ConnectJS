@@ -1,57 +1,52 @@
 import React, { useRef, useState, useImperativeHandle, forwardRef } from 'react'; 
 import { DataType } from '@/store/node/types';
+import { Vector } from '@/utils';
 import style from '@/style/Connection.scss';
 
 type Handler = {
-  changeView: (Sx:number, Sy:number, Ex:number, Ey:number) => void;
-  setPos: (Sx:number, Sy:number, Ex:number, Ey:number) => void;
-  getPos: (isStartPos: boolean) => number[];
+  changeView: (s: Vector, e: Vector) => void;
+  setPos: (s: Vector, e: Vector) => void;
+  getPos: (isStartPos: boolean) => Vector;
 }
 type Props = {
   type: DataType;
   curving: number;
-  sX: number;
-  sY: number;
-  eX: number;
-  eY: number;
+  s: Vector;
+  e: Vector;
 }
 
 const Connection = forwardRef<Handler, Props>((props, fRef) => {
   const [ref] = useState(useRef<SVGPathElement>(null));
-  const [sX, setSX] = useState(props.sX);
-  const [sY, setSY] = useState(props.sY);
-  const [eX, setEX] = useState(props.eX);
-  const [eY, setEY] = useState(props.eY);
+  const [s, setS] = useState(props.s);
+  const [e, setE] = useState(props.e);
   useImperativeHandle(fRef, ()=>({
     changeView,
     setPos,
     getPos,
   }));
 
-  const changeView = (Sx: number, Sy: number, Ex: number, Ey: number) => {
+  const changeView = (s: Vector, e: Vector) => {
     if (ref.current === null) return;
-    ref.current.attributes[1].value = calcDList(Sx,Sy,Ex,Ey,props.curving);
+    ref.current.attributes[1].value = calcDList(s,e,props.curving);
   }
-  const setPos = (Sx: number, Sy: number, Ex: number, Ey: number) => {
-    if (Sx !== sX) setSX(Sx);
-    if (Sy !== sY) setSY(Sy);
-    if (Ex !== eX) setEX(Ex);
-    if (Ey !== eY) setEY(Ey);
+  const setPos = (newS: Vector, newE: Vector) => {
+    if (s !== newS) setS(newS);
+    if (e !== newE) setE(newE);
   }
-  const getPos = (isStartPos: boolean) => isStartPos ? [sX, sY] : [eX, eY];
+  const getPos = (isStartPos: boolean) => isStartPos ? s : e;
 
   return (
     <path className={style.connectionLine} ref={ref}
-      d={calcDList(sX, sY, eX, eY, props.curving)}/>	
+      d={calcDList(s, e, props.curving)}/>	
   );
 })
 
 export default Connection;
 
-const calcDList = (Sx: number, Sy: number, Ex: number, Ey: number, curving: number) => {
+const calcDList = (s: Vector, e: Vector, curving: number) => {
   let dList :(number | string)[] = ['M']; dList[3] = 'Q'; dList[8] = 'T';
-  dList[1] = Sx; dList[2] = Sy; dList[9] = Ex; dList[10] = Ey;
-  dList[4] = Math.abs((Ex-Sx)*curving)+Sx; dList[5] = Sy;
-  dList[6] = (Sx + Ex) / 2; dList[7] = (Sy + Ey) / 2;
+  dList[1] = s.x; dList[2] = s.y; dList[9] = e.x; dList[10] = e.y;
+  dList[4] = Math.abs((e.x-s.x)*curving)+s.x; dList[5] = s.y;
+  dList[6] = (s.x + e.x) / 2; dList[7] = (s.y + e.y) / 2;
   return dList.join(' ');
 }
