@@ -4,7 +4,7 @@ import IO from './IO';
 import { getIndex, Vector } from '@/utils';
 import style from '@/style/Base/IOs.scss';
 
-type Handler = {
+export type Handler = {
   getJointPos: (isInput: boolean, id: number) => Vector;
   getAllJointPos: (isInput: boolean) => Vector[];
 }

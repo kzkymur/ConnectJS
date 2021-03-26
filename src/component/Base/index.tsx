@@ -1,15 +1,15 @@
-import React, { useEffect, useState, useRef, useImperativeHandle, forwardRef } from 'react'; 
+import React, { useEffect, useState, useRef, useImperativeHandle, forwardRef, MutableRefObject } from 'react'; 
 import { useDispatch } from 'react-redux';
 import { Content } from '@/store/node/types';
 import { updateAction, updateSizeAction, updatePosAction } from '@/store/node/actions';
 import Header from './Header';
 import Main from './Main';
-import IOs from './IOs';
+import IOs, { Handler as IOsHandler } from './IOs';
 import { px2n, Vector } from '@/utils';
 import style, { optionalbarHeight } from '@/style/Base.scss';
 const optBarHeight = px2n(optionalbarHeight);
 
-type Handler = {
+export type Handler = {
   getJointPos: (isInput: boolean, id: number) => Vector;
   getAllJointPos: (isInput: boolean) => Vector[];
   getPos: () => Vector;
@@ -25,7 +25,8 @@ type Props = {
 
 const Base = forwardRef<Handler, Props>((props, fRef) => {
   let { property } = props;
-  let [ ref ] = useState<React.RefObject<HTMLDivElement>>(React.createRef<HTMLDivElement>());
+  const [ ref ] = useState<React.RefObject<HTMLDivElement>>(React.createRef<HTMLDivElement>());
+  const [ iosRef ] = useState<MutableRefObject<IOsHandler>>(useRef({} as IOsHandler));
   const { id } = property;
   let element: React.ReactNode;
   const dispatch = useDispatch();
@@ -75,12 +76,8 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
   //   }
   // }
 
-  const getJointPos = (isInput: boolean, id: number) => {
-    return {x: 0, y: 0};
-  }
-  const getAllJointPos = () => {
-    return [{x: 0, y: 0}];
-  }
+  const getJointPos = (isInput: boolean, id: number) => iosRef.current.getJointPos(isInput, id);
+  const getAllJointPos = (isInput: boolean) => iosRef.current.getAllJointPos(isInput);
   const getPos = () => {
     const v = {x: 0, y: 0};
     const elm = ref.current; if (elm === null) return v; 
@@ -99,9 +96,11 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
     elm.style.top = v.y + 'px';
   }
   const updatePosState = (v: Vector) => {
-    const elm = ref.current; if (elm === null) return false; 
-    const strTop = elm.offsetTop + 'px';
-    const strLeft = elm.offsetLeft + 'px';
+    // const elm = ref.current; if (elm === null) return false; 
+    // const strTop = elm.offsetTop + 'px';
+    // const strLeft = elm.offsetLeft + 'px';
+    const strTop = v.x + 'px';
+    const strLeft = v.y + 'px';
     if (baseStyle.top !== strTop || baseStyle.left !== strLeft) {
       updatePos(strTop, strLeft);
       return true;
@@ -110,7 +109,8 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
   }
   const updateSizeState = (v: Vector) => {
     const elm = ref.current; if (elm === null) return false; 
-    const width = elm.offsetWidth, height = elm.offsetHeight;
+    // const width = elm.offsetWidth, height = elm.offsetHeight;
+    const width = v.x, height = v.y;
     elm.style.zIndex = String(-1 * width * height);
     const strWidth = width + 'px';
     const strHeight = (height - optBarHeight * (Math.max(property.inputs.length, property.outputs.length)+1)) + 'px';
@@ -193,7 +193,7 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
       >
       <Header {...headerProps}/>
       <Main {...mainProps}/>
-      <IOs {...IOsProps}/>
+      <IOs {...IOsProps} ref={iosRef}/>
     </div>
   )
 });
