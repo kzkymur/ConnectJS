@@ -1,3 +1,5 @@
+import { Vector } from '@/utils';
+
 export const NodeModeNames = {
   Code: 'CODE',
   Canvas: 'CANVAS',
@@ -13,22 +15,22 @@ export const DataTypes = {
 } as const;
 export type DataType = typeof DataTypes.Number | typeof DataTypes.NumberList | typeof DataTypes.Framebuffer;
 export interface Socket {
-  type: DataType,
-  id: number,
-  name: string,
-  counterId: number,
+  type: DataType;
+  id: number;
+  name: string;
+  counterId: number;
 }
 
 interface Node {
   id: number;
   name: string;
   mode: NodeMode;
-  width: string,
-  height: string,
-  top: string,
-  left: string,
-  outputs: Socket[],
-  inputs: Socket[],
+  width: string;
+  height: string;
+  top: string;
+  left: string;
+  outputs: Socket[];
+  inputs: Socket[];
 }
 interface Canvas extends Node {
 
@@ -41,9 +43,12 @@ export type Content = Canvas | Processor;
 export type Contents = Content[];
 
 export type ConnectionType = {
-  type: DataType,
-  iBaseId: number,
-  iId: number,
-  oBaseId: number,
-  oId: number,
+  type: DataType;
+  id: number;
+  iBaseId: number;
+  iId: number;
+  oBaseId: number;
+  oId: number;
+  s: Vector;
+  e: Vector;
 }

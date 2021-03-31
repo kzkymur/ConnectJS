@@ -3,7 +3,7 @@ import { DataType } from '@/store/node/types';
 import { Vector } from '@/utils';
 import style from '@/style/Connection.scss';
 
-type Handler = {
+export type Handler = {
   changeView: (s: Vector, e: Vector) => void;
   setPos: (s: Vector, e: Vector) => void;
   getPos: (isStartPos: boolean) => Vector;

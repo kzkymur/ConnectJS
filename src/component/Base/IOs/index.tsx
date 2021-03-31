@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef, MutableRefObject, forwardRef, useImperativeHandle } from 'react';
 import { Socket } from '@/store/node/types';
 import IO from './IO';
-import { getIndex, Vector } from '@/utils';
+import { Vector, getIndex } from '@/utils';
+import { IdRef, updateIdRefs } from '@/utils/manageIdRef';
 import style from '@/style/Base/IOs.scss';
 
 export type Handler = {
@@ -16,38 +17,23 @@ type Props = {
 }
 
 const IOs = forwardRef<Handler, Props>((props, fRef) => {
-  const [socketJointRefs, setSocketJointRefs] = useState<SocketJointRefs>({input: [], output: []});
-  const addJR = (jrs: JointRefType[], id: number) => [...jrs, {id: id, ref: useRef({} as Vector)}];
-  const removeJR = (jrs: JointRefType[], id: number) => jrs.filter(jr=>jr.id!==id);
-  const updateSJR = (isInput: boolean) => {
-    const sockets = isInput ? props.inputs : props.outputs;
-    const key = isInput ? 'input' : 'output', newSJR = {...socketJointRefs};
-    let newJointRefs = isInput ? [...socketJointRefs.input] : [...socketJointRefs.output];
-    let flag = false;
-    sockets.forEach(input=>{
-      const i = getIndex(newJointRefs, input.id);
-      if (i === -1) { flag = true; newJointRefs = addJR(newJointRefs, input.id); }
-    });
-    newJointRefs.forEach(jr=>{
-      const i = getIndex(props.inputs, jr.id);
-      if (i === -1) { flag = true; newJointRefs = removeJR(newJointRefs, jr.id); }
-    });
-    if (flag) {
-      newSJR[key] = newJointRefs;
-      setSocketJointRefs(newSJR);
-    }
-  }
-  useEffect(()=>{ updateSJR(true); }, [props.inputs]);
-  useEffect(()=>{ updateSJR(false); }, [props.outputs]);
+  const [inputJointRefs, setInputJointRefs] = useState<JointRef[]>([]);
+  useEffect(()=>{ 
+    updateIdRefs<Vector>(inputJointRefs, props.inputs, setInputJointRefs); 
+  }, [props.inputs]);
+  const [outputJointRefs, setOutputJointRefs] = useState<JointRef[]>([]);
+  useEffect(()=>{ 
+    updateIdRefs<Vector>(outputJointRefs, props.outputs, setOutputJointRefs); 
+  }, [props.outputs]);
 
   const getJointPos = (isInput: boolean, id: number) => {
-    const sockets = isInput ? socketJointRefs.input : socketJointRefs.output;
+    const sockets = isInput ? inputJointRefs : inputJointRefs;
     const i = getIndex(sockets, id);
     if (i!==-1) return sockets[i].ref.current;
     return { x:0, y:0 };
   }
   const getAllJointPos = (isInput: boolean) => {
-    const sockets = isInput ? socketJointRefs.input : socketJointRefs.output;
+    const sockets = isInput ? inputJointRefs : inputJointRefs;
     const jps: Vector[] = [];
     sockets.forEach(s=>{jps.push(s.ref.current)});
     return jps;
@@ -60,7 +46,7 @@ const IOs = forwardRef<Handler, Props>((props, fRef) => {
   return (
     <div className={style.container}>
       <div className={style.package}>
-        {socketJointRefs.input.map((jointRef, i)=>{
+        {inputJointRefs.map((jointRef, i)=>{
           const input = props.inputs[jointRef.id];
           const inputProps = {
             io: input,
@@ -71,7 +57,7 @@ const IOs = forwardRef<Handler, Props>((props, fRef) => {
         })}
       </div>
       <div className={style.package}>
-        {socketJointRefs.output.map((jointRef, i)=>{
+        {outputJointRefs.map((jointRef, i)=>{
           const output = props.outputs[jointRef.id];
           const outputProps = {
             io: output,
@@ -87,11 +73,4 @@ const IOs = forwardRef<Handler, Props>((props, fRef) => {
 
 export default IOs;
 
-type JointRefType = {
-  id: number;
-  ref: MutableRefObject<Vector>;
-}
-type SocketJointRefs = {
-  input: JointRefType[];
-  output: JointRefType[];
-}
+type JointRef = IdRef<Vector>;

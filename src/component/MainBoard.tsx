@@ -1,33 +1,31 @@
-import React, { useState, useEffect, useRef, MutableRefObject } from 'react'; 
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useState, useEffect } from 'react'; import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store';
 import { addConnectionAction } from '@/store/node/actions';
 import { openCPAction } from '@/store/panel/actions';
 import { Content, ConnectionType } from '@/store/node/types';
 import Base, { Handler as BaseHandler } from './Base';
 import ControllPanel from './ControllPanel';
-import Connection from './Connection';
-import { getIndex } from '@/utils';
+import Connection, { Handler as ConnectionHandler } from './Connection';
+import { updateIdRefs, IdRef } from '@/utils/manageIdRef';
 import style from '@/style/MainBoard.css';
-
-type BaseIdRefType = {
-  id: number;
-  ref: MutableRefObject<BaseHandler>;
-}
 
 const MainBoard: React.FC = () => {
   const props = useSelector((state: RootState) => state.nodeReducer);
   const cpIdsList = useSelector((state: RootState) => state.panelReducer.cpIdsList);
-  const [baseIdRefs, setBaseIdRefs] = useState<BaseIdRefType[]>([]);
+  const connections = useSelector((state: RootState) => state.nodeReducer.connections);
+  const [baseIdRefs, setBaseIdRefs] = useState<BaseIdRef[]>([]);
+  useEffect(()=>{
+    updateIdRefs<BaseHandler>(baseIdRefs, props.contents, setBaseIdRefs);
+  }, [props.contents]);
+  const [connectionIdRefs, setConnectionIdRefs] = useState<ConnectionIdRef[]>([]);
+  useEffect(()=>{
+    updateIdRefs<ConnectionHandler>(connectionIdRefs, props.connections, setConnectionIdRefs);
+  }, [props.connections]);
   const [cpIndexes, setCPIndexes] = useState<number[]>([]);
 
   const dispatch = useDispatch();
   const openCPFunc = (id: number) => dispatch(openCPAction(id));
   const addConnection = (c: ConnectionType) => dispatch(addConnectionAction(c));
-
-  // refのsetup
-  const addBIR = (id: number) => [...baseIdRefs, {id: id, ref: useRef({} as BaseHandler)}];
-  const removeBIR = (id: number) => baseIdRefs.filter(bmi=>bmi.id!==id);
 
   // controlPanel系
   const createOpenCP = (id: number) => {
@@ -47,20 +45,6 @@ const MainBoard: React.FC = () => {
     return setCPIndex
   }
 
-  // 状態確認系
-  useEffect(()=>{
-    let newBaseIdRefs = [...baseIdRefs];
-    let flag = false;
-    props.contents.forEach(c=>{
-      const i = getIndex(newBaseIdRefs, c.id);
-      if (i === -1) { flag = true; newBaseIdRefs = addBIR(c.id); }
-    });
-    newBaseIdRefs.forEach(bir=>{
-      const i = getIndex(props.contents, bir.id);
-      if (i === -1) { flag = true; newBaseIdRefs = removeBIR(bir.id); }
-    });
-    if (flag) setBaseIdRefs(newBaseIdRefs);
-  }, [props.contents]);
   useEffect(()=>{
     for (const i in cpIdsList) {
       if (cpIndexes[i] === undefined) {
@@ -71,7 +55,7 @@ const MainBoard: React.FC = () => {
 
   return (
     <div className={style.mainBoard}>
-      {baseIdRefs.map((baseIdRef: BaseIdRefType)=>{
+      {baseIdRefs.map((baseIdRef: BaseIdRef)=>{
         const c = props.contents.filter(c=>c.id === baseIdRef.id)[0];
         if (c===undefined) return null;
         const baseProps = {
@@ -95,9 +79,16 @@ const MainBoard: React.FC = () => {
         return <ControllPanel {...cpProps} key={i}/>
       })}
       <svg className={style.connectionPanel}>
+        {connections.map((c, i)=>{
+          const cProps = { type: c.type, curving: props.curving, s: c.s, e: c.e, };
+          return <Connection key={i} {...cProps}/>;
+        })}
       </svg>
     </div>
   )
 }
 
 export default MainBoard;
+
+type BaseIdRef = IdRef<BaseHandler>;
+type ConnectionIdRef = IdRef<ConnectionHandler>;
