@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react'; import { useSelector, useDispatch } from 'react-redux';
+import React, { useState, useEffect, MutableRefObject } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store';
 import { addConnectionAction } from '@/store/node/actions';
 import { openCPAction } from '@/store/panel/actions';
@@ -6,21 +7,27 @@ import { Content, ConnectionType } from '@/store/node/types';
 import Base, { Handler as BaseHandler } from './Base';
 import ControllPanel from './ControllPanel';
 import Connection, { Handler as ConnectionHandler } from './Connection';
-import { updateIdRefs, IdRef } from '@/utils/manageIdRef';
+import { getIndex } from '@/utils';
+import { add, subtract } from '@/utils/vector';
+import { useIdRef, IdRef } from '@/utils/manageIdRef';
 import style from '@/style/MainBoard.css';
 
 const MainBoard: React.FC = () => {
   const props = useSelector((state: RootState) => state.nodeReducer);
   const cpIdsList = useSelector((state: RootState) => state.panelReducer.cpIdsList);
   const connections = useSelector((state: RootState) => state.nodeReducer.connections);
-  const [baseIdRefs, setBaseIdRefs] = useState<BaseIdRef[]>([]);
-  useEffect(()=>{
-    updateIdRefs<BaseHandler>(baseIdRefs, props.contents, setBaseIdRefs);
-  }, [props.contents]);
-  const [connectionIdRefs, setConnectionIdRefs] = useState<ConnectionIdRef[]>([]);
-  useEffect(()=>{
-    updateIdRefs<ConnectionHandler>(connectionIdRefs, props.connections, setConnectionIdRefs);
-  }, [props.connections]);
+  // const [baseIdRefs, setBaseIdRefs] = useState<BaseIdRef[]>([]);
+  // useEffect(()=>{
+  //   const result = useIdRef<BaseHandler>(baseIdRefs, props.contents, );
+  //   if (result.updateFlag) setBaseIdRefs(result.newIdRefs);
+  // }, [props.contents]);
+  // const [connectionIdRefs, setConnectionIdRefs] = useState<ConnectionIdRef[]>([]);
+  // useEffect(()=>{
+  //   const result = useIdRef<ConnectionHandler>(connectionIdRefs, props.connections);
+  //   if (result.updateFlag) setConnectionIdRefs(result.newIdRefs);
+  // }, [props.connections]);
+  const baseIdRefs = useIdRef<BaseHandler>(props.contents);
+  const connectionIdRefs = useIdRef<ConnectionHandler>(connections);
   const [cpIndexes, setCPIndexes] = useState<number[]>([]);
 
   const dispatch = useDispatch();
@@ -53,6 +60,46 @@ const MainBoard: React.FC = () => {
     }
   }, [cpIdsList]);
 
+  const basePosChange = (base: MutableRefObject<BaseHandler>, id: number) => (e: React.MouseEvent<HTMLDivElement>) => {
+    const pos = base.current.getPos();
+    const s = {x: e.clientX, y: e.clientY };
+    const ics: ConnectionInfo[] = [], ocs: ConnectionInfo[] = [];
+    connections.forEach(c=>{
+      if (c.iBaseId==id) ics.push({...c, ref: connectionIdRefs[getIndex(connectionIdRefs, c.id)].ref});
+      if (c.oBaseId==id) ocs.push({...c, ref: connectionIdRefs[getIndex(connectionIdRefs, c.id)].ref});
+    });
+    const mousemove = (e: MouseEvent) => {
+      const eClient = { x: e.clientX, y: e.clientY, };
+      const diff = subtract(eClient, s);
+      base.current.updatePosStyle(add(diff, pos));
+      ics.forEach(ic=>{
+        const { start, end } = ic.ref.current.getPos();
+        ic.ref.current.changeView(start, add(end, diff));
+      });
+      ocs.forEach(oc=>{
+        const { start, end } = oc.ref.current.getPos();
+        oc.ref.current.changeView(add(start, diff), end);
+      });
+    }
+    const mouseup = (e: MouseEvent) => {
+      const eClient = { x: e.clientX, y: e.clientY, };
+      const diff = subtract(eClient, s);
+      base.current.updatePosState(add(diff, pos));
+      ics.forEach(ic=>{
+        const { start, end } = ic.ref.current.getPos();
+        ic.ref.current.setPos(start, add(end, diff));
+      });
+      ocs.forEach(oc=>{
+        const { start, end } = oc.ref.current.getPos();
+        oc.ref.current.setPos(add(start, diff), end);
+      });
+      window.removeEventListener('mousemove', mousemove);
+      window.removeEventListener('mouseup', mouseup);
+    }
+    window.addEventListener('mousemove', mousemove);
+    window.addEventListener('mouseup', mouseup);
+  }
+
   return (
     <div className={style.mainBoard}>
       {baseIdRefs.map((baseIdRef: BaseIdRef)=>{
@@ -61,8 +108,10 @@ const MainBoard: React.FC = () => {
         const baseProps = {
           property: c, 
           openCP: createOpenCP(c.id),
+          posChange: basePosChange(baseIdRef.ref, c.id),
+          key: c.id,
         }
-        return <Base key={c.id}{...baseProps} ref={baseIdRef.ref}/>
+        return <Base ref={baseIdRef.ref} {...baseProps}/>
       })}
       {cpIdsList.map((ids: number[], i)=>{
         if(ids[0]===undefined) return;
@@ -92,3 +141,4 @@ export default MainBoard;
 
 type BaseIdRef = IdRef<BaseHandler>;
 type ConnectionIdRef = IdRef<ConnectionHandler>;
+type ConnectionInfo = ConnectionType & ConnectionIdRef;

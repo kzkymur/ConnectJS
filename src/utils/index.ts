@@ -12,8 +12,3 @@ export const getIndex = (objs: Obj[], id: number): number => {
   }
   return -1;
 }
-
-export type Vector = {
-  x: number;
-  y: number;
-}

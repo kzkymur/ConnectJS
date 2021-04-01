@@ -1,4 +1,4 @@
-import { Vector } from '@/utils';
+import Vector from '@/utils/vector';
 
 export const NodeModeNames = {
   Code: 'CODE',

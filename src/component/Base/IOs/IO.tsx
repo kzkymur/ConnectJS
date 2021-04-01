@@ -1,7 +1,7 @@
 import React, { useState, forwardRef, useImperativeHandle } from 'react';
 import { Socket } from '@/store/node/types';
 import NameBox from '@/component/atom/NameBox';
-import { Vector } from '@/utils';
+import Vector from '@/utils/vector';
 import style from '@/style/Base/IOs/IO.scss';
 
 type Props = {

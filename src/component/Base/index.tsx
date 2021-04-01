@@ -1,11 +1,11 @@
-import React, { useEffect, useState, useRef, useImperativeHandle, forwardRef, MutableRefObject } from 'react'; 
-import { useDispatch } from 'react-redux';
+import React, { useEffect, useState, useRef, useImperativeHandle, forwardRef, MutableRefObject } from 'react'; import { useDispatch } from 'react-redux';
 import { Content } from '@/store/node/types';
 import { updateAction, updateSizeAction, updatePosAction } from '@/store/node/actions';
 import Header from './Header';
 import Main from './Main';
 import IOs, { Handler as IOsHandler } from './IOs';
-import { px2n, Vector } from '@/utils';
+import { px2n } from '@/utils';
+import Vector from '@/utils/vector';
 import style, { optionalbarHeight } from '@/style/Base.scss';
 const optBarHeight = px2n(optionalbarHeight);
 
@@ -21,6 +21,7 @@ export type Handler = {
 type Props = {
   property: Content;
   openCP: () => void;
+  posChange: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
 
 const Base = forwardRef<Handler, Props>((props, fRef) => {
@@ -99,8 +100,8 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
     // const elm = ref.current; if (elm === null) return false; 
     // const strTop = elm.offsetTop + 'px';
     // const strLeft = elm.offsetLeft + 'px';
-    const strTop = v.x + 'px';
-    const strLeft = v.y + 'px';
+    const strLeft = v.x + 'px';
+    const strTop = v.y + 'px';
     if (baseStyle.top !== strTop || baseStyle.left !== strLeft) {
       updatePos(strTop, strLeft);
       return true;
@@ -177,7 +178,7 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
     name: property.name,
   };
   const mainProps = {
-    // startMoving,
+    posChange: props.posChange,
     element,
     fRef: mainRef
   };

@@ -1,12 +1,12 @@
 import React, { useRef, useState, useImperativeHandle, forwardRef } from 'react'; 
 import { DataType } from '@/store/node/types';
-import { Vector } from '@/utils';
+import Vector from '@/utils/vector';
 import style from '@/style/Connection.scss';
 
 export type Handler = {
-  changeView: (s: Vector, e: Vector) => void;
-  setPos: (s: Vector, e: Vector) => void;
-  getPos: (isStartPos: boolean) => Vector;
+  changeView: (start: Vector, end: Vector) => void;
+  setPos: (start: Vector, end: Vector) => void;
+  getPos: () => { start: Vector; end: Vector };
 }
 type Props = {
   type: DataType;
@@ -33,7 +33,7 @@ const Connection = forwardRef<Handler, Props>((props, fRef) => {
     if (s !== newS) setS(newS);
     if (e !== newE) setE(newE);
   }
-  const getPos = (isStartPos: boolean) => isStartPos ? s : e;
+  const getPos = () => ({ start: s, end: e, });
 
   return (
     <path className={style.connectionLine} ref={ref}

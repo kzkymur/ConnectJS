@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef, MutableRefObject, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { Socket } from '@/store/node/types';
 import IO from './IO';
-import { Vector, getIndex } from '@/utils';
-import { IdRef, updateIdRefs } from '@/utils/manageIdRef';
+import { getIndex } from '@/utils';
+import Vector from '@/utils/vector';
+import { IdRef, useIdRef } from '@/utils/manageIdRef';
 import style from '@/style/Base/IOs.scss';
 
 export type Handler = {
@@ -17,23 +18,27 @@ type Props = {
 }
 
 const IOs = forwardRef<Handler, Props>((props, fRef) => {
-  const [inputJointRefs, setInputJointRefs] = useState<JointRef[]>([]);
-  useEffect(()=>{ 
-    updateIdRefs<Vector>(inputJointRefs, props.inputs, setInputJointRefs); 
-  }, [props.inputs]);
-  const [outputJointRefs, setOutputJointRefs] = useState<JointRef[]>([]);
-  useEffect(()=>{ 
-    updateIdRefs<Vector>(outputJointRefs, props.outputs, setOutputJointRefs); 
-  }, [props.outputs]);
+  // const [inputJointRefs, setInputJointRefs] = useState<JointRef[]>([]);
+  // useEffect(()=>{ 
+  //   const result = useIdRef<Vector>(inputJointRefs, props.inputs); 
+  //   if (result.updateFlag) setInputJointRefs(result.newIdRefs);
+  // }, [props.inputs]);
+  // const [outputJointRefs, setOutputJointRefs] = useState<JointRef[]>([]);
+  // useEffect(()=>{ 
+  //   const result = useIdRef<Vector>(outputJointRefs, props.outputs); 
+  //   if (result.updateFlag) setOutputJointRefs(result.newIdRefs);
+  // }, [props.outputs]);
+  const inputJointRefs = useIdRef<Vector>(props.inputs);
+  const outputJointRefs = useIdRef<Vector>(props.outputs);
 
   const getJointPos = (isInput: boolean, id: number) => {
-    const sockets = isInput ? inputJointRefs : inputJointRefs;
+    const sockets = isInput ? inputJointRefs : outputJointRefs;
     const i = getIndex(sockets, id);
     if (i!==-1) return sockets[i].ref.current;
     return { x:0, y:0 };
   }
   const getAllJointPos = (isInput: boolean) => {
-    const sockets = isInput ? inputJointRefs : inputJointRefs;
+    const sockets = isInput ? inputJointRefs : outputJointRefs;
     const jps: Vector[] = [];
     sockets.forEach(s=>{jps.push(s.ref.current)});
     return jps;
