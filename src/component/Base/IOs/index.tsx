@@ -3,7 +3,7 @@ import { Socket } from '@/store/node/types';
 import IO from './IO';
 import { getIndex } from '@/utils';
 import Vector from '@/utils/vector';
-import useIdRef from '@/utils/manageIdRef';
+import useIdRef, { mergeSourceAndIdRefs } from '@/utils/useIdRef';
 import style from '@/style/Base/IOs.scss';
 
 export type Handler = {
@@ -18,17 +18,19 @@ type Props = {
 }
 
 const IOs = forwardRef<Handler, Props>((props, fRef) => {
-  const inputJointRefs = useIdRef<Vector, Socket>(props.inputs);
-  const outputJointRefs = useIdRef<Vector, Socket>(props.outputs);
+  const inputIdRefs = useIdRef<Vector>(props.inputs);
+  const inputs = mergeSourceAndIdRefs<Socket, Vector>(props.inputs, inputIdRefs);
+  const outputIdRefs = useIdRef<Vector>(props.outputs);
+  const outputs = mergeSourceAndIdRefs<Socket, Vector>(props.outputs, outputIdRefs);
 
   const getJointPos = (isInput: boolean, id: number) => {
-    const sockets = isInput ? inputJointRefs : outputJointRefs;
+    const sockets = isInput ? inputs : outputs;
     const i = getIndex(sockets, id);
     if (i!==-1) return sockets[i].ref.current;
     return { x:0, y:0 };
   }
   const getAllJointPos = (isInput: boolean) => {
-    const sockets = isInput ? inputJointRefs : outputJointRefs;
+    const sockets = isInput ? inputs : outputs;
     const jps: Vector[] = [];
     sockets.forEach(s=>{jps.push(s.ref.current)});
     return jps;
@@ -41,7 +43,7 @@ const IOs = forwardRef<Handler, Props>((props, fRef) => {
   return (
     <div className={style.container}>
       <div className={style.package}>
-        {inputJointRefs.map((jointRef, i)=>{
+        {inputs.map((jointRef, i)=>{
           const input = props.inputs[jointRef.id];
           const inputProps = {
             io: input,
@@ -52,7 +54,7 @@ const IOs = forwardRef<Handler, Props>((props, fRef) => {
         })}
       </div>
       <div className={style.package}>
-        {outputJointRefs.map((jointRef, i)=>{
+        {outputs.map((jointRef, i)=>{
           const output = props.outputs[jointRef.id];
           const outputProps = {
             io: output,

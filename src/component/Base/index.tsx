@@ -93,15 +93,10 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
   }
   const updatePosStyle = (v: Vector) => {
     const elm = ref.current; if (elm === null) return; 
-    elm.style.left = v.x + 'px';
-    elm.style.top = v.y + 'px';
+    elm.style.left = v.x + 'px', elm.style.top = v.y + 'px';
   }
   const updatePosState = (v: Vector) => {
-    // const elm = ref.current; if (elm === null) return false; 
-    // const strTop = elm.offsetTop + 'px';
-    // const strLeft = elm.offsetLeft + 'px';
-    const strLeft = v.x + 'px';
-    const strTop = v.y + 'px';
+    const strLeft = v.x + 'px', strTop = v.y + 'px';
     if (baseStyle.top !== strTop || baseStyle.left !== strLeft) {
       updatePos(strTop, strLeft);
       return true;
