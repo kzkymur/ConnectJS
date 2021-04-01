@@ -5,7 +5,7 @@ import { addConnectionAction } from '@/store/node/actions';
 import { openCPAction } from '@/store/panel/actions';
 import { BaseType, ConnectionType } from '@/store/node/types';
 import Base, { Handler as BaseHandler } from './Base';
-import ControllPanel from './ControllPanel';
+import Panel from './Panel';
 import Connection, { Handler as ConnectionHandler } from './Connection';
 import { add, subtract } from '@/utils/vector';
 import useIdRef, { mergeSourceAndIdRefs } from '@/utils/useIdRef';
@@ -50,7 +50,7 @@ const MainBoard: React.FC = () => {
         if(ids[0]===undefined) return;
         let properties: BaseType[] = [];
         ids.forEach(id=>{ properties.push(props.bases.filter(c=>c.id===id)[0]); })
-        return <ControllPanel key={i} {...cpProps(properties, cpIndexes[i], createSetCPIndex(i))}/>
+        return <Panel key={i} {...cpProps(properties, cpIndexes[i], createSetCPIndex(i))}/>
       })}
       <svg className={style.connectionPanel}>
         {connections.map((c, i)=>{
