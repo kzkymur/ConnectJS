@@ -1,3 +1,5 @@
+import Vector from '@/utils/vector';
+
 export const NodeModeNames = {
   Code: 'CODE',
   Canvas: 'CANVAS',
@@ -6,35 +8,29 @@ interface CodeMode { name: typeof NodeModeNames.Code }
 interface CanvasMode { name: typeof NodeModeNames.Canvas } 
 export type NodeMode = CodeMode | CanvasMode;
 
-export const OutputTypes = {
+export const DataTypes = {
   Number: 'NUMBER',
   NumberList: 'NUMBER_LIST',
   Framebuffer: 'FRAMEBUFFER',
 } as const;
-export type OutputType = typeof OutputTypes.Number | typeof OutputTypes.NumberList | typeof OutputTypes.Framebuffer;
-export interface OutputInfo {
-  type: OutputType,
-  name: string,
-  value?: number | number[],
-  isConnected: boolean,
-}
-export interface InputInfo {
-  type: OutputType,
-  name: string,
-  oBaseId?: number,
-  oChannel?: number,
+export type DataType = typeof DataTypes.Number | typeof DataTypes.NumberList | typeof DataTypes.Framebuffer;
+export interface Socket {
+  type: DataType;
+  id: number;
+  name: string;
+  counterId: number;
 }
 
 interface Node {
   id: number;
   name: string;
   mode: NodeMode;
-  width: string,
-  height: string,
-  top: string,
-  left: string,
-  outputs: OutputInfo[],
-  inputs: InputInfo[],
+  width: string;
+  height: string;
+  top: string;
+  left: string;
+  outputs: Socket[];
+  inputs: Socket[];
 }
 interface Canvas extends Node {
 
@@ -46,10 +42,13 @@ export type Content = Canvas | Processor;
 
 export type Contents = Content[];
 
-export type Connection = {
-  type: OutputType,
-  iBaseId: number,
-  iChannel: number,
-  oBaseId: number,
-  oChannel: number,
+export type ConnectionType = {
+  type: DataType;
+  id: number;
+  iBaseId: number;
+  iId: number;
+  oBaseId: number;
+  oId: number;
+  s: Vector;
+  e: Vector;
 }

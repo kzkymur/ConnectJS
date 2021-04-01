@@ -1,5 +1,5 @@
 import Action, { ActionTypes } from './actionTypes';
-import { Content, Connection } from './types';
+import { Content, ConnectionType } from './types';
 
 export const addAction = (content: Content): Action => ({
   type: ActionTypes.add,
@@ -29,15 +29,15 @@ export const updatePosAction = (id: number, top: string, left: string): Action =
 export const undoAction = (): Action => ({ type: ActionTypes.undo, });
 export const redoAction = (): Action => ({ type: ActionTypes.redo, });
 
-export const addConnectionAction = (param: Connection): Action => ({
+export const addConnectionAction = (param: ConnectionType): Action => ({
   type: ActionTypes.addConnection, 
-  payload: param	
+  payload: param,
 });
-export const updateConnectionAction = (param: Connection): Action => ({ 
+export const updateConnectionAction = (param: ConnectionType): Action => ({ 
   type: ActionTypes.updateConnection, 
-  payload: param	
+  payload: param,
 });
 export const deleteConnectionAction = (index: number): Action => ({
   type: ActionTypes.deleteConnection,
-  payload: { index: index, }
+  payload: { index: index, },
 });
