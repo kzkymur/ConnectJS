@@ -1,9 +1,9 @@
-import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import React, { forwardRef, useImperativeHandle } from 'react';
 import { Socket } from '@/store/node/types';
 import IO from './IO';
 import { getIndex } from '@/utils';
 import Vector from '@/utils/vector';
-import { IdRef, useIdRef } from '@/utils/manageIdRef';
+import useIdRef from '@/utils/manageIdRef';
 import style from '@/style/Base/IOs.scss';
 
 export type Handler = {
@@ -18,16 +18,6 @@ type Props = {
 }
 
 const IOs = forwardRef<Handler, Props>((props, fRef) => {
-  // const [inputJointRefs, setInputJointRefs] = useState<JointRef[]>([]);
-  // useEffect(()=>{ 
-  //   const result = useIdRef<Vector>(inputJointRefs, props.inputs); 
-  //   if (result.updateFlag) setInputJointRefs(result.newIdRefs);
-  // }, [props.inputs]);
-  // const [outputJointRefs, setOutputJointRefs] = useState<JointRef[]>([]);
-  // useEffect(()=>{ 
-  //   const result = useIdRef<Vector>(outputJointRefs, props.outputs); 
-  //   if (result.updateFlag) setOutputJointRefs(result.newIdRefs);
-  // }, [props.outputs]);
   const inputJointRefs = useIdRef<Vector>(props.inputs);
   const outputJointRefs = useIdRef<Vector>(props.outputs);
 
@@ -77,5 +67,3 @@ const IOs = forwardRef<Handler, Props>((props, fRef) => {
 })
 
 export default IOs;
-
-type JointRef = IdRef<Vector>;

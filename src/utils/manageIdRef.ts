@@ -1,10 +1,9 @@
 import { MutableRefObject, useEffect, useState } from 'react'; 
-import { getIndex } from '../utils'; 
+import { Obj, getIndex } from '../utils'; 
 
-export type Obj = { id: number; }
-export type IdRef<Handler> = Obj & { ref: MutableRefObject<Handler>; }
+type IdRef<Handler> = Obj & { ref: MutableRefObject<Handler>; }
 
-export function useIdRef <Handler>(sourceObjs: Obj[]): IdRef<Handler>[] {
+export default function useIdRef <Handler>(sourceObjs: Obj[]): IdRef<Handler>[] {
   const [idRefs, setIdRefs] = useState<IdRef<Handler>[]>([]);
   useEffect(()=>{ 
     let newIdRefs = [...idRefs];
@@ -24,8 +23,6 @@ export function useIdRef <Handler>(sourceObjs: Obj[]): IdRef<Handler>[] {
       }
     }
     if (updateFlag) setIdRefs(newIdRefs);
-    console.log(sourceObjs);
-    console.log(newIdRefs);
   }, [sourceObjs]);
   return idRefs;
 }

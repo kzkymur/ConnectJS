@@ -9,26 +9,15 @@ import ControllPanel from './ControllPanel';
 import Connection, { Handler as ConnectionHandler } from './Connection';
 import { getIndex } from '@/utils';
 import { add, subtract } from '@/utils/vector';
-import { useIdRef, IdRef } from '@/utils/manageIdRef';
+import useIdRef from '@/utils/manageIdRef';
 import style from '@/style/MainBoard.css';
 
 const MainBoard: React.FC = () => {
   const props = useSelector((state: RootState) => state.nodeReducer);
   const cpIdsList = useSelector((state: RootState) => state.panelReducer.cpIdsList);
   const connections = useSelector((state: RootState) => state.nodeReducer.connections);
-  // const [baseIdRefs, setBaseIdRefs] = useState<BaseIdRef[]>([]);
-  // useEffect(()=>{
-  //   const result = useIdRef<BaseHandler>(baseIdRefs, props.contents, );
-  //   if (result.updateFlag) setBaseIdRefs(result.newIdRefs);
-  // }, [props.contents]);
-  // const [connectionIdRefs, setConnectionIdRefs] = useState<ConnectionIdRef[]>([]);
-  // useEffect(()=>{
-  //   const result = useIdRef<ConnectionHandler>(connectionIdRefs, props.connections);
-  //   if (result.updateFlag) setConnectionIdRefs(result.newIdRefs);
-  // }, [props.connections]);
   const baseIdRefs = useIdRef<BaseHandler>(props.contents);
-  const connectionIdRefs = useIdRef<ConnectionHandler>(connections);
-  const [cpIndexes, setCPIndexes] = useState<number[]>([]);
+  const connectionIdRefs = useIdRef<ConnectionHandler>(connections); const [cpIndexes, setCPIndexes] = useState<number[]>([]);
 
   const dispatch = useDispatch();
   const openCPFunc = (id: number) => dispatch(openCPAction(id));
@@ -102,7 +91,7 @@ const MainBoard: React.FC = () => {
 
   return (
     <div className={style.mainBoard}>
-      {baseIdRefs.map((baseIdRef: BaseIdRef)=>{
+      {baseIdRefs.map((baseIdRef)=>{
         const c = props.contents.filter(c=>c.id === baseIdRef.id)[0];
         if (c===undefined) return null;
         const baseProps = {
@@ -139,6 +128,4 @@ const MainBoard: React.FC = () => {
 
 export default MainBoard;
 
-type BaseIdRef = IdRef<BaseHandler>;
-type ConnectionIdRef = IdRef<ConnectionHandler>;
-type ConnectionInfo = ConnectionType & ConnectionIdRef;
+type ConnectionInfo = ConnectionType & { ref: MutableRefObject<ConnectionHandler>; };
