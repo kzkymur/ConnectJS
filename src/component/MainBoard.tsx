@@ -24,18 +24,6 @@ const MainBoard: React.FC = () => {
   const addConnection = (c: ConnectionType) => dispatch(addConnectionAction(c));
 
   // controlPanel系
-  const createOpenCP = (id: number) => {
-    const openCP = () => {
-      const currentIndex = cpIdsList[0].indexOf(id);
-      if (currentIndex === -1) {
-        openCPFunc(id);
-        createSetCPIndex(0)(cpIdsList[0].length);
-      } else if (currentIndex !== cpIndexes[0]){
-        createSetCPIndex(0)(currentIndex);
-      }
-    }
-    return openCP;
-  }
   const createSetCPIndex = (cpIndex: number) => {
     const setCPIndex = (newIndex: number) => {
       setCPIndexes( cpIndexes.map( (oldIndex, i) => i === cpIndex ? newIndex : oldIndex ))
@@ -56,7 +44,7 @@ const MainBoard: React.FC = () => {
       {bases.map(b=>{
         const ics: ConnectionInfo[] = [], ocs: ConnectionInfo[] = [];
         connections.forEach(c=>{ if (c.iBaseId==b.id) ics.push(c); if (c.oBaseId==b.id) ocs.push(c); });
-        return <Base key={b.id} ref={b.ref} {...baseProps(b, createOpenCP(b.id), basePosChange(b, ics, ocs))}/>
+        return <Base key={b.id} ref={b.ref} {...baseProps(b, basePosChange(b, ics, ocs, openCPFunc))}/>
       })}
       {cpIdsList.map((ids: number[], i)=>{
         if(ids[0]===undefined) return;
@@ -81,20 +69,21 @@ type ConnectionInfo = ConnectionType & { ref: MutableRefObject<ConnectionHandler
 type BasePosChange = (
   base: BaseType & { ref: MutableRefObject<BaseHandler>; }, 
   inputConnections: ConnectionInfo[], 
-  outputConnections: ConnectionInfo[]
+  outputConnections: ConnectionInfo[],
+  openCP: (id: number) => void,
 ) => (e: React.MouseEvent<HTMLDivElement>) => void;
-const basePosChange: BasePosChange = (base, inputConnections, outputConnections) => (e) => {
+const basePosChange: BasePosChange = (base, input, output, openCP) => (e) => {
   const pos = base.ref.current.getPos();
   const s = {x: e.clientX, y: e.clientY };
   const mousemove = (e: MouseEvent) => {
     const eClient = { x: e.clientX, y: e.clientY, };
     const diff = subtract(eClient, s);
     base.ref.current.updatePosStyle(add(diff, pos));
-    inputConnections.forEach(ic=>{
+    input.forEach(ic=>{
       const { start, end } = ic.ref.current.getPos();
       ic.ref.current.changeView(start, add(end, diff));
     });
-    outputConnections.forEach(oc=>{
+    output.forEach(oc=>{
       const { start, end } = oc.ref.current.getPos();
       oc.ref.current.changeView(add(start, diff), end);
     });
@@ -102,15 +91,18 @@ const basePosChange: BasePosChange = (base, inputConnections, outputConnections)
   const mouseup = (e: MouseEvent) => {
     const eClient = { x: e.clientX, y: e.clientY, };
     const diff = subtract(eClient, s);
-    base.ref.current.updatePosState(add(diff, pos));
-    inputConnections.forEach(ic=>{
-      const { start, end } = ic.ref.current.getPos();
-      ic.ref.current.setPos(start, add(end, diff));
-    });
-    outputConnections.forEach(oc=>{
-      const { start, end } = oc.ref.current.getPos();
-      oc.ref.current.setPos(add(start, diff), end);
-    });
+    if (base.ref.current.updatePosState(add(diff, pos))) {
+      input.forEach(ic=>{
+        const { start, end } = ic.ref.current.getPos();
+        ic.ref.current.setPos(start, add(end, diff));
+      });
+      output.forEach(oc=>{
+        const { start, end } = oc.ref.current.getPos();
+        oc.ref.current.setPos(add(start, diff), end);
+      });
+    } else {
+      openCP(base.id);
+    }
     window.removeEventListener('mousemove', mousemove);
     window.removeEventListener('mouseup', mouseup);
   }
@@ -118,5 +110,5 @@ const basePosChange: BasePosChange = (base, inputConnections, outputConnections)
   window.addEventListener('mouseup', mouseup);
 }
 
-const baseProps = (property: BaseType, openCP: ()=>void, posChange: (e: React.MouseEvent<HTMLDivElement>) => void) => ({ property, openCP, posChange, });
+const baseProps = (property: BaseType, posChange: (e: React.MouseEvent<HTMLDivElement>) => void) => ({ property, posChange, });
 const cpProps = (properties: BaseType[], index: number, setIndex: (index: number)=>void) => ({ properties, index, setIndex, });

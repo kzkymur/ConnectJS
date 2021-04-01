@@ -20,7 +20,6 @@ export type Handler = {
 }
 type Props = {
   property: BaseType;
-  openCP: () => void;
   posChange: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
 
@@ -35,47 +34,6 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
   const updateSize = (width: string, height: string) => dispatch(updateSizeAction(id, width, height));
   const updatePos = (top: string, left: string) => dispatch(updatePosAction(id, top, left));
   let baseStyle: BaseType = property;
-  // let inNameBox = false;
-  // const setInNameBox = (newInNameBox: boolean) => inNameBox = newInNameBox;
-  // let startX: number; let startY: number;
-
-  // const startMoving = (e: React.MouseEvent) => {
-  //   if (ref.current === null) return; const elm = ref.current;
-  //   startX = e.clientX - elm.offsetLeft;
-  //   startY = e.clientY - elm.offsetTop;
-  //   elm.style.zIndex = String(-1 * elm.offsetWidth * elm.offsetHeight + 1);
-  //   window.addEventListener('mousemove', moving);
-  // }
-  // const moving = (e: MouseEvent) => {
-  //   const elm = ref.current;
-  //   if (elm === null) return; 
-  //   elm.style.left = (e.clientX - startX) + 'px';
-  //   elm.style.top = (e.clientY - startY) + 'px';
-  //   const height = elm.offsetHeight;
-  //   if (mainRef.current === null) return;
-  //   mainRef.current.style.height = (height - optBarHeight * (Math.max(property.inputs.length, property.outputs.length)+1)) + 'px';
-  // }
-  // const updateState = () => {
-  //   window.removeEventListener('mousemove', moving);
-  //   if (ref.current === null) return; const elm = ref.current;
-  //   const width = elm.offsetWidth;
-  //   const height = elm.offsetHeight;
-  //   const zIndex = String(-1 * width * height);
-  //   elm.style.zIndex = zIndex;
-  //
-  //   const strWidth = width + 'px';
-  //   const strHeight = (height - optBarHeight * (Math.max(property.inputs.length, property.outputs.length)+1)) + 'px';
-  //   const strTop = elm.offsetTop + 'px';
-  //   const strLeft = elm.offsetLeft + 'px';
-  //   if (baseStyle.width !== strWidth || baseStyle.height !== strHeight) return updateSize(strWidth, strHeight);
-  //   else if (baseStyle.top !== strTop || baseStyle.left !== strLeft) return updatePos(strTop, strLeft);
-  //
-  //   if (inNameBox) {
-  //     setInNameBox(false);
-  //   } else {
-  //     return props.openCP();
-  //   }
-  // }
 
   const getJointPos = (isInput: boolean, id: number) => iosRef.current.getJointPos(isInput, id);
   const getAllJointPos = (isInput: boolean) => iosRef.current.getAllJointPos(isInput);
