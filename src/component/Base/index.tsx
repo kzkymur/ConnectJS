@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useImperativeHandle, forwardRef, MutableRefObject } from 'react'; import { useDispatch } from 'react-redux';
-import { Content } from '@/store/node/types';
+import { BaseType } from '@/store/node/types';
 import { updateAction, updateSizeAction, updatePosAction } from '@/store/node/actions';
 import Header from './Header';
 import Main from './Main';
@@ -19,7 +19,7 @@ export type Handler = {
   updateSizeState: (v: Vector) => boolean;
 }
 type Props = {
-  property: Content;
+  property: BaseType;
   openCP: () => void;
   posChange: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
@@ -31,10 +31,10 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
   const { id } = property;
   let element: React.ReactNode;
   const dispatch = useDispatch();
-  const updateFunc = (c: Content) => dispatch(updateAction(c));
+  const updateFunc = (c: BaseType) => dispatch(updateAction(c));
   const updateSize = (width: string, height: string) => dispatch(updateSizeAction(id, width, height));
   const updatePos = (top: string, left: string) => dispatch(updatePosAction(id, top, left));
-  let baseStyle: Content = property;
+  let baseStyle: BaseType = property;
   // let inNameBox = false;
   // const setInNameBox = (newInNameBox: boolean) => inNameBox = newInNameBox;
   // let startX: number; let startY: number;
@@ -134,7 +134,7 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
 
   const createIONameUpdate = (isInput: boolean, index: number) => {
     const ioNameUpdate = (name: string) => {
-      const newProperty: Content = isInput ? {
+      const newProperty: BaseType = isInput ? {
         ...property,
         inputs: property.inputs.map((input, i) => {
           if (i===index) {

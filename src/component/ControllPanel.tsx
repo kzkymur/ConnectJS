@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { Content, NodeModeNames, Socket, DataTypes, DataType } from '@/store/node/types';
+import { BaseType, NodeModeNames, Socket, DataTypes, DataType } from '@/store/node/types';
 import { updateAction } from '@/store/node/actions';
 import { closeCPAction, closeAllCPAction } from '@/store/panel/actions';
 import NameBox from './atom/NameBox';
 import style from '@/style/ControllPanel.css';
 
 type Props = {
-  properties: Content[];
+  properties: BaseType[];
   index: number;
   setIndex: (i: number) => void;
 }
@@ -15,12 +15,12 @@ type Props = {
 const ControlPanel: React.FC<Props> = props => {
   const dispatch = useDispatch();
   const index = props.index;
-  const updateFunc = (c: Content) => dispatch(updateAction(c));
+  const updateFunc = (c: BaseType) => dispatch(updateAction(c));
   useEffect(()=>{
   }) 
 
   const nameUpdate = (name: string) => {
-    const newBaseStyle: Content = {
+    const newBaseStyle: BaseType = {
       ...props.properties[index],
       name: name,
     };
@@ -66,7 +66,7 @@ const ControlPanel: React.FC<Props> = props => {
       name: 'value',
       counterId: -1,
     }
-    const newProperty: Content = {
+    const newProperty: BaseType = {
       ...props.properties[index],
       inputs: [...props.properties[index].inputs, inputInfo]
     };
@@ -80,7 +80,7 @@ const ControlPanel: React.FC<Props> = props => {
       name: 'value',
       counterId: -1,
     }
-    const newProperty: Content = {
+    const newProperty: BaseType = {
       ...props.properties[index],
       outputs: [...props.properties[index].outputs, outputInfo]
     };

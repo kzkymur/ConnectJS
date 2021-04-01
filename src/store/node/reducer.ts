@@ -1,17 +1,17 @@
 import { Reducer } from 'redux';
 import Action, { ActionTypes } from './actionTypes';
-import { Contents, ConnectionType } from './types';
+import { BaseType, ConnectionType } from './types';
 import ReverseActionBranch, { OperationTypes, OperationType } from './reverseActionBranch';
 
 interface State {
-  contents: Contents;
+  bases: BaseType[];
   latestId: number;
   connections: ConnectionType[];
   reverseActionBranch: ReverseActionBranch;
   curving: number;
 }
 const initialState: State = {
-  contents: [],
+  bases: [],
   latestId: 0,
   connections: [],
   reverseActionBranch: new ReverseActionBranch(),
@@ -31,11 +31,11 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
   switch (action.type) {
     case ActionTypes.add: {
       let latestId = state.latestId;
-      let content = action.payload.content;
-      if (content.id === -1) {
+      let base = action.payload.base;
+      if (base.id === -1) {
         latestId += 1;
-        content = {
-          ...content,
+        base = {
+          ...base,
           id: latestId,
           name: 'node' + String(latestId),
         };
@@ -43,50 +43,50 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
       state = {
         ...state,
         latestId: latestId,
-        contents: [
-          ...state.contents,
-          content
+        bases: [
+          ...state.bases,
+          base
         ],
       };
       reverseAction = {
         type: ActionTypes.delete,
-        payload: { id: content.id },
+        payload: { id: base.id },
       };
       break;
     }
     case ActionTypes.delete: {
-      const deletedContent = state.contents.filter(c => c.id === action.payload.id)[0];
+      const deletedContent = state.bases.filter(c => c.id === action.payload.id)[0];
       if (deletedContent === undefined) return state;
       state = {
         ...state,
-        contents: state.contents.filter(c => c.id !== action.payload.id),
+        bases: state.bases.filter(c => c.id !== action.payload.id),
       };
       reverseAction = {
         type: ActionTypes.add,
-        payload: { content: deletedContent },
+        payload: { base: deletedContent },
       };
       break;
     }
 
     case ActionTypes.update: {
-      const oldContent = state.contents.filter(c => c.id === action.payload.content.id)[0];
+      const oldContent = state.bases.filter(c => c.id === action.payload.base.id)[0];
       if (oldContent === undefined) return state;
       state = {
         ...state,
-        contents: state.contents.map(c => c.id === action.payload.content.id ? action.payload.content : c),
+        bases: state.bases.map(c => c.id === action.payload.base.id ? action.payload.base : c),
       };
       reverseAction = {
         type: ActionTypes.update,
-        payload: { content: oldContent },
+        payload: { base: oldContent },
       };
       break;
     }
     case ActionTypes.updateName: {
-      const oldContent = state.contents.filter(c => c.id === action.payload.id)[0];
+      const oldContent = state.bases.filter(c => c.id === action.payload.id)[0];
       if (oldContent === undefined) return state;
       state = {
         ...state,
-        contents: state.contents.map(c => c.id === action.payload.id ? {
+        bases: state.bases.map(c => c.id === action.payload.id ? {
           ...c,
           name: action.payload.name,
         } : c),
@@ -98,11 +98,11 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
       break;
     }
     case ActionTypes.updateSize: {
-      const oldContent = state.contents.filter(c => c.id === action.payload.id)[0];
+      const oldContent = state.bases.filter(c => c.id === action.payload.id)[0];
       if (oldContent === undefined) return state;
       state = {
         ...state,
-        contents: state.contents.map(c => c.id === action.payload.id ? {
+        bases: state.bases.map(c => c.id === action.payload.id ? {
           ...c,
           width: action.payload.width,
           height: action.payload.height,
@@ -119,11 +119,11 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
       break;
     }
     case ActionTypes.updatePos: {
-      const oldContent = state.contents.filter(c => c.id === action.payload.id)[0];
+      const oldContent = state.bases.filter(c => c.id === action.payload.id)[0];
       if (oldContent === undefined) return state;
       state = {
         ...state,
-        contents: state.contents.map(c => c.id === action.payload.id ? {
+        bases: state.bases.map(c => c.id === action.payload.id ? {
           ...c,
           top: action.payload.top,
           left: action.payload.left,

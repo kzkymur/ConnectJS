@@ -38,9 +38,7 @@ interface Canvas extends Node {
 interface Processor extends Node {
 
 };
-export type Content = Canvas | Processor;
-
-export type Contents = Content[];
+export type BaseType = Canvas | Processor;
 
 export type ConnectionType = {
   type: DataType;

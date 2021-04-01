@@ -1,18 +1,18 @@
 import Action, { ActionTypes } from './actionTypes';
-import { Content, ConnectionType } from './types';
+import { BaseType, ConnectionType } from './types';
 
-export const addAction = (content: Content): Action => ({
+export const addAction = (base: BaseType): Action => ({
   type: ActionTypes.add,
-  payload: { content: content, },
+  payload: { base: base, },
 });
 export const deleteAction = (baseId: number): Action => ({
   type: ActionTypes.delete,
   payload: { id: baseId, },
 });
 
-export const updateAction = (content: Content): Action => ({
+export const updateAction = (base: BaseType): Action => ({
   type: ActionTypes.update,
-  payload: { content: content, },
+  payload: { base: base, },
 });
 export const updateNameAction = (id: number, name: string): Action => ({
   type: ActionTypes.updateName,
