@@ -18,8 +18,8 @@ type Props = {
 }
 
 const IOs = forwardRef<Handler, Props>((props, fRef) => {
-  const inputJointRefs = useIdRef<Vector>(props.inputs);
-  const outputJointRefs = useIdRef<Vector>(props.outputs);
+  const inputJointRefs = useIdRef<Vector, Socket>(props.inputs);
+  const outputJointRefs = useIdRef<Vector, Socket>(props.outputs);
 
   const getJointPos = (isInput: boolean, id: number) => {
     const sockets = isInput ? inputJointRefs : outputJointRefs;
