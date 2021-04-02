@@ -8,9 +8,7 @@ import Base, { Handler as BaseHandler } from './Base';
 import Panel from './Panel';
 import Connection, { Handler as ConnectionHandler } from './Connection';
 import { add, subtract } from '@/utils/vector';
-import useIdRef, { mergeSourceAndIdRefs } from '@/utils/useIdRef';
-import style from '@/style/MainBoard.css';
-
+import useIdRef, { mergeSourceAndIdRefs } from '@/utils/useIdRef'; import style from '@/style/MainBoard.css'; 
 const MainBoard: React.FC = () => {
   const props = useSelector((state: RootState) => state.nodeReducer);
   const cpIdsList = useSelector((state: RootState) => state.panelReducer.cpIdsList);
@@ -42,8 +40,8 @@ const MainBoard: React.FC = () => {
   return (
     <div className={style.mainBoard}>
       {bases.map(b=>{
-        const ics: ConnectionInfo[] = [], ocs: ConnectionInfo[] = [];
-        connections.forEach(c=>{ if (c.iBaseId==b.id) ics.push(c); if (c.oBaseId==b.id) ocs.push(c); });
+        const ics: ConnectionInfo[] = connections.filter(c=>c.iBaseId==b.id);
+        const ocs: ConnectionInfo[] = connections.filter(c=>c.oBaseId==b.id);
         return <Base key={b.id} ref={b.ref} {...baseProps(b, basePosChange(b, ics, ocs, openCPFunc))}/>
       })}
       {cpIdsList.map((ids: number[], i)=>{
@@ -72,34 +70,22 @@ type BasePosChange = (
   outputConnections: ConnectionInfo[],
   openCP: (id: number) => void,
 ) => (e: React.MouseEvent<HTMLDivElement>) => void;
-const basePosChange: BasePosChange = (base, input, output, openCP) => (e) => {
+const basePosChange: BasePosChange = (base, input, output, openCP) => e => {
   const pos = base.ref.current.getPos();
   const s = {x: e.clientX, y: e.clientY };
   const mousemove = (e: MouseEvent) => {
     const eClient = { x: e.clientX, y: e.clientY, };
     const diff = subtract(eClient, s);
     base.ref.current.updatePosStyle(add(diff, pos));
-    input.forEach(ic=>{
-      const { start, end } = ic.ref.current.getPos();
-      ic.ref.current.changeView(start, add(end, diff));
-    });
-    output.forEach(oc=>{
-      const { start, end } = oc.ref.current.getPos();
-      oc.ref.current.changeView(add(start, diff), end);
-    });
+    input.forEach(ic=>{ ic.ref.current.changeViewWithDiff(false, diff); });
+    output.forEach(oc=>{ oc.ref.current.changeViewWithDiff(true, diff); });
   }
   const mouseup = (e: MouseEvent) => {
     const eClient = { x: e.clientX, y: e.clientY, };
     const diff = subtract(eClient, s);
     if (base.ref.current.updatePosState(add(diff, pos))) {
-      input.forEach(ic=>{
-        const { start, end } = ic.ref.current.getPos();
-        ic.ref.current.setPos(start, add(end, diff));
-      });
-      output.forEach(oc=>{
-        const { start, end } = oc.ref.current.getPos();
-        oc.ref.current.setPos(add(start, diff), end);
-      });
+      input.forEach(ic=>{ ic.ref.current.setPosWithDiff(false, diff)});
+      output.forEach(oc=>{ oc.ref.current.setPosWithDiff(true, diff)});
     } else {
       openCP(base.id);
     }

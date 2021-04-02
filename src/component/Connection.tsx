@@ -1,11 +1,13 @@
 import React, { useRef, useState, useImperativeHandle, forwardRef } from 'react'; 
 import { DataType } from '@/store/node/types';
-import Vector from '@/utils/vector';
+import Vector, { add } from '@/utils/vector';
 import style from '@/style/Connection.scss';
 
 export type Handler = {
   changeView: (start: Vector, end: Vector) => void;
+  changeViewWithDiff: (isInput: boolean, diff: Vector) => void;
   setPos: (start: Vector, end: Vector) => void;
+  setPosWithDiff: (isInput: boolean, diff: Vector) => void;
   getPos: () => { start: Vector; end: Vector };
 }
 type Props = {
@@ -16,22 +18,30 @@ type Props = {
 }
 
 const Connection = forwardRef<Handler, Props>((props, fRef) => {
-  const [ref] = useState(useRef<SVGPathElement>(null));
+  const ref = useRef<SVGPathElement>(null);
   const [s, setS] = useState(props.s);
   const [e, setE] = useState(props.e);
   useImperativeHandle(fRef, ()=>({
     changeView,
+    changeViewWithDiff,
     setPos,
+    setPosWithDiff,
     getPos,
   }));
 
   const changeView = (s: Vector, e: Vector) => {
-    if (ref.current === null) return;
-    ref.current.attributes[1].value = calcDList(s,e,props.curving);
+    ref.current!.attributes[1].value = calcDList(s,e,props.curving);
+  }
+  const changeViewWithDiff = (isInput: boolean, diff: Vector) => {
+    ref.current!.attributes[1].value = isInput ? calcDList(add(s,diff),e,props.curving) : calcDList(s,add(e,diff),props.curving);
   }
   const setPos = (newS: Vector, newE: Vector) => {
     if (s !== newS) setS(newS);
     if (e !== newE) setE(newE);
+  }
+  const setPosWithDiff = (isInput: boolean, diff: Vector) => {
+    if (isInput) setS(add(getPos().start, diff));
+    else setE(add(getPos().end, diff));
   }
   const getPos = () => ({ start: s, end: e, });
 
