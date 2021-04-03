@@ -19,9 +19,10 @@ export type Handler = {
   updatePosState: (v: Vector) => boolean;
   updateSizeState: (v: Vector) => boolean;
 }
-type Props = {
+export type Props = {
   property: BaseType;
   posChange: (e: React.MouseEvent<HTMLDivElement>) => void;
+  sizeChange: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
 
 const Base = forwardRef<Handler, Props>((props, fRef) => {
@@ -144,8 +145,8 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
   };
   return (
     <div className={style.container} ref={ref}
-      /* onMouseUp={updateState} */
-      >
+      onMouseDown={props.sizeChange}
+    >
       <Header {...headerProps}/>
       <Main {...mainProps}/>
       <IOs {...IOsProps} ref={iosRef}/>

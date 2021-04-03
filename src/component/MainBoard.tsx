@@ -1,14 +1,16 @@
-import React, { useState, useEffect, MutableRefObject } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store';
 import { addConnectionAction } from '@/store/node/actions';
 import { openCPAction } from '@/store/panel/actions';
 import { BaseType, ConnectionType } from '@/store/node/types';
 import Base, { Handler as BaseHandler } from './Base';
+import baseProps, { ConnectionInfo } from './Base/props';
 import Panel from './Panel';
 import Connection, { Handler as ConnectionHandler } from './Connection';
-import { add, subtract } from '@/utils/vector';
-import useIdRef, { mergeSourceAndIdRefs } from '@/utils/useIdRef'; import style from '@/style/MainBoard.css'; 
+import useIdRef, { mergeSourceAndIdRefs } from '@/utils/useIdRef';
+import style from '@/style/MainBoard.css'; 
+
 const MainBoard: React.FC = () => {
   const props = useSelector((state: RootState) => state.nodeReducer);
   const cpIdsList = useSelector((state: RootState) => state.panelReducer.cpIdsList);
@@ -42,7 +44,7 @@ const MainBoard: React.FC = () => {
       {bases.map(b=>{
         const ics: ConnectionInfo[] = connections.filter(c=>c.iBaseId==b.id);
         const ocs: ConnectionInfo[] = connections.filter(c=>c.oBaseId==b.id);
-        return <Base key={b.id} ref={b.ref} {...baseProps(b, basePosChange(b, ics, ocs, openCPFunc))}/>
+        return <Base key={b.id} ref={b.ref} {...baseProps(b, ics, ocs, openCPFunc)}/>
       })}
       {cpIdsList.map((ids: number[], i)=>{
         if(ids[0]===undefined) return;
@@ -62,39 +64,4 @@ const MainBoard: React.FC = () => {
 
 export default MainBoard;
 
-type ConnectionInfo = ConnectionType & { ref: MutableRefObject<ConnectionHandler>; };
-
-type BasePosChange = (
-  base: BaseType & { ref: MutableRefObject<BaseHandler>; }, 
-  inputConnections: ConnectionInfo[], 
-  outputConnections: ConnectionInfo[],
-  openCP: (id: number) => void,
-) => (e: React.MouseEvent<HTMLDivElement>) => void;
-const basePosChange: BasePosChange = (base, input, output, openCP) => e => {
-  const pos = base.ref.current.getPos();
-  const s = {x: e.clientX, y: e.clientY };
-  const mousemove = (e: MouseEvent) => {
-    const eClient = { x: e.clientX, y: e.clientY, };
-    const diff = subtract(eClient, s);
-    base.ref.current.updatePosStyle(add(diff, pos));
-    input.forEach(ic=>{ ic.ref.current.changeViewWithDiff(false, diff); });
-    output.forEach(oc=>{ oc.ref.current.changeViewWithDiff(true, diff); });
-  }
-  const mouseup = (e: MouseEvent) => {
-    const eClient = { x: e.clientX, y: e.clientY, };
-    const diff = subtract(eClient, s);
-    if (base.ref.current.updatePosState(add(diff, pos))) {
-      input.forEach(ic=>{ ic.ref.current.setPosWithDiff(false, diff)});
-      output.forEach(oc=>{ oc.ref.current.setPosWithDiff(true, diff)});
-    } else {
-      openCP(base.id);
-    }
-    window.removeEventListener('mousemove', mousemove);
-    window.removeEventListener('mouseup', mouseup);
-  }
-  window.addEventListener('mousemove', mousemove);
-  window.addEventListener('mouseup', mouseup);
-}
-
-const baseProps = (property: BaseType, posChange: (e: React.MouseEvent<HTMLDivElement>) => void) => ({ property, posChange, });
 const cpProps = (properties: BaseType[], index: number, setIndex: (index: number)=>void) => ({ properties, index, setIndex, });
