@@ -1,10 +1,10 @@
 import React, { MutableRefObject } from 'react';
 import { BaseType, ConnectionType } from '@/store/node/types';
 import { Handler as ConnectionHandler } from '@/component/Connection';
-import { Handler as BaseHandler, Props as BasePropsType } from '@/component/Base';
+import { Handler as BaseHandler, Props as BaseProps } from '@/component/Base';
 import { add, subtract } from '@/utils/vector';
 
-class BaseProps implements BasePropsType {
+class Props {
   #base: BaseType & { ref: MutableRefObject<BaseHandler>; };
   #in: ConnectionInfo[]; 
   #out: ConnectionInfo[];
@@ -84,7 +84,7 @@ export default function baseProps (
   inputConnections: ConnectionInfo[],
   outputConnections: ConnectionInfo[],
   openCP: (id:number)=>void
-):BasePropsType {
-  const obj = new BaseProps(base, inputConnections, outputConnections, openCP);
+): BaseProps {
+  const obj = new Props(base, inputConnections, outputConnections, openCP);
   return { ...obj };
 }
