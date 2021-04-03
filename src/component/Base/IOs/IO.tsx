@@ -5,9 +5,9 @@ import Vector from '@/utils/vector';
 import style from '@/style/Base/IOs/IO.scss';
 
 type Props = {
-  io: Socket;
-  iONameUpdate: (name: string) => void;
-  isOutput: boolean;
+  socket: Socket;
+  socketNameUpdate: (name: string) => void;
+  isInput: boolean;
 }
 
 const IO = forwardRef<Vector, Props>((props, fRef) => {
@@ -23,13 +23,13 @@ const IO = forwardRef<Vector, Props>((props, fRef) => {
   });
 
   return (
-    <div className={`${style.container} ${props.isOutput ? style.output : ''}`}>
+    <div className={`${style.container} ${!props.isInput ? style.output : ''}`}>
       <div className={style.jointContainer}>
         <div className={style.joint} ref={ref}/>
       </div>
       <NameBox className={style.nameBox}
-        name={props.io.name}
-        updateFunc={props.iONameUpdate}/>
+        name={props.socket.name}
+        updateFunc={props.socketNameUpdate}/>
     </div>
   )
 });

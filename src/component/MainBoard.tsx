@@ -5,7 +5,7 @@ import { addConnectionAction } from '@/store/node/actions';
 import { openCPAction } from '@/store/panel/actions';
 import { BaseType, ConnectionType } from '@/store/node/types';
 import Base, { Handler as BaseHandler } from './Base';
-import baseProps, { ConnectionInfo } from './Base/props';
+import baseProps from './Base/props';
 import Panel from './Panel';
 import Connection, { Handler as ConnectionHandler } from './Connection';
 import useIdRef, { mergeSourceAndIdRefs } from '@/utils/useIdRef';
@@ -17,7 +17,7 @@ const MainBoard: React.FC = () => {
   const baseIdRefs = useIdRef<BaseHandler>(props.bases);
   const bases = mergeSourceAndIdRefs<BaseType, BaseHandler>(props.bases, baseIdRefs);
   const connectionIdRefs = useIdRef<ConnectionHandler>(props.connections);
-  const connections = mergeSourceAndIdRefs<ConnectionType, ConnectionHandler>(props.connections, connectionIdRefs);
+  const cons = mergeSourceAndIdRefs<ConnectionType, ConnectionHandler>(props.connections, connectionIdRefs);
   const [cpIndexes, setCPIndexes] = useState<number[]>([]);
   const dispatch = useDispatch();
   const openCPFunc = (id: number) => dispatch(openCPAction(id));
@@ -42,9 +42,7 @@ const MainBoard: React.FC = () => {
   return (
     <div className={style.mainBoard}>
       {bases.map(b=>{
-        const ics: ConnectionInfo[] = connections.filter(c=>c.iBaseId==b.id);
-        const ocs: ConnectionInfo[] = connections.filter(c=>c.oBaseId==b.id);
-        return <Base key={b.id} ref={b.ref} {...baseProps(b, ics, ocs, openCPFunc)}/>
+        return <Base key={b.id} ref={b.ref} {...baseProps( b, cons.filter(c=>c.iBaseId==b.id), cons.filter(c=>c.oBaseId==b.id), openCPFunc)}/>
       })}
       {cpIdsList.map((ids: number[], i)=>{
         if(ids[0]===undefined) return;
@@ -53,7 +51,7 @@ const MainBoard: React.FC = () => {
         return <Panel key={i} {...cpProps(properties, cpIndexes[i], createSetCPIndex(i))}/>
       })}
       <svg className={style.connectionPanel}>
-        {connections.map((c, i)=>{
+        {cons.map((c, i)=>{
           const cProps = { type: c.type, curving: props.curving, s: c.s, e: c.e, };
           return <Connection key={i} {...cProps}/>;
         })}

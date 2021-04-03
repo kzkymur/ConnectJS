@@ -43,25 +43,23 @@ const IOs = forwardRef<Handler, Props>((props, fRef) => {
   return (
     <div className={style.container}>
       <div className={style.package}>
-        {inputs.map((jointRef, i)=>{
-          const input = props.inputs[jointRef.id];
+        {inputs.map((s, i)=>{
           const inputProps = {
-            io: input,
-            iONameUpdate: props.createIONameUpdate(true, i),
-            isOutput: false,
+            socket: s,
+            socketNameUpdate: props.createIONameUpdate(true, i),
+            isInput: true,
           }
-          return <IO {...inputProps} ref={jointRef.ref} key={i}/>
+          return <IO {...inputProps} ref={s.ref} key={i}/>
         })}
       </div>
       <div className={style.package}>
-        {outputs.map((jointRef, i)=>{
-          const output = props.outputs[jointRef.id];
+        {outputs.map((s, i)=>{
           const outputProps = {
-            io: output,
-            iONameUpdate: props.createIONameUpdate(false, i),
-            isOutput: true,
+            socket: s,
+            socketNameUpdate: props.createIONameUpdate(false, i),
+            isInput: false,
           }
-          return <IO {...outputProps} ref={jointRef.ref} key={i}/>
+          return <IO {...outputProps} ref={s.ref} key={i}/>
         })}
       </div>
     </div>

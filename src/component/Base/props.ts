@@ -54,7 +54,6 @@ class Props {
   }
   sizeChange: (e: React.MouseEvent<HTMLDivElement>) => void = e => {
     if (!this.#flag) return;
-    const size = this.#base.ref.current.getSize();
     const s = {x: e.clientX, y: e.clientY };
     const mousemove = (e: MouseEvent) => {
       const eClient = { x: e.clientX, y: e.clientY, };
@@ -65,7 +64,7 @@ class Props {
     const mouseup = (e: MouseEvent) => {
       const eClient = { x: e.clientX, y: e.clientY, };
       const diff = subtract(eClient, s);
-      if (this.#base.ref.current.updateSizeState(add(diff, size))) {
+      if (this.#base.ref.current.updateSizeState()) {
         this.#in.forEach(ic=>{ ic.ref.current.setPosWithDiff(false, {x: 0, y: diff.y})});
         this.#out.forEach(oc=>{ oc.ref.current.setPosWithDiff(true, diff)});
       }

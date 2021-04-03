@@ -17,7 +17,8 @@ export type Handler = {
   getSize: () => Vector;
   updatePosStyle: (v: Vector) => void;
   updatePosState: (v: Vector) => boolean;
-  updateSizeState: (v: Vector) => boolean;
+  // updateSizeStyle: () => void;
+  updateSizeState: () => boolean;
 }
 export type Props = {
   property: BaseType;
@@ -63,10 +64,10 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
     }
     return false;
   }
-  const updateSizeState = (v: Vector) => {
+  const updateSizeState = () => {
     const elm = ref.current; if (elm === null) return false; 
-    // const width = elm.offsetWidth, height = elm.offsetHeight;
-    const width = v.x, height = v.y;
+    const width = elm.offsetWidth, height = elm.offsetHeight;
+    // const width = v.x, height = v.y;
     elm.style.zIndex = String(-1 * width * height);
     const strWidth = width + 'px';
     const strHeight = (height - optBarHeight * (Math.max(property.inputs.length, property.outputs.length)+1)) + 'px';
