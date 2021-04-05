@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { BaseType, NodeModeNames, Socket, DataTypes, DataType } from '@/store/node/types';
-import { updateAction } from '@/store/node/actions';
+import { updateAction, addSocketAction } from '@/store/node/actions';
 import { closeCPAction, closeAllCPAction } from '@/store/panel/actions';
 import NameBox from './atom/NameBox';
 import style from '@/style/ControllPanel.css';
@@ -16,8 +16,6 @@ const ControlPanel: React.FC<Props> = props => {
   const dispatch = useDispatch();
   const index = props.index;
   const updateFunc = (c: BaseType) => dispatch(updateAction(c));
-  useEffect(()=>{
-  }) 
 
   const nameUpdate = (name: string) => {
     const newBaseStyle: BaseType = {
@@ -60,31 +58,11 @@ const ControlPanel: React.FC<Props> = props => {
   }
   const addInput = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    const inputInfo: Socket = {
-      type: defaultOutputType,
-      id: -1,
-      name: 'value',
-      counterId: -1,
-    }
-    const newProperty: BaseType = {
-      ...props.properties[index],
-      inputs: [...props.properties[index].inputs, inputInfo]
-    };
-    updateFunc(newProperty);
+    dispatch(addSocketAction(props.properties[index].id, true, defaultOutputType));
   }
   const addOutput = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    const outputInfo: Socket = {
-      type: defaultOutputType,
-      id: -1,
-      name: 'value',
-      counterId: -1,
-    }
-    const newProperty: BaseType = {
-      ...props.properties[index],
-      outputs: [...props.properties[index].outputs, outputInfo]
-    };
-    updateFunc(newProperty);
+    dispatch(addSocketAction(props.properties[index].id, false, defaultOutputType));
   }
 
   let i = -1;

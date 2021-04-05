@@ -31,6 +31,8 @@ interface Node {
   left: string;
   outputs: Socket[];
   inputs: Socket[];
+  inputsLatestId: number;
+  outputsLatestId: number;
 }
 interface Canvas extends Node {
 

@@ -140,6 +140,60 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
       break;
     }
 
+    case ActionTypes.addSocket: {
+      state = {
+        ...state,
+        bases: state.bases.map(b => b.id === action.payload.baseId ? {
+          ...b,
+          inputsLatestId: action.payload.isInput ? b.inputsLatestId + 1 : b.inputsLatestId,
+          inputs: action.payload.isInput ? [...b.inputs, {
+            id: b.inputsLatestId + 1,
+            type: action.payload.type,
+            name: action.payload.type,
+            counterId: -1,
+          }] : b.inputs,
+          outputsLatestId: !action.payload.isInput ? b.outputsLatestId + 1 : b.outputsLatestId,
+          outputs: !action.payload.isInput ? [...b.outputs, {
+            id: b.outputsLatestId + 1,
+            type: action.payload.type,
+            name: action.payload.type,
+            counterId: -1,
+          }] : b.outputs,
+        } : b),
+      };
+      const base = state.bases.filter(b=>b.id===action.payload.baseId)[0];
+      reverseAction = {
+        type: ActionTypes.deleteSocket,
+        payload: {
+          baseId: action.payload.baseId,
+          isInput: action.payload.isInput,
+          id: action.payload.isInput ? base.inputsLatestId : base.outputsLatestId,
+        },
+      };
+      break;
+    }
+    case ActionTypes.deleteSocket: {
+      const base = state.bases.filter(b=>b.id===action.payload.baseId)[0];
+      const deletedSocket = action.payload.isInput ? base.inputs.filter(i => i.id === action.payload.id)[0] : base.outputs.filter(o => o.id === action.payload.id)[0];
+      state = {
+        ...state,
+        bases: state.bases.map(b => b.id === action.payload.baseId ? {
+          ...b,
+          inputs: action.payload.isInput ? b.inputs.filter(i => i.id !== action.payload.id) : b.inputs,
+          outputs: !action.payload.isInput ? b.outputs.filter(o => o.id !== action.payload.id) : b.outputs,
+        } : b),
+      };
+      reverseAction = {
+        type: ActionTypes.addSocket,
+        payload: {
+          baseId: action.payload.baseId,
+          isInput: action.payload.isInput,
+          type: deletedSocket.type,
+        },
+      };
+      break;
+    }
+
     case ActionTypes.addConnection: {
       return {
         ...state,

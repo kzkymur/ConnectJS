@@ -1,5 +1,5 @@
 import { Action } from 'redux';
-import { BaseType, ConnectionType } from './types';
+import { BaseType, ConnectionType, DataType } from './types';
 
 export const ActionTypes = {
   add: "ADD",
@@ -8,6 +8,8 @@ export const ActionTypes = {
   updateName: "UPDATENAME",
   updateSize: "UPDATESIZE",
   updatePos: "UPDATEPOS",
+  addSocket: "ADDSOCKET",
+  deleteSocket: "DELETESOCKET",
 
   undo: "UNDO",
   redo: "REDO",
@@ -53,6 +55,22 @@ interface UpdatePos extends Action {
     left: string;
   };
 }
+interface AddSocket extends Action {
+  type: typeof ActionTypes.addSocket;
+  payload: {
+    baseId: number;
+    isInput: boolean;
+    type: DataType;
+  };
+}
+interface DeleteSocket extends Action {
+  type: typeof ActionTypes.deleteSocket;
+  payload: {
+    baseId: number;
+    isInput: boolean;
+    id: number;
+  };
+}
 
 interface Undo extends Action { type: typeof ActionTypes.undo; }
 interface Redo extends Action { type: typeof ActionTypes.redo; }
@@ -72,6 +90,7 @@ interface DeleteConnection extends Action {
 type NodeAction = 
   Add | Delete | 
   Update | UpdateName | UpdateSize | UpdatePos |
+  AddSocket | DeleteSocket |
   Undo | Redo | 
   AddConnection | UpdateConnection | DeleteConnection; 
 export default NodeAction;

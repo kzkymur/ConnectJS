@@ -13,4 +13,6 @@ export const addAction: AddAction = (mode) => originalAddAction({
   left: String(40 + 20 * Math.random()) + '%',
   outputs: [],
   inputs: [],
+  outputsLatestId: 0,
+  inputsLatestId: 0,
 });
