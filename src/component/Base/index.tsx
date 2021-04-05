@@ -52,13 +52,7 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
     }
     return false;
   }
-  const updateSizeStyle = () => {
-    mainRef.current.style.height = px(calcMainHeight(ref.current.offsetHeight, inputs, outputs));
-  }
-  const keepSizeStyle = () => {
-    mainRef.current.style.height = height;
-    ref.current.style.height = px(px2n(height) + optBarHeight * (Math.max(inputs.length, outputs.length)+1));
-  }
+  const updateSizeStyle = () => { mainRef.current.style.height = px(calcMainHeight(ref.current.offsetHeight, inputs, outputs)); }
   const updateSizeState = () => {
     const width = ref.current.offsetWidth, height = ref.current.offsetHeight;
     ref.current.style.zIndex = String(-1 * width * height);
@@ -70,7 +64,10 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
     }
     return false;
   }
-
+  const keepSizeStyle = () => {
+    mainRef.current.style.height = height;
+    ref.current.style.height = px(px2n(height) + optBarHeight * (Math.max(inputs.length, outputs.length)+1));
+  }
   useImperativeHandle(fRef, ()=>({
     getJointPos,
     getAllJointPos,
@@ -82,36 +79,6 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
     updateSizeState,
   }));
 
-  const createIONameUpdate = (isInput: boolean, index: number) => {
-    const ioNameUpdate = (name: string) => {
-      const newProperty: BaseType = isInput ? {
-        ...property,
-        inputs: inputs.map((input, i) => {
-          if (i===index) {
-            input.name = name;
-            return input;
-          } else {
-            return input;
-          }
-        }) 
-      } : {
-        ...property,
-        outputs: outputs.map((output, i) => {
-          if (i===index) {
-            return {
-              ...output,
-              name: name,
-            };
-          } else {
-            return output;
-          }
-        }) 
-      };
-      updateFunc(newProperty);
-    }
-    return ioNameUpdate;
-  }
-
   useEffect(()=>{
     let elm;
     elm = ref.current;
@@ -121,23 +88,24 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
     elm.style.opacity = '1';
     keepSizeStyle();
   })
-  const headerProps = { id, name, };
-  const mainProps = {
-    posChange: props.posChange,
-    element,
-    fRef: mainRef
-  };
-  const IOsProps = {
-    id, inputs, outputs,
-    createIONameUpdate,
-  };
+
+  const createIONameUpdate = (isInput: boolean, index: number) => (name: string) => {
+    const newProperty: BaseType = {...property};
+    const sockets = isInput ? inputs : outputs;
+    const key = isInput ? 'inputs' : 'outputs';
+    newProperty[key] = sockets.map((s, i) => {
+      if (i===index) s.name = name;
+      return s;
+    }) 
+    updateFunc(newProperty);
+  }
   return (
     <div className={style.container} ref={ref}
       onMouseDown={props.sizeChange}
     >
-      <Header {...headerProps}/>
-      <Main {...mainProps}/>
-      <IOs {...IOsProps} ref={iosRef}/>
+      <Header {...headerProps(id, name)}/>
+      <Main {...mainProps(props.posChange, element, mainRef)}/>
+      <IOs {...IOsProps(id, inputs, outputs, createIONameUpdate)} ref={iosRef}/>
     </div>
   )
 });
@@ -145,3 +113,8 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
 export default Base;
 
 const calcMainHeight = (height: number, inputs: Array<Socket>, outputs: Array<Socket>): number => (height - optBarHeight * (Math.max(inputs.length, outputs.length)+1));
+
+const headerProps = (id: number, name: string) => ({ id, name, });
+const mainProps = (posChange: (e: React.MouseEvent<HTMLDivElement>) => void, element: React.ReactNode, fRef: React.RefObject<HTMLDivElement>) => ({ element, posChange, fRef });
+const IOsProps = (id: number, inputs: Socket[], outputs: Socket[], createIONameUpdate: (isInput: boolean, index: number) => (name: string) => void) => ({ id, inputs, outputs, createIONameUpdate });
+

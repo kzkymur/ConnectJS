@@ -3,13 +3,14 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store';
 import { addConnectionAction } from '@/store/node/actions';
 import { openCPAction } from '@/store/panel/actions';
-import { BaseType, ConnectionType } from '@/store/node/types';
+import { BaseType, ConnectionType, DataType } from '@/store/node/types';
 import Base, { Handler as BaseHandler } from './Base';
 import baseProps from './Base/props';
 import Panel from './Panel';
 import Connection, { Handler as ConnectionHandler } from './Connection';
 import useIdRef, { mergeSourceAndIdRefs } from '@/utils/useIdRef';
 import style from '@/style/MainBoard.css'; 
+import Vector from '@/utils/vector';
 
 const MainBoard: React.FC = () => {
   const props = useSelector((state: RootState) => state.nodeReducer);
@@ -51,10 +52,7 @@ const MainBoard: React.FC = () => {
         return <Panel key={i} {...cpProps(properties, cpIndexes[i], createSetCPIndex(i))}/>
       })}
       <svg className={style.connectionPanel}>
-        {cons.map((c, i)=>{
-          const cProps = { type: c.type, curving: props.curving, s: c.s, e: c.e, };
-          return <Connection key={i} {...cProps}/>;
-        })}
+        {cons.map((c, i)=> <Connection key={i} {...cProps(c.type, props.curving, c.s, c.e)}/> )}
       </svg>
     </div>
   )
@@ -63,3 +61,4 @@ const MainBoard: React.FC = () => {
 export default MainBoard;
 
 const cpProps = (properties: BaseType[], index: number, setIndex: (index: number)=>void) => ({ properties, index, setIndex, });
+const cProps = (type: DataType, curving: number, start: Vector, end: Vector) => ({ type, curving, s: start, e: end });
