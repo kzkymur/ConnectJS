@@ -1,4 +1,5 @@
 export const px2n:(px:string) => number = (px: string) => Number(px.split('px')[0]); 
+export const px = (n: number | string) => n + 'px';
 
 export type valueOf<T> = T[keyof T];
 

@@ -58,6 +58,7 @@ class Props {
     const mousemove = (e: MouseEvent) => {
       const eClient = { x: e.clientX, y: e.clientY, };
       const diff = subtract(eClient, s);
+      this.#base.ref.current.updateSizeStyle();
       this.#in.forEach(ic=>{ ic.ref.current.changeViewWithDiff(false, {x: 0, y: diff.y}); });
       this.#out.forEach(oc=>{ oc.ref.current.changeViewWithDiff(true, diff); });
     }
