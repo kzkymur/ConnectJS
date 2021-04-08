@@ -6,6 +6,7 @@ import style from '@/style/Connection.scss';
 export type Handler = {
   changeView: (start: Vector, end: Vector) => void;
   changeViewWithDiff: (isInput: boolean, diff: Vector) => void;
+  setType: (type: DataType) => void;
   setPos: (start: Vector, end: Vector) => void;
   setPosWithDiff: (isInput: boolean, diff: Vector) => void;
   getPos: () => { start: Vector; end: Vector };
@@ -24,6 +25,7 @@ const Connection = forwardRef<Handler, Props>((props, fRef) => {
   useImperativeHandle(fRef, ()=>({
     changeView,
     changeViewWithDiff,
+    setType,
     setPos,
     setPosWithDiff,
     getPos,
@@ -34,6 +36,9 @@ const Connection = forwardRef<Handler, Props>((props, fRef) => {
   }
   const changeViewWithDiff = (isInput: boolean, diff: Vector) => {
     ref.current!.attributes[1].value = isInput ? calcDList(add(s,diff),e,props.curving) : calcDList(s,add(e,diff),props.curving);
+  }
+  const setType = (type: DataType) => {
+    // update();
   }
   const setPos = (newS: Vector, newE: Vector) => {
     if (s !== newS) setS(newS);

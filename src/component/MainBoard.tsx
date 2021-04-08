@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store';
 import { addConnectionAction } from '@/store/node/actions';
 import { openCPAction } from '@/store/panel/actions';
-import { BaseType, ConnectionType, DataType } from '@/store/node/types';
+import { BaseType, ConnectionType, DataType, DataTypes } from '@/store/node/types';
 import Base, { Handler as BaseHandler } from './Base';
 import baseProps from './Base/props';
 import Panel from './Panel';
@@ -19,6 +19,7 @@ const MainBoard: React.FC = () => {
   const bases = mergeSourceAndIdRefs<BaseType, BaseHandler>(props.bases, baseIdRefs);
   const connectionIdRefs = useIdRef<ConnectionHandler>(props.connections);
   const cons = mergeSourceAndIdRefs<ConnectionType, ConnectionHandler>(props.connections, connectionIdRefs);
+  const tmpConRef = useRef<ConnectionHandler>({} as ConnectionHandler);
   const [cpIndexes, setCPIndexes] = useState<number[]>([]);
   const dispatch = useDispatch();
   const openCPFunc = (id: number) => dispatch(openCPAction(id));
@@ -43,7 +44,7 @@ const MainBoard: React.FC = () => {
   return (
     <div className={style.mainBoard}>
       {bases.map(b=>{
-        return <Base key={b.id} ref={b.ref} {...baseProps( b, cons.filter(c=>c.iBaseId==b.id), cons.filter(c=>c.oBaseId==b.id), openCPFunc)}/>
+        return <Base key={b.id} ref={b.ref} {...baseProps( b, cons.filter(c=>c.iBaseId==b.id), cons.filter(c=>c.oBaseId==b.id), openCPFunc, tmpConRef)}/>
       })}
       {cpIdsList.map((ids: number[], i)=>{
         if(ids[0]===undefined) return;
@@ -53,6 +54,7 @@ const MainBoard: React.FC = () => {
       })}
       <svg className={style.connectionPanel}>
         {cons.map((c, i)=> <Connection key={i} {...cProps(c.type, props.curving, c.s, c.e)}/> )}
+        <Connection ref={tmpConRef} {...cProps(DataTypes.Framebuffer,props.curving,{x:0,y:0},{x:0,y:0})}/>
       </svg>
     </div>
   )

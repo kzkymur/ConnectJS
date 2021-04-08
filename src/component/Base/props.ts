@@ -9,24 +9,27 @@ class Props {
   #in: ConnectionInfo[]; 
   #out: ConnectionInfo[];
   #openCP: (id:number)=>void;
-  #flag: boolean = true;
+  #isSizeChanging: boolean = true;
+  #tcr: MutableRefObject<ConnectionHandler>;
+  #newConnectionInfo?: NewConnectionInfo;
   readonly property: BaseType;
 
-  constructor (
-    base: BaseType & { ref: MutableRefObject<BaseHandler>; },
+  constructor ( base: BaseType & { ref: MutableRefObject<BaseHandler>; },
     inputConnections: ConnectionInfo[],
     outputConnections: ConnectionInfo[],
-    openCP: (id:number)=>void
+    openCP: (id:number)=>void,
+    temporalConnectionRef: MutableRefObject<ConnectionHandler>,
   ) {
     this.#base = base;
     this.property = base;
     this.#in = inputConnections;
     this.#out = outputConnections;
     this.#openCP = openCP;
+    this.#tcr = temporalConnectionRef;
   }
 
   posChange: (e: React.MouseEvent<HTMLDivElement>) => void = e => {
-    this.#flag = false;
+    this.#isSizeChanging = false;
     const pos = this.#base.ref.current.getPos();
     const s = {x: e.clientX, y: e.clientY };
     const mousemove = (e: MouseEvent) => {
@@ -47,13 +50,13 @@ class Props {
       }
       window.removeEventListener('mousemove', mousemove);
       window.removeEventListener('mouseup', mouseup);
-      this.#flag = true;
+      this.#isSizeChanging = true;
     }
     window.addEventListener('mousemove', mousemove);
     window.addEventListener('mouseup', mouseup);
   }
   sizeChange: (e: React.MouseEvent<HTMLDivElement>) => void = e => {
-    if (!this.#flag) return;
+    if (!this.#isSizeChanging) return;
     const s = {x: e.clientX, y: e.clientY };
     const mousemove = (e: MouseEvent) => {
       const eClient = { x: e.clientX, y: e.clientY, };
@@ -75,16 +78,41 @@ class Props {
     window.addEventListener('mousemove', mousemove);
     window.addEventListener('mouseup', mouseup);
   }
-}
 
-export type ConnectionInfo = ConnectionType & { ref: MutableRefObject<ConnectionHandler>; };
+  operateNewConnection: (isInput: boolean, id: number) => () => void = (isInput, id) => () => {
+    const s = this.#base.ref.current.getJointPos(isInput, id);
+    const mousemove = (e: MouseEvent) => {
+      const eClient = { x: e.clientX, y: e.clientY, };
+      if (isInput) this.#tcr.current.changeView(eClient, s);
+      else this.#tcr.current.changeView(s, eClient);
+    }
+    const mouseup = () => {
+      const zeroV = { x: 0, y:0 };
+      this.#tcr.current.changeView(zeroV, zeroV);
+      window.removeEventListener('mousemove', mousemove);
+      window.addEventListener('mouseup', mouseup);
+    }
+    window.addEventListener('mousemove', mousemove);
+    window.addEventListener('mouseup', mouseup);
+  }
+  registerNewConnection: (isInput: boolean, id: number) => () => void = (isInput, id) => () => {
+  }
+}
 
 export default function baseProps (
   base: BaseType & { ref: MutableRefObject<BaseHandler>; },
   inputConnections: ConnectionInfo[],
   outputConnections: ConnectionInfo[],
-  openCP: (id:number)=>void
+  openCP: (id:number)=>void,
+  temporalConnectionRef: MutableRefObject<ConnectionHandler>,
 ): BaseProps {
-  const obj = new Props(base, inputConnections, outputConnections, openCP);
+  const obj = new Props(base, inputConnections, outputConnections, openCP, temporalConnectionRef);
   return { ...obj };
 }
+
+type ConnectionInfo = ConnectionType & { ref: MutableRefObject<ConnectionHandler>; };
+type NewConnectionInfo = {
+  isInput: boolean;
+  baseId: number;
+  id: number;
+};
