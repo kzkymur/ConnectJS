@@ -85,7 +85,7 @@ interface UpdateConnection extends Action {
 }
 interface DeleteConnection extends Action { 
   type: typeof ActionTypes.deleteConnection; 
-  payload: { index: number; };
+  payload: { id: number; };
 }
 type NodeAction = 
   Add | Delete | 

@@ -45,7 +45,7 @@ export const updateConnectionAction = (param: ConnectionType): Action => ({
   type: ActionTypes.updateConnection, 
   payload: param,
 });
-export const deleteConnectionAction = (index: number): Action => ({
+export const deleteConnectionAction = (id: number): Action => ({
   type: ActionTypes.deleteConnection,
-  payload: { index: index, },
+  payload: { id, },
 });
