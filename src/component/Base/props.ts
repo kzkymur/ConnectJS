@@ -1,31 +1,36 @@
 import React, { MutableRefObject } from 'react';
-import { BaseType, ConnectionType } from '@/store/node/types';
+import { BaseType, ConnectionType, DataTypes } from '@/store/node/types';
 import { Handler as ConnectionHandler } from '@/component/Connection';
 import { Handler as BaseHandler, Props as BaseProps } from '@/component/Base';
-import { add, subtract } from '@/utils/vector';
+import Vector, { add, subtract } from '@/utils/vector';
 
 class Props {
   #base: BaseType & { ref: MutableRefObject<BaseHandler>; };
   #in: ConnectionInfo[]; 
   #out: ConnectionInfo[];
-  #openCP: (id:number)=>void;
+  #openCP: (id:number) => void;
   #isSizeChanging: boolean = true;
-  #tcr: MutableRefObject<ConnectionHandler>;
-  #newConnectionInfo?: NewConnectionInfo;
+  #ncr: MutableRefObject<ConnectionHandler>;
+  #ncir: MutableRefObject<NewConnectionInfo>;
+  #addConnection: (c: ConnectionType) => void;
   readonly property: BaseType;
 
   constructor ( base: BaseType & { ref: MutableRefObject<BaseHandler>; },
     inputConnections: ConnectionInfo[],
     outputConnections: ConnectionInfo[],
     openCP: (id:number)=>void,
-    temporalConnectionRef: MutableRefObject<ConnectionHandler>,
+    newConnectionRef: MutableRefObject<ConnectionHandler>,
+    newConnectionInfoRef: MutableRefObject<NewConnectionInfo>,
+    addConnection: (c: ConnectionType) => void,
   ) {
     this.#base = base;
     this.property = base;
     this.#in = inputConnections;
     this.#out = outputConnections;
     this.#openCP = openCP;
-    this.#tcr = temporalConnectionRef;
+    this.#ncr = newConnectionRef;
+    this.#ncir = newConnectionInfoRef;
+    this.#addConnection = addConnection;
   }
 
   posChange: (e: React.MouseEvent<HTMLDivElement>) => void = e => {
@@ -81,14 +86,18 @@ class Props {
 
   operateNewConnection: (isInput: boolean, id: number) => () => void = (isInput, id) => () => {
     const s = this.#base.ref.current.getJointPos(isInput, id);
+    this.#ncir.current.isInput = isInput;
+    this.#ncir.current.baseId = this.#base.id;
+    this.#ncir.current.id = id;
+    this.#ncir.current.s = s;
     const mousemove = (e: MouseEvent) => {
       const eClient = { x: e.clientX, y: e.clientY, };
-      if (isInput) this.#tcr.current.changeView(eClient, s);
-      else this.#tcr.current.changeView(s, eClient);
+      if (isInput) this.#ncr.current.changeView(eClient, s);
+      else this.#ncr.current.changeView(s, eClient);
     }
     const mouseup = () => {
       const zeroV = { x: 0, y:0 };
-      this.#tcr.current.changeView(zeroV, zeroV);
+      this.#ncr.current.changeView(zeroV, zeroV);
       window.removeEventListener('mousemove', mousemove);
       window.addEventListener('mouseup', mouseup);
     }
@@ -96,6 +105,23 @@ class Props {
     window.addEventListener('mouseup', mouseup);
   }
   registerNewConnection: (isInput: boolean, id: number) => () => void = (isInput, id) => () => {
+    const ncir = this.#ncir.current;
+    // console.log(ncir);
+    console.log(this.#base.name);
+    if (isInput === ncir.isInput) return;
+    if (this.#base.id === ncir.baseId) return;
+    if (ncir.baseId === undefined || ncir.isInput === undefined || ncir.id === undefined || ncir.s === undefined) return;
+    const e = this.#base.ref.current.getJointPos(isInput, id);
+    this.#addConnection({
+      type: DataTypes.Number,
+      id: 1,
+      iBaseId: isInput ? this.#base.id : ncir.baseId,
+      iId: isInput ? id : ncir.id,
+      oBaseId: !isInput ? this.#base.id : ncir.baseId,
+      oId: !isInput ? id : ncir.id,
+      s: !isInput ?  e : ncir.s,
+      e: isInput ?  e : ncir.s,
+    })
   }
 }
 
@@ -104,15 +130,18 @@ export default function baseProps (
   inputConnections: ConnectionInfo[],
   outputConnections: ConnectionInfo[],
   openCP: (id:number)=>void,
-  temporalConnectionRef: MutableRefObject<ConnectionHandler>,
+  newConnectionRef: MutableRefObject<ConnectionHandler>,
+  newConnectionInfoRef: MutableRefObject<NewConnectionInfo>,
+  addConnection: (c: ConnectionType) => void,
 ): BaseProps {
-  const obj = new Props(base, inputConnections, outputConnections, openCP, temporalConnectionRef);
+  const obj = new Props(base, inputConnections, outputConnections, openCP, newConnectionRef, newConnectionInfoRef, addConnection);
   return { ...obj };
 }
 
 type ConnectionInfo = ConnectionType & { ref: MutableRefObject<ConnectionHandler>; };
-type NewConnectionInfo = {
-  isInput: boolean;
-  baseId: number;
-  id: number;
+export type NewConnectionInfo = {
+  isInput?: boolean;
+  baseId?: number;
+  id?: number;
+  s?: Vector;
 };

@@ -9,6 +9,7 @@ type Props = {
   socketNameUpdate: (name: string) => void;
   isInput: boolean;
   operateNewConnection: () => void;
+  registerNewConnection: () => void;
 }
 
 const IO = forwardRef<Vector, Props>((props, fRef) => {
@@ -28,6 +29,7 @@ const IO = forwardRef<Vector, Props>((props, fRef) => {
       <div className={style.jointContainer}>
         <div className={style.joint} ref={ref}
           onMouseDown={props.operateNewConnection}
+          onMouseUp={props.registerNewConnection}
         />
       </div>
       <NameBox className={style.nameBox}
