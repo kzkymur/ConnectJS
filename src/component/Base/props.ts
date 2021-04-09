@@ -106,8 +106,6 @@ class Props {
   }
   registerNewConnection: (isInput: boolean, id: number) => () => void = (isInput, id) => () => {
     const ncir = this.#ncir.current;
-    // console.log(ncir);
-    console.log(this.#base.name);
     if (isInput === ncir.isInput) return;
     if (this.#base.id === ncir.baseId) return;
     if (ncir.baseId === undefined || ncir.isInput === undefined || ncir.id === undefined || ncir.s === undefined) return;

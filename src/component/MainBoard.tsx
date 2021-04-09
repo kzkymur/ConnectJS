@@ -55,7 +55,7 @@ const MainBoard: React.FC = () => {
         return <Panel key={i} {...cpProps(properties, cpIndexes[i], createSetCPIndex(i))}/>
       })}
       <svg className={style.connectionPanel}>
-        {cons.map((c, i) => <Connection key={i} {...cProps(c.type, props.curving, c.s, c.e)}/> )}
+        {cons.map((c, i) => <Connection key={i} ref={c.ref} {...cProps(c.type, props.curving, c.s, c.e)}/> )}
         <Connection ref={newConRef} {...cProps(DataTypes.Framebuffer,props.curving,{x:0,y:0},{x:0,y:0})}/>
       </svg>
     </div>
