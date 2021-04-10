@@ -29,7 +29,7 @@ export default reducer;
 type ReducerLogic = (state: State, action: Action, operationType: OperationType) => State;
 const reducerLogic: ReducerLogic = (state, action, operationType) => {
   console.log(action);
-  let reverseAction: Action;
+  let reverseActions: Action[];
   switch (action.type) {
     case ActionTypes.add: {
       let latestId = state.baseLatestId;
@@ -44,10 +44,10 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
         baseLatestId: latestId,
         bases: [ ...state.bases, base ],
       };
-      reverseAction = {
+      reverseActions = [{
         type: ActionTypes.delete,
         payload: { id: base.id },
-      };
+      }];
       break;
     }
     case ActionTypes.delete: {
@@ -57,10 +57,10 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
         ...state,
         bases: state.bases.filter(b => b.id !== action.payload.id),
       };
-      reverseAction = {
+      reverseActions = [{
         type: ActionTypes.add,
         payload: { base: deletedBase },
-      };
+      }];
       break;
     }
 
@@ -71,10 +71,10 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
         ...state,
         bases: state.bases.map(c => c.id === action.payload.base.id ? action.payload.base : c),
       };
-      reverseAction = {
+      reverseActions = [{
         type: ActionTypes.update,
         payload: { base: oldBase },
-      };
+      }];
       break;
     }
     case ActionTypes.updateName: {
@@ -87,10 +87,10 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
           name: action.payload.name,
         } : c),
       };
-      reverseAction = {
+      reverseActions = [{
         type: ActionTypes.updateName,
         payload: { id: action.payload.id, name: oldBase.name },
-      };
+      }];
       break;
     }
     case ActionTypes.updateSize: {
@@ -104,14 +104,14 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
           height: action.payload.height,
         } : c),
       };
-      reverseAction = {
+      reverseActions = [{
         type: ActionTypes.updateSize,
-        payload: { 
+        payload: {
           id: action.payload.id, 
           width: oldBase.width,
           height: oldBase.height,
         },
-      };
+      }];
       break;
     }
     case ActionTypes.updatePos: {
@@ -125,14 +125,14 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
           left: action.payload.left,
         } : c),
       };
-      reverseAction = {
+      reverseActions = [{
         type: ActionTypes.updatePos,
         payload: {
           id: action.payload.id,
           top: oldBase.top,
           left: oldBase.left,
         },
-      };
+      }];
       break;
     }
 
@@ -158,14 +158,14 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
         } : b),
       };
       const base = state.bases.filter(b=>b.id===action.payload.baseId)[0];
-      reverseAction = {
+      reverseActions = [{
         type: ActionTypes.deleteSocket,
         payload: {
           baseId: action.payload.baseId,
           isInput: action.payload.isInput,
           id: action.payload.isInput ? base.inputsLatestId : base.outputsLatestId,
         },
-      };
+      }];
       break;
     }
     case ActionTypes.deleteSocket: {
@@ -179,14 +179,14 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
           outputs: !action.payload.isInput ? b.outputs.filter(o => o.id !== action.payload.id) : b.outputs,
         } : b),
       };
-      reverseAction = {
+      reverseActions = [{
         type: ActionTypes.addSocket,
         payload: {
           baseId: action.payload.baseId,
           isInput: action.payload.isInput,
           type: deletedSocket.type,
         },
-      };
+      }];
       break;
     }
 
@@ -202,10 +202,10 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
         connections: [ ...state.connections, connection ],
         connectionLatestId: latestId,
       }
-      reverseAction = {
+      reverseActions = [{
         type: ActionTypes.deleteConnection,
         payload: { id: latestId, },
-      };
+      }];
       break;
     }
     case ActionTypes.deleteConnection: {
@@ -215,28 +215,28 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
         ...state,
         connections: state.connections.filter(c => c.id !== action.payload.id),
       };
-      reverseAction = {
+      reverseActions = [{
         type: ActionTypes.addConnection,
         payload: deletedConnection, 
-      };
+      }];
       break;
     }
 
     case ActionTypes.undo:{
       const reverseElement = state.reverseActionBranch.current.prev;
       if (reverseElement===undefined) return state;
-      return state = reducerLogic(state, reverseElement.action, OperationTypes.backward);
+      return reverseElement.actions.reduce((a, s) => reducerLogic(a, s, OperationTypes.backward), state);
     }
     case ActionTypes.redo:{
       const reverseElement = state.reverseActionBranch.current.next;
       if (reverseElement===undefined) return state;
-      return state = reducerLogic(state, reverseElement.action, OperationTypes.forward);
+      return reverseElement.actions.reduce((a, s) => reducerLogic(a, s, OperationTypes.forward), state);
     }
 
     default: return state; // 再描画しない〜〜
   }
   return {
     ...state,
-    reverseActionBranch: state.reverseActionBranch.operate(reverseAction, operationType),
+    reverseActionBranch: state.reverseActionBranch.operate(reverseActions, operationType),
   }
 }

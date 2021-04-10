@@ -112,7 +112,7 @@ class Props {
     const e = this.#base.ref.current.getJointPos(isInput, id);
     this.#addConnection({
       type: DataTypes.Number,
-      id: 1,
+      id: -1,
       iBaseId: isInput ? this.#base.id : ncir.baseId,
       iId: isInput ? id : ncir.id,
       oBaseId: !isInput ? this.#base.id : ncir.baseId,

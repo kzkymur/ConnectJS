@@ -7,7 +7,7 @@ interface Partition {
   left?: Partition;
 }
 interface Element {
-  action: Action;
+  actions: Action[];
   prev: Partition;
   next: Partition;
 }
@@ -24,23 +24,23 @@ export type OperationType =
 
 export type ActionHistory = (Action | ActionHistory)[];
 
-type OperatingMethod = (action: Action) => void;
-type OperateType = (action: Action, operationType: OperationType) => ReverseActionBranch;
+type OperatingMethod = (actions: Action[]) => void;
+type OperateType = (actions: Action[], operationType: OperationType) => ReverseActionBranch;
 export default class ReverseActionBranch {
   current: Partition = {};
   constructor (p?: Partition) { if (p !== undefined) { this.current = p; } };
-  operate: OperateType = (action, operationType) => {
+  operate: OperateType = (actions, operationType) => {
     switch (operationType) {
       case OperationTypes.branch: {
-        this.branch(action);
+        this.branch(actions);
         break;
       }
       case OperationTypes.backward: {
-        this.backward(action);
+        this.backward(actions);
         break;
       }
       case OperationTypes.forward: {
-        this.forward(action);
+        this.forward(actions);
         break;
       }
     }
@@ -82,9 +82,9 @@ export default class ReverseActionBranch {
     }
   }
 
-  private branch: OperatingMethod = (action) => {
+  private branch: OperatingMethod = (actions) => {
     const newElm: Element = {
-      action: action,
+      actions,
       prev: this.current,
       next: {},
     }; 
@@ -105,15 +105,15 @@ export default class ReverseActionBranch {
     newElm.next = newPartition;
     this.current = newPartition;
   }
-  private backward: OperatingMethod = (action) => {
+  private backward: OperatingMethod = (actions) => {
     if (this.current.prev !== undefined) {
-      this.current.prev.action = action;
+      this.current.prev.actions = actions;
       this.current = this.current.prev.prev;
     }
   }
-  private forward: OperatingMethod = (action) => {
+  private forward: OperatingMethod = (actions) => {
     if (this.current.next !== undefined) {
-      this.current.next.action = action;
+      this.current.next.actions = actions;
       this.current = this.current.next.next;
     }
   }
@@ -143,7 +143,7 @@ export default class ReverseActionBranch {
       if (current === this.current) {
         log += 'current\n';
       }
-      log += `${current.prev.action.type}\n`;
+      current.prev.actions.forEach(a=>{log += `${a.type}\n`});
       current = current.prev.prev;
     }
     if (current === this.current) {
