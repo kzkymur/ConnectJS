@@ -1,5 +1,6 @@
 import { Reducer } from 'redux';
 import Action, { ActionTypes } from './actionTypes';
+import NodeAction, { ActionTypes as NodeActionTypes } from '../node/actionTypes';
 
 interface State {
   cpIdsList: number[][];
@@ -14,7 +15,7 @@ const reducer: ReducerType = (state = initialState, action) => {
 }
 export default reducer;
 
-type ReducerLogic = (state: State, action: Action) => State;
+type ReducerLogic = (state: State, action: Action | NodeAction) => State;
 const reducerLogic: ReducerLogic = (state, action) => {
   console.log(action);
   switch (action.type) {
@@ -41,11 +42,12 @@ const reducerLogic: ReducerLogic = (state, action) => {
       }
     }
 
+    case NodeActionTypes.delete: 
     case ActionTypes.closeCPById: {
       return {
         ...state,
         cpIdsList: [state.cpIdsList[0].filter(id => id !== action.payload.id)],
-      } 
+      }
     }
 
     default: return state;
