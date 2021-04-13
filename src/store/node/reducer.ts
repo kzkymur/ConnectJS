@@ -104,11 +104,11 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
       if (oldBase === undefined) return state;
       state = {
         ...state,
-        bases: state.bases.map(c => c.id === action.payload.id ? {
-          ...c,
+        bases: state.bases.map(b => b.id === action.payload.id ? {
+          ...b,
           width: action.payload.width,
           height: action.payload.height,
-        } : c),
+        } : b),
       };
       reverseActions = [{
         type: ActionTypes.updateSize,
@@ -125,11 +125,11 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
       if (oldBase === undefined) return state;
       state = {
         ...state,
-        bases: state.bases.map(c => c.id === action.payload.id ? {
-          ...c,
+        bases: state.bases.map(b => b.id === action.payload.id ? {
+          ...b,
           top: action.payload.top,
           left: action.payload.left,
-        } : c),
+        } : b),
       };
       reverseActions = [{
         type: ActionTypes.updatePos,

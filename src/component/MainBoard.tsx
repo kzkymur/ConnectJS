@@ -42,6 +42,7 @@ const MainBoard: React.FC = () => {
     }
   }, [cpIdsList]);
   console.log(cons);
+  console.log(bases);
 
   return (
     <div className={style.mainBoard}>
@@ -50,12 +51,12 @@ const MainBoard: React.FC = () => {
       })}
       {cpIdsList.map((ids: number[], i)=>{
         if(ids[0]===undefined) return;
-        let properties: BaseType[] = [];
-        ids.forEach(id=>{ properties.push(props.bases.filter(c=>c.id===id)[0]); })
-        return <Panel key={i} {...cpProps(properties, cpIndexes[i], createSetCPIndex(i))}/>
+        let bases: BaseType[] = [];
+        ids.forEach(id=>{ bases.push(props.bases.filter(c=>c.id===id)[0]); })
+        return <Panel key={i} {...pProps(bases, cpIndexes[i], createSetCPIndex(i))}/>
       })}
       <svg className={style.connectionPanel}>
-        {cons.map((c, i) => <Connection key={c.id} ref={c.ref} {...cProps(c.type, props.curving, c.s, c.e)}/> )}
+        {cons.map(c => <Connection key={c.id} ref={c.ref} {...cProps(c.type, props.curving, c.s, c.e)}/> )}
         <Connection ref={newConRef} {...cProps(DataTypes.Framebuffer,props.curving,{x:0,y:0},{x:0,y:0})}/>
       </svg>
     </div>
@@ -64,5 +65,5 @@ const MainBoard: React.FC = () => {
 
 export default MainBoard;
 
-const cpProps = (properties: BaseType[], index: number, setIndex: (index: number)=>void) => ({ properties, index, setIndex, });
+const pProps = (bases: BaseType[], index: number, setIndex: (index: number)=>void) => ({ bases, index, setIndex, });
 const cProps = (type: DataType, curving: number, start: Vector, end: Vector) => ({ type, curving, s: start, e: end });

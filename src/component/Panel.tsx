@@ -7,19 +7,19 @@ import NameBox from './atom/NameBox';
 import style from '@/style/ControllPanel.css';
 
 type Props = {
-  properties: BaseType[];
+  bases: BaseType[];
   index: number;
   setIndex: (i: number) => void;
 }
 
-const ControlPanel: React.FC<Props> = props => {
+const Panel: React.FC<Props> = props => {
   const dispatch = useDispatch();
   const index = props.index;
   const updateFunc = (c: BaseType) => dispatch(updateAction(c));
 
   const nameUpdate = (name: string) => {
     const newBaseStyle: BaseType = {
-      ...props.properties[index],
+      ...props.bases[index],
       name: name,
     };
     updateFunc(newBaseStyle);
@@ -47,7 +47,8 @@ const ControlPanel: React.FC<Props> = props => {
   }
 
   let defaultOutputType: DataType;
-  switch (props.properties[index].mode.name) {
+  // switch (props.bases[index].mode.name) {
+  switch (props.bases[index] ? props.bases[index].mode.name : props.bases[0].mode.name) {
     case NodeModeNames.Canvas: {
       defaultOutputType = DataTypes.Framebuffer;
       break;
@@ -58,23 +59,23 @@ const ControlPanel: React.FC<Props> = props => {
   }
   const addInput = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    dispatch(addSocketAction(props.properties[index].id, true, defaultOutputType));
+    dispatch(addSocketAction(props.bases[index].id, true, defaultOutputType));
   }
   const addOutput = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    dispatch(addSocketAction(props.properties[index].id, false, defaultOutputType));
+    dispatch(addSocketAction(props.bases[index].id, false, defaultOutputType));
   }
 
   let i = -1;
   return (
     <div className={style.controllPanel}>
       <div className={style.headerContainer}>
-        {props.properties.map((property)=>{
+        {props.bases.map(b=>{
           i++;
           return(
             <div className={`${style.cpTabContainer} ${i===index ? style.activeCPTabContainer : ''}`} key={i}>
               <NameBox className={style.nameBoxInCP}
-                name={property.name}
+                name={b.name}
                 updateFunc={nameUpdate}
                 onMouseDown={createChangeIndexFunc(i)}/>
               <button className={style.closeCPButton}onClick={createCloseFunc(i)}>×</button>
@@ -84,14 +85,14 @@ const ControlPanel: React.FC<Props> = props => {
       </div>
       <div className={style.inputContainer}>
         <button onClick={addInput}>Add</button>
-        {props.properties[index].inputs.map((input)=>{
+        {props.bases[index].inputs.map((input)=>{
           i++;
           return <input className={style.ioElm}type='text' defaultValue={i} key={i}/>
         })}
       </div>
       <div className={style.inputContainer}>
         <button onClick={addOutput}>Add</button>
-        {props.properties[index].outputs.map((output)=>{
+        {props.bases[index].outputs.map((output)=>{
           i++;
           return <input className={style.ioElm}type='text' defaultValue={i} key={i}/>
         })}
@@ -100,4 +101,4 @@ const ControlPanel: React.FC<Props> = props => {
   )
 }
 
-export default ControlPanel;
+export default Panel;

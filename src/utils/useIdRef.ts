@@ -12,14 +12,14 @@ export default function useIdRef <Handler>(sourceObjs: Obj[]): (IdRef<Handler>)[
       const i = getIndex(newIdRefs, so.id);
       if (i === -1) { 
         updateFlag = true;
-        newIdRefs = [...idRefs, { id: so.id, ref: { current: ({} as Handler) }}];
+        newIdRefs = [...newIdRefs, { id: so.id, ref: { current: ({} as Handler) }}];
       }
     }
     for (const ir of newIdRefs) {
       const i = getIndex(sourceObjs, ir.id);
       if (i === -1) {
         updateFlag = true;
-        newIdRefs = idRefs.filter(idRef=>idRef.id!==ir.id);
+        newIdRefs = newIdRefs.filter(idRef=>idRef.id!==ir.id);
       }
     }
     if (updateFlag) setIdRefs(newIdRefs);
