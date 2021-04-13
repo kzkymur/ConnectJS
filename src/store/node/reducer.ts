@@ -52,15 +52,21 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
     }
     case ActionTypes.delete: {
       const deletedBase = state.bases.filter(b => b.id === action.payload.id)[0];
+      const deletedConnections = state.connections.filter(c => c.iBaseId === action.payload.id || c.oBaseId === action.payload.id);
       if (deletedBase === undefined) return state;
       state = {
         ...state,
         bases: state.bases.filter(b => b.id !== action.payload.id),
+        connections: state.connections.filter(c => c.iBaseId !== action.payload.id && c.oBaseId !== action.payload.id),
       };
       reverseActions = [{
         type: ActionTypes.add,
         payload: { base: deletedBase },
       }];
+      deletedConnections.forEach(c => { reverseActions.push({
+        type: ActionTypes.addConnection,
+        payload: { ...c },
+      }) })
       break;
     }
 
@@ -204,7 +210,7 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
       }
       reverseActions = [{
         type: ActionTypes.deleteConnection,
-        payload: { id: latestId, },
+        payload: { id: connection.id, },
       }];
       break;
     }
@@ -222,19 +228,20 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
       break;
     }
 
-    case ActionTypes.undo:{
+    case ActionTypes.undo: {
       const reverseElement = state.reverseActionBranch.current.prev;
       if (reverseElement===undefined) return state;
-      return reverseElement.actions.reduce((a, s) => reducerLogic(a, s, OperationTypes.backward), state);
+      return { ...reverseElement.actions.reduce((a, s, i) => reducerLogic(a, s, reverseElement.actions.length === i+1 ? OperationTypes.backward : OperationTypes.store), state) };
     }
-    case ActionTypes.redo:{
+    case ActionTypes.redo: {
       const reverseElement = state.reverseActionBranch.current.next;
       if (reverseElement===undefined) return state;
-      return reverseElement.actions.reduce((a, s) => reducerLogic(a, s, OperationTypes.forward), state);
+      return { ...reverseElement.actions.reduce((a, s, i) => reducerLogic(a, s, reverseElement.actions.length === i+1 ? OperationTypes.forward : OperationTypes.store), state) };
     }
 
     default: return state; // 再描画しない〜〜
   }
+
   return {
     ...state,
     reverseActionBranch: state.reverseActionBranch.operate(reverseActions, operationType),

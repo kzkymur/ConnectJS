@@ -16,11 +16,13 @@ export const OperationTypes = {
   branch: 'BRANCH',
   forward: 'FORWARD',
   backward: 'BACKWARD',
+  store: 'STORE',
 } as const;
 export type OperationType =
   typeof OperationTypes.branch |
   typeof OperationTypes.forward |
-  typeof OperationTypes.backward;
+  typeof OperationTypes.backward |
+  typeof OperationTypes.store;
 
 export type ActionHistory = (Action | ActionHistory)[];
 
@@ -28,6 +30,7 @@ type OperatingMethod = (actions: Action[]) => void;
 type OperateType = (actions: Action[], operationType: OperationType) => ReverseActionBranch;
 export default class ReverseActionBranch {
   current: Partition = {};
+  private actionQue: Action[] = [];
   constructor (p?: Partition) { if (p !== undefined) { this.current = p; } };
   operate: OperateType = (actions, operationType) => {
     switch (operationType) {
@@ -35,12 +38,16 @@ export default class ReverseActionBranch {
         this.branch(actions);
         break;
       }
+      case OperationTypes.forward: {
+        this.forward(actions);
+        break;
+      }
       case OperationTypes.backward: {
         this.backward(actions);
         break;
       }
-      case OperationTypes.forward: {
-        this.forward(actions);
+      case OperationTypes.store: {
+        this.store(actions);
         break;
       }
     }
@@ -105,18 +112,23 @@ export default class ReverseActionBranch {
     newElm.next = newPartition;
     this.current = newPartition;
   }
-  private backward: OperatingMethod = (actions) => {
-    if (this.current.prev !== undefined) {
-      this.current.prev.actions = actions;
-      this.current = this.current.prev.prev;
-    }
-  }
   private forward: OperatingMethod = (actions) => {
     if (this.current.next !== undefined) {
-      this.current.next.actions = actions;
+      this.store(actions);
+      this.current.next.actions = this.actionQue;
+      this.actionQue = [];
       this.current = this.current.next.next;
     }
   }
+  private backward: OperatingMethod = (actions) => {
+    if (this.current.prev !== undefined) {
+      this.store(actions);
+      this.current.prev.actions = this.actionQue;
+      this.actionQue = [];
+      this.current = this.current.prev.prev;
+    }
+  }
+  private store: OperatingMethod = (actions) => { this.actionQue = [...actions, ...this.actionQue]; }
   // private search: (p: Partition) => ActionHistory = (p) => {
   //   let actionHistory: ActionHistory = [];
   //   while (p.next !== undefined) {
@@ -143,7 +155,9 @@ export default class ReverseActionBranch {
       if (current === this.current) {
         log += 'current\n';
       }
-      current.prev.actions.forEach(a=>{log += `${a.type}\n`});
+      log += '[\n';
+      current.prev.actions.forEach(a=>{log += ` ${a.type}\n`});
+      log += ']\n';
       current = current.prev.prev;
     }
     if (current === this.current) {

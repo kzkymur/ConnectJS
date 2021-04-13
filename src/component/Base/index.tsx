@@ -119,4 +119,3 @@ const calcMainHeight = (height: number, inputs: Array<Socket>, outputs: Array<So
 const headerProps = (id: number, name: string) => ({ id, name, });
 const mainProps = (posChange: (e: React.MouseEvent<HTMLDivElement>) => void, element: React.ReactNode, fRef: React.RefObject<HTMLDivElement>) => ({ element, posChange, fRef });
 const IOsProps = (id: number, inputs: Socket[], outputs: Socket[], createIONameUpdate: (isInput: boolean, index: number) => (name: string) => void, operateNewConnection: (isInput: boolean ,id: number) => () => void, registerNewConnection: (isInput: boolean ,id: number) => () => void) => ({ id, inputs, outputs, createIONameUpdate, operateNewConnection, registerNewConnection });
-
