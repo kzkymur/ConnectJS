@@ -1,29 +1,42 @@
-import React from 'react';
-import { InputInfo, OutputInfo } from '@/store/types';
+import React, { useState, forwardRef, useImperativeHandle } from 'react';
+import { Socket } from '@/store/node/types';
 import NameBox from '@/component/atom/NameBox';
+import Vector from '@/utils/vector';
 import style from '@/style/Base/IOs/IO.scss';
 
 type Props = {
-  io: InputInfo | OutputInfo;
-  startConnectionMoving: (e: React.MouseEvent<HTMLDivElement>) => void;
-  addConnection: () => void;
-  iONameUpdate: (name: string) => void;
-  isOutput: boolean;
+  socket: Socket;
+  socketNameUpdate: (name: string) => void;
+  isInput: boolean;
+  operateNewConnection: () => void;
+  registerNewConnection: () => void;
 }
 
-const IO: React.FC<Props> = props => {
+const IO = forwardRef<Vector, Props>((props, fRef) => {
+  const [ ref ] = useState<React.RefObject<HTMLDivElement>>(React.createRef<HTMLDivElement>());
+  useImperativeHandle(fRef, ()=>{
+    if (ref.current === null) return { x:0, y:0};
+    const joint = ref.current;
+    const jointRect = joint.getBoundingClientRect();
+    return {
+      x: jointRect.left + joint.offsetWidth / 2,
+      y: jointRect.top + joint.offsetHeight / 2,
+    };
+  });
+
   return (
-    <div className={`${style.container} ${props.isOutput ? style.output : ''}`}>
-      <div className={style.jointContainer} 
-        onMouseDown={props.startConnectionMoving}
-        onMouseUp={props.addConnection}>
-        <div className={style.joint} />
+    <div className={`${style.container} ${!props.isInput ? style.output : ''}`}>
+      <div className={style.jointContainer}>
+        <div className={style.joint} ref={ref}
+          onMouseDown={props.operateNewConnection}
+          onMouseUp={props.registerNewConnection}
+        />
       </div>
       <NameBox className={style.nameBox}
-        name={props.io.name}
-        updateFunc={props.iONameUpdate}/>
+        name={props.socket.name}
+        updateFunc={props.socketNameUpdate}/>
     </div>
   )
-}
+});
 
 export default IO;

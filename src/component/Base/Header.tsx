@@ -1,34 +1,28 @@
 import React from 'react';
-import { glEditor } from '../../store/types';
+import { useDispatch } from 'react-redux';
+import { deleteAction, updateNameAction } from '@/store/node/actions';
 import NameBox from '../atom/NameBox';
 import style from '@/style/Base/Header.scss';
 
 type Props = {
-  property: glEditor;
-  updateFunc: (gle: glEditor) => void;
-  delete: () => void;
+  id: number;
+  name: string;
 }
 
 const Header: React.FC<Props> = props => {
-  const property = props.property;
-  const nameUpdate = (name: string) => {
-    const newBaseStyle: glEditor = {
-      ...property,
-      name: name,
-    };
-    props.updateFunc(newBaseStyle);
-  }
+  const dispatch = useDispatch();
+  const del = () => dispatch(deleteAction(props.id));
+  const nameUpdate = (name: string) => dispatch(updateNameAction(props.id, name));
 
   return (
     <div className={style.container}>
       <NameBox className={style.nameBox}
-        name={property.name}
+        name={props.name}
         updateFunc={nameUpdate}/>
       <button className={style.button}
-        onClick={props.delete}>×</button>
+        onClick={del}>×</button>
     </div>
   )
 }
 
 export default Header;
-

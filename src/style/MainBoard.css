@@ -13,9 +13,3 @@
   height: 100%;
   z-index: -99999999999999999;
 }
-
-.connection-line{
-  fill: transparent;
-  stroke: blue;
-  stroke-width: 2;
-}

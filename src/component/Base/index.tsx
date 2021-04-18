@@ -1,138 +1,121 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useImperativeHandle, forwardRef } from 'react';
 import { useDispatch } from 'react-redux';
-import { glEditor } from '@/store/types';
-import { updateAction } from '@/store/actions';
+import { BaseType, Socket } from '@/store/node/types';
+import { updateAction, updateSizeAction, updatePosAction } from '@/store/node/actions';
 import Header from './Header';
 import Main from './Main';
-import IOs from './IOs';
-import { px2n } from '@/utils';
+import IOs, { Handler as IOsHandler } from './IOs';
+import { px, px2n } from '@/utils';
+import Vector from '@/utils/vector';
 import style, { optionalbarHeight } from '@/style/Base.scss';
 const optBarHeight = px2n(optionalbarHeight);
 
-type Props = {
-  property: glEditor;
-  fRef: React.RefObject<HTMLDivElement>;
-  startMoving: (startPosX: number, startPosY: number) => void;
-  createStartConnectionMoving: (isInput: boolean, channel: number, isConnected: boolean) => (e: React.MouseEvent<HTMLDivElement>) => void;
-  createAddConnection: (isInput: boolean, channel: number) => () => void;
-  openCP: () => void;
-  delete: () => void;
+export type Handler = {
+  getJointPos: (isInput: boolean, id: number) => Vector;
+  getAllJointPos: (isInput: boolean) => Vector[];
+  getPos: () => Vector;
+  getSize: () => Vector;
+  updatePosStyle: (v: Vector) => void;
+  updatePosState: (v: Vector) => boolean;
+  updateSizeStyle: () => void;
+  updateSizeState: () => boolean;
+}
+export type Props = {
+  property: BaseType;
+  posChange: (e: React.MouseEvent<HTMLDivElement>) => void;
+  sizeChange: (e: React.MouseEvent<HTMLDivElement>) => void;
+  operateNewConnection: (isInput: boolean, id: number) => () => void;
+  registerNewConnection: (isInput: boolean, id: number) => () => void;
 }
 
-const Base: React.FC<Props> = props => {
-  let {fRef, property} = props;
+const Base = forwardRef<Handler, Props>((props, fRef) => {
+  const { property } = props;
+  const [ ref ] = useState(React.useRef<HTMLDivElement>({} as HTMLDivElement));
+  const [ iosRef ] = useState(useRef({} as IOsHandler));
+  const { id, inputs, outputs, width, top, left, name, height } = property;
   let element: React.ReactNode;
   const dispatch = useDispatch();
-  const updateFunc = (gle: glEditor) => dispatch(updateAction(gle));
-  let baseStyle: glEditor = property;
-  const checkPropNames: string[] = ['width', 'height', 'top', 'left'];
-  const isProperty = (value: string): value is (keyof glEditor) => checkPropNames.includes(value);
-  let inNameBox = false;
-  const setInNameBox = (newInNameBox: boolean) => inNameBox = newInNameBox;
+  const updateFunc = (c: BaseType) => dispatch(updateAction(c));
+  const updateSize = (width: string, height: string) => dispatch(updateSizeAction(id, width, height));
+  const updatePos = (top: string, left: string) => dispatch(updatePosAction(id, top, left));
+  let baseStyle: BaseType = property;
+  const [ mainRef ] = useState(useRef<HTMLDivElement>({} as HTMLDivElement));
 
-  const updateState = () => {
-    if (fRef.current === null) return; const elm = fRef.current;
-    const width = elm.offsetWidth;
-    const height = elm.offsetHeight;
-    const zIndex = String(-1 * width * height);
-    elm.style.zIndex = zIndex;
-    const newBaseStyle: glEditor = {
-      ...property,
-      width: width + 'px',
-      height: (height - optBarHeight * (Math.max(property.inputs.length, property.outputs.length)+1)) + 'px',
-      top: elm.offsetTop + 'px',
-      left: elm.offsetLeft + 'px',
+  const getJointPos = (isInput: boolean, id: number) => iosRef.current.getJointPos(isInput, id);
+  const getAllJointPos = (isInput: boolean) => iosRef.current.getAllJointPos(isInput);
+  const getPos = () => ({ x: ref.current.offsetLeft, y: ref.current.offsetTop});
+  const getSize = () => ({ x: ref.current.offsetWidth, y: ref.current.offsetHeight - optBarHeight * (Math.max(inputs.length, outputs.length)+1)});
+  const updatePosStyle = (v: Vector) => { ref.current.style.left = px(v.x), ref.current.style.top = px(v.y); }
+  const updatePosState = (v: Vector) => {
+    const strLeft = px(v.x), strTop = px(v.y);
+    if (baseStyle.top !== strTop || baseStyle.left !== strLeft) {
+      updatePos(strTop, strLeft);
+      return true;
     }
-    for (let key in baseStyle) {
-      if (isProperty(key)) {
-        if (baseStyle[key] !== newBaseStyle[key]) {
-          baseStyle = newBaseStyle;
-          return updateFunc(newBaseStyle);
-        }
-      }
-    }
-    if (inNameBox) {
-      setInNameBox(false);
-    } else {
-      return props.openCP();
-    }
+    return false;
   }
-  const createIONameUpdate = (isInput: boolean, index: number) => {
-    const ioNameUpdate = (name: string) => {
-      const newProperty: glEditor = isInput ? {
-        ...property,
-        inputs: property.inputs.map((input, i) => {
-          if (i===index) {
-            input.name = name;
-            return input;
-          } else {
-            return input;
-          }
-        }) 
-      } : {
-        ...property,
-        outputs: property.outputs.map((output, i) => {
-          if (i===index) {
-            return {
-              ...output,
-              name: name,
-            };
-          } else {
-            return output;
-          }
-        }) 
-      };
-      updateFunc(newProperty);
+  const updateSizeStyle = () => { mainRef.current.style.height = px(calcMainHeight(ref.current.offsetHeight, inputs, outputs)); }
+  const updateSizeState = () => {
+    const width = ref.current.offsetWidth, height = ref.current.offsetHeight;
+    ref.current.style.zIndex = String(-1 * width * height);
+    const strWidth = px(width);
+    const strHeight = px(calcMainHeight(height, inputs, outputs));
+    if (baseStyle.width !== strWidth || baseStyle.height !== strHeight) {
+      updateSize(strWidth, strHeight);
+      return true;
     }
-    return ioNameUpdate;
+    return false;
   }
+  const keepSizeStyle = () => {
+    mainRef.current.style.height = height;
+    ref.current.style.height = px(px2n(height) + optBarHeight * (Math.max(inputs.length, outputs.length)+1));
+  }
+  useImperativeHandle(fRef, ()=>({
+    getJointPos,
+    getAllJointPos,
+    getPos,
+    getSize,
+    updatePosStyle,
+    updatePosState,
+    updateSizeStyle,
+    updateSizeState,
+  }));
 
-  const startMoving = (e: React.MouseEvent) => {
-    if (fRef.current === null) return; const elm = fRef.current;
-    props.startMoving(e.clientX - elm.offsetLeft, e.clientY - elm.offsetTop);
-    elm.style.zIndex = String(-1 * elm.offsetWidth * elm.offsetHeight + 1);
-  }
-
-  const [ mainRef ] = useState(useRef<HTMLDivElement>(null));
   useEffect(()=>{
     let elm;
-    if (fRef.current === null) return; elm = fRef.current;
-    elm.style.width = property.width;
-    elm.style.top = property.top;
-    elm.style.left = property.left;
+    elm = ref.current;
+    elm.style.width = width;
+    elm.style.top = top;
+    elm.style.left = left;
     elm.style.opacity = '1';
-    if (mainRef.current === null) return; elm = mainRef.current;
-    elm.style.height = property.height;
+    keepSizeStyle();
   })
-  const displayUpdate = () => {
-    if (fRef.current === null) return; const height = fRef.current.offsetHeight;
-    if (mainRef.current === null) return; let elm = mainRef.current;
-    elm.style.height = (height - optBarHeight * (Math.max(property.inputs.length, property.outputs.length)+1)) + 'px';
-  }
-  const headerProps = {
-    property,
-    updateFunc,
-    delete: props.delete,
-  }
-  const mainProps = {
-    startMoving,
-    element,
-    fRef: mainRef
-  }
-  const IOsProps = {
-    inputs: property.inputs,
-    outputs: property.outputs,
-    createStartConnectionMoving: props.createStartConnectionMoving,
-    createAddConnection: props.createAddConnection,
-    createIONameUpdate,
+
+  const createIONameUpdate = (isInput: boolean, index: number) => (name: string) => {
+    const newProperty: BaseType = {...property};
+    const sockets = isInput ? inputs : outputs;
+    const key = isInput ? 'inputs' : 'outputs';
+    newProperty[key] = sockets.map((s, i) => {
+      if (i===index) s.name = name;
+      return s;
+    }) 
+    updateFunc(newProperty);
   }
   return (
-    <div className={style.container} ref={fRef} onMouseMove={displayUpdate} onMouseUp={updateState}>
-      <Header {...headerProps}/>
-      <Main {...mainProps}/>
-      <IOs {...IOsProps}/>
+    <div className={style.container} ref={ref}
+      onMouseDown={props.sizeChange}
+    >
+      <Header {...headerProps(id, name)}/>
+      <Main {...mainProps(props.posChange, element, mainRef)}/>
+      <IOs {...IOsProps(id, inputs, outputs, createIONameUpdate, props.operateNewConnection, props.registerNewConnection)} ref={iosRef}/>
     </div>
   )
-}
+});
 
 export default Base;
+
+const calcMainHeight = (height: number, inputs: Array<Socket>, outputs: Array<Socket>): number => (height - optBarHeight * (Math.max(inputs.length, outputs.length)+1));
+
+const headerProps = (id: number, name: string) => ({ id, name, });
+const mainProps = (posChange: (e: React.MouseEvent<HTMLDivElement>) => void, element: React.ReactNode, fRef: React.RefObject<HTMLDivElement>) => ({ element, posChange, fRef });
+const IOsProps = (id: number, inputs: Socket[], outputs: Socket[], createIONameUpdate: (isInput: boolean, index: number) => (name: string) => void, operateNewConnection: (isInput: boolean ,id: number) => () => void, registerNewConnection: (isInput: boolean ,id: number) => () => void) => ({ id, inputs, outputs, createIONameUpdate, operateNewConnection, registerNewConnection });

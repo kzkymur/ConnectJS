@@ -3,14 +3,15 @@ import style from '@/style/Base/Main.scss';
 
 type Props = {
   element: React.ReactNode;
-  startMoving: (e: React.MouseEvent) => void;
+  posChange: (e: React.MouseEvent<HTMLDivElement>) => void;
   fRef: React.RefObject<HTMLDivElement>;
 }
 
 const Main: React.FC<Props> = props => {
   return (
     <div ref={props.fRef} className={style.main} 
-        onMouseDown={props.startMoving}>
+        onMouseDown={props.posChange}
+    >
       {props.element}
     </div>
   )

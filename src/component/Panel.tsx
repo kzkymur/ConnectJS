@@ -1,26 +1,25 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { glEditor, EditorModeNames, InputInfo, OutputInfo, OutputTypes, OutputType } from '../store/types';
-import { updateAction, closeCPAction, closeAllCPAction } from '../store/actions';
+import { BaseType, NodeModeNames, Socket, DataTypes, DataType } from '@/store/node/types';
+import { updateAction, addSocketAction } from '@/store/node/actions';
+import { closeCPAction, closeAllCPAction } from '@/store/panel/actions';
 import NameBox from './atom/NameBox';
 import style from '@/style/ControllPanel.css';
 
 type Props = {
-  properties: glEditor[];
+  bases: BaseType[];
   index: number;
   setIndex: (i: number) => void;
 }
 
-const ControlPanel: React.FC<Props> = props => {
+const Panel: React.FC<Props> = props => {
   const dispatch = useDispatch();
   const index = props.index;
-  const updateFunc = (gle: glEditor) => dispatch(updateAction(gle));
-  useEffect(()=>{
-  }) 
+  const updateFunc = (c: BaseType) => dispatch(updateAction(c));
 
   const nameUpdate = (name: string) => {
-    const newBaseStyle: glEditor = {
-      ...props.properties[index],
+    const newBaseStyle: BaseType = {
+      ...props.bases[index],
       name: name,
     };
     updateFunc(newBaseStyle);
@@ -47,52 +46,36 @@ const ControlPanel: React.FC<Props> = props => {
     return closeFunc;
   }
 
-  let defaultOutputType: OutputType;
-  switch (props.properties[index].mode.name) {
-    case EditorModeNames.Canvas: {
-      defaultOutputType = OutputTypes.Framebuffer;
+  let defaultOutputType: DataType;
+  // switch (props.bases[index].mode.name) {
+  switch (props.bases[index] ? props.bases[index].mode.name : props.bases[0].mode.name) {
+    case NodeModeNames.Canvas: {
+      defaultOutputType = DataTypes.Framebuffer;
       break;
     }
     default: {
-      defaultOutputType = OutputTypes.Number;
+      defaultOutputType = DataTypes.Number;
     }
   }
   const addInput = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    const inputInfo: InputInfo = {
-      type: defaultOutputType,
-      name: 'value',
-    }
-    const newProperty: glEditor = {
-      ...props.properties[index],
-      inputs: [...props.properties[index].inputs, inputInfo]
-    };
-    updateFunc(newProperty);
+    dispatch(addSocketAction(props.bases[index].id, true, defaultOutputType));
   }
   const addOutput = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    const outputInfo: OutputInfo = {
-      type: defaultOutputType,
-      name: 'value',
-      isConnected: false,
-    }
-    const newProperty: glEditor = {
-      ...props.properties[index],
-      outputs: [...props.properties[index].outputs, outputInfo]
-    };
-    updateFunc(newProperty);
+    dispatch(addSocketAction(props.bases[index].id, false, defaultOutputType));
   }
 
   let i = -1;
   return (
     <div className={style.controllPanel}>
       <div className={style.headerContainer}>
-        {props.properties.map((property)=>{
+        {props.bases.map(b=>{
           i++;
           return(
             <div className={`${style.cpTabContainer} ${i===index ? style.activeCPTabContainer : ''}`} key={i}>
               <NameBox className={style.nameBoxInCP}
-                name={property.name}
+                name={b.name}
                 updateFunc={nameUpdate}
                 onMouseDown={createChangeIndexFunc(i)}/>
               <button className={style.closeCPButton}onClick={createCloseFunc(i)}>×</button>
@@ -102,14 +85,14 @@ const ControlPanel: React.FC<Props> = props => {
       </div>
       <div className={style.inputContainer}>
         <button onClick={addInput}>Add</button>
-        {props.properties[index].inputs.map((input)=>{
+        {props.bases[index].inputs.map((input)=>{
           i++;
           return <input className={style.ioElm}type='text' defaultValue={i} key={i}/>
         })}
       </div>
       <div className={style.inputContainer}>
         <button onClick={addOutput}>Add</button>
-        {props.properties[index].outputs.map((output)=>{
+        {props.bases[index].outputs.map((output)=>{
           i++;
           return <input className={style.ioElm}type='text' defaultValue={i} key={i}/>
         })}
@@ -118,5 +101,4 @@ const ControlPanel: React.FC<Props> = props => {
   )
 }
 
-export default ControlPanel;
-
+export default Panel;
