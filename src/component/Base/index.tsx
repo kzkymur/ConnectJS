@@ -17,13 +17,14 @@ export type Handler = {
   getSize: () => Vector;
   updatePosStyle: (v: Vector) => void;
   updatePosState: (v: Vector) => boolean;
-  updateSizeStyle: () => void;
-  updateSizeState: () => boolean;
+  updateSizeStyle: (v: Vector) => void;
+  updateSizeState: (v: Vector) => boolean;
 }
 export type Props = {
   property: BaseType;
   posChange: (e: React.MouseEvent<HTMLDivElement>) => void;
   sizeChange: (e: React.MouseEvent<HTMLDivElement>) => void;
+  onMouseMove: (e: React.MouseEvent<HTMLDivElement>) => void;
   operateNewConnection: (isInput: boolean, id: number) => () => void;
   registerNewConnection: (isInput: boolean, id: number) => () => void;
 }
@@ -54,12 +55,15 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
     }
     return false;
   }
-  const updateSizeStyle = () => { mainRef.current.style.height = px(calcMainHeight(ref.current.offsetHeight, inputs, outputs)); }
-  const updateSizeState = () => {
-    const width = ref.current.offsetWidth, height = ref.current.offsetHeight;
-    ref.current.style.zIndex = String(-1 * width * height);
-    const strWidth = px(width);
-    const strHeight = px(calcMainHeight(height, inputs, outputs));
+  const updateSizeStyle = (v: Vector) => {
+    mainRef.current.style.height = px(calcMainHeight(v.y, inputs, outputs));
+    ref.current.style.zIndex = String(-1 * v.x * v.y);
+    ref.current.style.width = px(v.x), ref.current.style.height = px(v.y);
+  }
+  const updateSizeState = (v: Vector) => {
+    ref.current.style.zIndex = String(-1 * v.x * v.y);
+    const strWidth = px(v.x);
+    const strHeight = px(calcMainHeight(v.y, inputs, outputs));
     if (baseStyle.width !== strWidth || baseStyle.height !== strHeight) {
       updateSize(strWidth, strHeight);
       return true;
@@ -104,6 +108,7 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
   return (
     <div className={style.container} ref={ref}
       onMouseDown={props.sizeChange}
+      onMouseMove={props.onMouseMove}
     >
       <Header {...headerProps(id, name)}/>
       <Main {...mainProps(props.posChange, element, mainRef)}/>

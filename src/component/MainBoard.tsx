@@ -41,8 +41,6 @@ const MainBoard: React.FC = () => {
       }
     }
   }, [cpIdsList]);
-  console.log(cons);
-  console.log(bases);
 
   return (
     <div className={style.mainBoard}>

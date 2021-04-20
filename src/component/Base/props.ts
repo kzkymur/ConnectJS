@@ -3,6 +3,7 @@ import { BaseType, ConnectionType, DataTypes } from '@/store/node/types';
 import { Handler as ConnectionHandler } from '@/component/Connection';
 import { Handler as BaseHandler, Props as BaseProps } from '@/component/Base';
 import Vector, { add, subtract } from '@/utils/vector';
+import { border } from '@/config';
 
 class Props {
   #base: BaseType & { ref: MutableRefObject<BaseHandler>; };
@@ -61,27 +62,47 @@ class Props {
     window.addEventListener('mouseup', mouseup);
   }
   sizeChange: (e: React.MouseEvent<HTMLDivElement>) => void = e => {
-    if (!this.#isSizeChanging) return;
-    const s = {x: e.clientX, y: e.clientY };
-    const mousemove = (e: MouseEvent) => {
-      const eClient = { x: e.clientX, y: e.clientY, };
-      const diff = subtract(eClient, s);
-      this.#base.ref.current.updateSizeStyle();
-      this.#in.forEach(ic=>{ ic.ref.current.changeViewWithDiff(false, {x: 0, y: diff.y}); });
-      this.#out.forEach(oc=>{ oc.ref.current.changeViewWithDiff(true, diff); });
+    this.onMouseMove(e);
+    // if (!this.#isSizeChanging) return;
+    // const s = {x: e.clientX, y: e.clientY };
+    // const mousemove = (e: MouseEvent) => {
+    //   const eClient = { x: e.clientX, y: e.clientY, };
+    //   const diff = subtract(eClient, s);
+    //   this.#base.ref.current.updateSizeStyle();
+    //   this.#in.forEach(ic=>{ ic.ref.current.changeViewWithDiff(false, {x: 0, y: diff.y}); });
+    //   this.#out.forEach(oc=>{ oc.ref.current.changeViewWithDiff(true, diff); });
+    // }
+    // const mouseup = (e: MouseEvent) => {
+    //   const eClient = { x: e.clientX, y: e.clientY, };
+    //   const diff = subtract(eClient, s);
+    //   if (this.#base.ref.current.updateSizeState()) {
+    //     this.#in.forEach(ic=>{ ic.ref.current.setPosWithDiff(false, {x: 0, y: diff.y})});
+    //     this.#out.forEach(oc=>{ oc.ref.current.setPosWithDiff(true, diff)});
+    //   }
+    //   window.removeEventListener('mousemove', mousemove);
+    //   window.removeEventListener('mouseup', mouseup);
+    // }
+    // window.addEventListener('mousemove', mousemove);
+    // window.addEventListener('mouseup', mouseup);
+  }
+
+  onMouseMove: (e: React.MouseEvent<HTMLDivElement>) => void = e => {
+    const bcr = e.currentTarget.getBoundingClientRect();
+    const m = {x: e.clientX, y: e.clientY };
+    const left = bcr.x, right = bcr.x + bcr.width, top = bcr.y, bottom = bcr.y + bcr.height;
+    const isLeftSide = left - border < m.x && m.x < left + border, isRightSide = right - border < m.x && m.x < right + border;
+    const isUpperSide = top - border < m.x && m.x < top + border, isLowerSide = bottom - border < m.x && m.x < bottom + border;
+    let cursor;
+    if (isLeftSide || isRightSide || isUpperSide || isLowerSide) {
+      cursor = (isLeftSide && isUpperSide) || (isRightSide && isLowerSide) ? 'nwse' :
+        (isLeftSide && isLowerSide) || (isRightSide && isUpperSide) ? 'nesw' :
+        isLeftSide || isRightSide ? 'ew' : 'ns';
+      cursor = `${cursor}-resize`;
+    } else {
+      cursor = 'default';
     }
-    const mouseup = (e: MouseEvent) => {
-      const eClient = { x: e.clientX, y: e.clientY, };
-      const diff = subtract(eClient, s);
-      if (this.#base.ref.current.updateSizeState()) {
-        this.#in.forEach(ic=>{ ic.ref.current.setPosWithDiff(false, {x: 0, y: diff.y})});
-        this.#out.forEach(oc=>{ oc.ref.current.setPosWithDiff(true, diff)});
-      }
-      window.removeEventListener('mousemove', mousemove);
-      window.removeEventListener('mouseup', mouseup);
-    }
-    window.addEventListener('mousemove', mousemove);
-    window.addEventListener('mouseup', mouseup);
+    console.log(cursor);
+    e.currentTarget.style.cursor = cursor;
   }
 
   operateNewConnection: (isInput: boolean, id: number) => () => void = (isInput, id) => () => {
