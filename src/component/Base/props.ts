@@ -91,7 +91,7 @@ class Props {
     const m = {x: e.clientX, y: e.clientY };
     const left = bcr.x, right = bcr.x + bcr.width, top = bcr.y, bottom = bcr.y + bcr.height;
     const isLeftSide = left - border < m.x && m.x < left + border, isRightSide = right - border < m.x && m.x < right + border;
-    const isUpperSide = top - border < m.x && m.x < top + border, isLowerSide = bottom - border < m.x && m.x < bottom + border;
+    const isUpperSide = top - border < m.y && m.y < top + border, isLowerSide = bottom - border < m.y && m.y < bottom + border;
     let cursor;
     if (isLeftSide || isRightSide || isUpperSide || isLowerSide) {
       cursor = (isLeftSide && isUpperSide) || (isRightSide && isLowerSide) ? 'nwse' :
