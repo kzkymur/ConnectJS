@@ -22,9 +22,8 @@ export type Handler = {
 }
 export type Props = {
   property: BaseType;
-  posChange: (e: React.MouseEvent<HTMLDivElement>) => void;
-  sizeChange: (e: React.MouseEvent<HTMLDivElement>) => void;
   onMouseMove: (e: React.MouseEvent<HTMLDivElement>) => void;
+  onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void;
   operateNewConnection: (isInput: boolean, id: number) => () => void;
   registerNewConnection: (isInput: boolean, id: number) => () => void;
 }
@@ -44,8 +43,8 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
 
   const getJointPos = (isInput: boolean, id: number) => iosRef.current.getJointPos(isInput, id);
   const getAllJointPos = (isInput: boolean) => iosRef.current.getAllJointPos(isInput);
-  const getPos = () => ({ x: ref.current.offsetLeft, y: ref.current.offsetTop});
-  const getSize = () => ({ x: ref.current.offsetWidth, y: ref.current.offsetHeight - optBarHeight * (Math.max(inputs.length, outputs.length)+1)});
+  const getPos = () => ({ x: ref.current.offsetLeft, y: ref.current.offsetTop });
+  const getSize = () => ({ x: ref.current.offsetWidth, y: ref.current.offsetHeight });
   const updatePosStyle = (v: Vector) => { ref.current.style.left = px(v.x), ref.current.style.top = px(v.y); }
   const updatePosState = (v: Vector) => {
     const strLeft = px(v.x), strTop = px(v.y);
@@ -107,11 +106,11 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
   }
   return (
     <div className={style.container} ref={ref}
-      onMouseDown={props.sizeChange}
+      onMouseDown={props.onMouseDown}
       onMouseMove={props.onMouseMove}
     >
       <Header {...headerProps(id, name)}/>
-      <Main {...mainProps(props.posChange, element, mainRef)}/>
+      <Main {...mainProps(element, mainRef)}/>
       <IOs {...IOsProps(id, inputs, outputs, createIONameUpdate, props.operateNewConnection, props.registerNewConnection)} ref={iosRef}/>
     </div>
   )
@@ -122,5 +121,5 @@ export default Base;
 const calcMainHeight = (height: number, inputs: Array<Socket>, outputs: Array<Socket>): number => (height - optBarHeight * (Math.max(inputs.length, outputs.length)+1));
 
 const headerProps = (id: number, name: string) => ({ id, name, });
-const mainProps = (posChange: (e: React.MouseEvent<HTMLDivElement>) => void, element: React.ReactNode, fRef: React.RefObject<HTMLDivElement>) => ({ element, posChange, fRef });
+const mainProps = (element: React.ReactNode, fRef: React.RefObject<HTMLDivElement>) => ({ element, fRef });
 const IOsProps = (id: number, inputs: Socket[], outputs: Socket[], createIONameUpdate: (isInput: boolean, index: number) => (name: string) => void, operateNewConnection: (isInput: boolean ,id: number) => () => void, registerNewConnection: (isInput: boolean ,id: number) => () => void) => ({ id, inputs, outputs, createIONameUpdate, operateNewConnection, registerNewConnection });
