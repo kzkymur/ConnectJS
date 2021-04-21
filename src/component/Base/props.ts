@@ -83,24 +83,23 @@ class Props {
     const bcr = e.currentTarget.getBoundingClientRect();
     const c = { x: bcr.x + bcr.width / 2, y: bcr.y + bcr.height / 2 };
     const s = { x: e.clientX, y: e.clientY };
-    const cs = subtract(s, c), signs = signFilter(cs);
+    const cs = subtract(s, c), signs = signFilter(cs), revX = { x: -1, y: 1 };
     const p = this.#base.ref.current.getPos(), a = this.#base.ref.current.getSize();
     const mousemove = (e: MouseEvent) => {
       const m = { x: e.clientX, y: e.clientY };
       const sm = subtract(m, s), d = hadamard(sm, signs);
       this.#base.ref.current.updatePosStyle(add(p, multiply(d, -1)));
       this.#base.ref.current.updateSizeStyle(add(a, multiply(d, 2)));
-      // this.#in.forEach(ic=>{ ic.ref.current.changeViewWithDiff(false, {x: 0, y: diff.y}); });
-      // this.#out.forEach(oc=>{ oc.ref.current.changeViewWithDiff(true, diff); });
+      this.#in.forEach(ic=>{ ic.ref.current.changeViewWithDiff(false, hadamard(revX, d)); });
+      this.#out.forEach(oc=>{ oc.ref.current.changeViewWithDiff(true, d); });
     }
     const mouseup = (e: MouseEvent) => {
       const m = { x: e.clientX, y: e.clientY };
       const sm = subtract(m, s), d = hadamard(sm, signs);
-      if (this.#base.ref.current.updateSizeState(add(a, multiply(d, 2))) ||
-        this.#base.ref.current.updatePosState(add(p, multiply(d, -1)))) {
-        // this.#in.forEach(ic=>{ ic.ref.current.setPosWithDiff(false, {x: 0, y: diff.y})});
-        // this.#out.forEach(oc=>{ oc.ref.current.setPosWithDiff(true, diff)});
-      }
+      this.#base.ref.current.updatePosState(add(p, multiply(d, -1)));
+      this.#base.ref.current.updateSizeState(add(a, multiply(d, 2)))
+      this.#in.forEach(ic=>{ ic.ref.current.setPosWithDiff(false, hadamard(revX, d))});
+      this.#out.forEach(oc=>{ oc.ref.current.setPosWithDiff(true, d)});
       window.removeEventListener('mousemove', mousemove);
       window.removeEventListener('mouseup', mouseup);
     }
