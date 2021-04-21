@@ -34,22 +34,42 @@ class Props {
     this.#addConnection = addConnection;
   }
 
+  onMouseMove: (e: React.MouseEvent<HTMLDivElement>) => void = e => {
+    const bcr = e.currentTarget.getBoundingClientRect();
+    const m = {x: e.clientX, y: e.clientY };
+    const left = bcr.x, right = bcr.x + bcr.width, top = bcr.y, bottom = bcr.y + bcr.height;
+    const isLeftSide = left - border < m.x && m.x < left + border, isRightSide = right - border < m.x && m.x < right + border;
+    const isUpperSide = top - border < m.y && m.y < top + border, isLowerSide = bottom - border < m.y && m.y < bottom + border;
+    let cursor;
+    if (isLeftSide || isRightSide || isUpperSide || isLowerSide) {
+      cursor = (isLeftSide && isUpperSide) || (isRightSide && isLowerSide) ? 'nwse' :
+        (isLeftSide && isLowerSide) || (isRightSide && isUpperSide) ? 'nesw' :
+        isLeftSide || isRightSide ? 'ew' : 'ns';
+      cursor = `${cursor}-resize`;
+      this.#isOnBorder = true;
+    } else {
+      cursor = 'default';
+      this.#isOnBorder = false;
+    }
+    e.currentTarget.style.cursor = cursor;
+  }
+
   private posChange: (e: React.MouseEvent<HTMLDivElement>) => void = e => {
     const pos = this.#base.ref.current.getPos();
     const s = {x: e.clientX, y: e.clientY };
     const mousemove = (e: MouseEvent) => {
-      const eClient = { x: e.clientX, y: e.clientY, };
-      const diff = subtract(eClient, s);
-      this.#base.ref.current.updatePosStyle(add(diff, pos));
-      this.#in.forEach(ic=>{ ic.ref.current.changeViewWithDiff(false, diff); });
-      this.#out.forEach(oc=>{ oc.ref.current.changeViewWithDiff(true, diff); });
+      const m = { x: e.clientX, y: e.clientY, };
+      const sm = subtract(m, s);
+      this.#base.ref.current.updatePosStyle(add(sm, pos));
+      this.#in.forEach(ic=>{ ic.ref.current.changeViewWithDiff(false, sm); });
+      this.#out.forEach(oc=>{ oc.ref.current.changeViewWithDiff(true, sm); });
     }
     const mouseup = (e: MouseEvent) => {
-      const eClient = { x: e.clientX, y: e.clientY, };
-      const diff = subtract(eClient, s);
-      if (this.#base.ref.current.updatePosState(add(diff, pos))) {
-        this.#in.forEach(ic=>{ ic.ref.current.setPosWithDiff(false, diff)});
-        this.#out.forEach(oc=>{ oc.ref.current.setPosWithDiff(true, diff)});
+      const m = { x: e.clientX, y: e.clientY, };
+      const sm = subtract(m, s);
+      if (this.#base.ref.current.updatePosState(add(sm, pos))) {
+        this.#in.forEach(ic=>{ ic.ref.current.setPosWithDiff(false, sm)});
+        this.#out.forEach(oc=>{ oc.ref.current.setPosWithDiff(true, sm)});
       } else {
         this.#openCP(this.#base.id);
       }
@@ -76,8 +96,8 @@ class Props {
     const mouseup = (e: MouseEvent) => {
       const m = { x: e.clientX, y: e.clientY };
       const sm = subtract(m, s), d = hadamard(sm, signs);
-      this.#base.ref.current.updatePosState(add(p, multiply(d, -1)));
-      if (this.#base.ref.current.updateSizeState(add(a, multiply(d, 2)))) {
+      if (this.#base.ref.current.updateSizeState(add(a, multiply(d, 2))) ||
+        this.#base.ref.current.updatePosState(add(p, multiply(d, -1)))) {
         // this.#in.forEach(ic=>{ ic.ref.current.setPosWithDiff(false, {x: 0, y: diff.y})});
         // this.#out.forEach(oc=>{ oc.ref.current.setPosWithDiff(true, diff)});
       }
@@ -90,26 +110,6 @@ class Props {
   onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void = e => {
     if (this.#isOnBorder) this.sizeChange(e);
     else this.posChange(e);
-  }
-
-  onMouseMove: (e: React.MouseEvent<HTMLDivElement>) => void = e => {
-    const bcr = e.currentTarget.getBoundingClientRect();
-    const m = {x: e.clientX, y: e.clientY };
-    const left = bcr.x, right = bcr.x + bcr.width, top = bcr.y, bottom = bcr.y + bcr.height;
-    const isLeftSide = left - border < m.x && m.x < left + border, isRightSide = right - border < m.x && m.x < right + border;
-    const isUpperSide = top - border < m.y && m.y < top + border, isLowerSide = bottom - border < m.y && m.y < bottom + border;
-    let cursor;
-    if (isLeftSide || isRightSide || isUpperSide || isLowerSide) {
-      cursor = (isLeftSide && isUpperSide) || (isRightSide && isLowerSide) ? 'nwse' :
-        (isLeftSide && isLowerSide) || (isRightSide && isUpperSide) ? 'nesw' :
-        isLeftSide || isRightSide ? 'ew' : 'ns';
-      cursor = `${cursor}-resize`;
-      this.#isOnBorder = true;
-    } else {
-      cursor = 'default';
-      this.#isOnBorder = false;
-    }
-    e.currentTarget.style.cursor = cursor;
   }
 
   operateNewConnection: (isInput: boolean, id: number) => () => void = (isInput, id) => () => {
