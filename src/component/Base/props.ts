@@ -56,11 +56,11 @@ class Props {
 
   private posChange: (e: React.MouseEvent<HTMLDivElement>) => void = e => {
     const pos = this.#base.ref.current.getPos();
-    const s = {x: e.clientX, y: e.clientY };
+    let s = { x: e.clientX, y: e.clientY };
     const mousemove = (e: MouseEvent) => {
       const m = { x: e.clientX, y: e.clientY, };
-      const sm = subtract(m, s);
-      this.#base.ref.current.updatePosStyle(add(sm, pos));
+      const sm = subtract(m, s); s = m;
+      this.#base.ref.current.updatePosStyle(sm);
       this.#in.forEach(ic=>{ ic.ref.current.changeViewWithDiff(false, sm); });
       this.#out.forEach(oc=>{ oc.ref.current.changeViewWithDiff(true, sm); });
     }
@@ -82,24 +82,23 @@ class Props {
   private sizeChange: (e: React.MouseEvent<HTMLDivElement>) => void = e => {
     const bcr = e.currentTarget.getBoundingClientRect();
     const c = { x: bcr.x + bcr.width / 2, y: bcr.y + bcr.height / 2 };
-    const s = { x: e.clientX, y: e.clientY };
+    let s = { x: e.clientX, y: e.clientY };
     const cs = subtract(s, c), signs = signFilter(cs), revX = { x: -1, y: 1 };
-    const p = this.#base.ref.current.getPos(), a = this.#base.ref.current.getSize();
     const mousemove = (e: MouseEvent) => {
       const m = { x: e.clientX, y: e.clientY };
-      const sm = subtract(m, s), d = hadamard(sm, signs);
-      this.#base.ref.current.updatePosStyle(add(p, multiply(d, -1)));
-      this.#base.ref.current.updateSizeStyle(add(a, multiply(d, 2)));
-      this.#in.forEach(ic=>{ ic.ref.current.changeViewWithDiff(false, hadamard(revX, d)); });
-      this.#out.forEach(oc=>{ oc.ref.current.changeViewWithDiff(true, d); });
+      const sm = subtract(m, s), d = hadamard(sm, signs); s = m;
+      const f = this.#base.ref.current.updateSizeStyle(multiply(d, 2));
+      this.#base.ref.current.updatePosStyle(multiply(hadamard(d, f),-1));
+      this.#in.forEach(ic=>{ ic.ref.current.changeViewWithDiff(false, hadamard(hadamard(revX, d), f)); });
+      this.#out.forEach(oc=>{ oc.ref.current.changeViewWithDiff(true, hadamard(d, f)); });
     }
     const mouseup = (e: MouseEvent) => {
       const m = { x: e.clientX, y: e.clientY };
       const sm = subtract(m, s), d = hadamard(sm, signs);
-      this.#base.ref.current.updatePosState(add(p, multiply(d, -1)));
-      this.#base.ref.current.updateSizeState(add(a, multiply(d, 2)))
-      this.#in.forEach(ic=>{ ic.ref.current.setPosWithDiff(false, hadamard(revX, d))});
-      this.#out.forEach(oc=>{ oc.ref.current.setPosWithDiff(true, d)});
+      this.#base.ref.current.updatePosState();
+      this.#base.ref.current.updateSizeState();
+      this.#in.forEach(ic=>{ ic.ref.current.setPosWithDiff(false, hadamard(revX, d)); });
+      this.#out.forEach(oc=>{ oc.ref.current.setPosWithDiff(true, d); });
       window.removeEventListener('mousemove', mousemove);
       window.removeEventListener('mouseup', mouseup);
     }
