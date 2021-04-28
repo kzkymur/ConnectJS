@@ -64,12 +64,10 @@ class Props {
       this.#in.forEach(ic=>{ ic.ref.current.changeViewWithDiff(false, sm); });
       this.#out.forEach(oc=>{ oc.ref.current.changeViewWithDiff(true, sm); });
     }
-    const mouseup = (e: MouseEvent) => {
-      const m = { x: e.clientX, y: e.clientY, };
-      const sm = subtract(m, s);
-      if (this.#base.ref.current.updatePosState(add(sm, pos))) {
-        this.#in.forEach(ic=>{ ic.ref.current.setPosWithDiff(false, sm)});
-        this.#out.forEach(oc=>{ oc.ref.current.setPosWithDiff(true, sm)});
+    const mouseup = () => {
+      if (this.#base.ref.current.updatePosState()) {
+        this.#in.forEach(ic=>{ ic.ref.current.setPosWithDiff(false)});
+        this.#out.forEach(oc=>{ oc.ref.current.setPosWithDiff(true)});
       } else {
         this.#openCP(this.#base.id);
       }
@@ -92,13 +90,11 @@ class Props {
       this.#in.forEach(ic=>{ ic.ref.current.changeViewWithDiff(false, hadamard(hadamard(revX, d), f)); });
       this.#out.forEach(oc=>{ oc.ref.current.changeViewWithDiff(true, hadamard(d, f)); });
     }
-    const mouseup = (e: MouseEvent) => {
-      const m = { x: e.clientX, y: e.clientY };
-      const sm = subtract(m, s), d = hadamard(sm, signs);
+    const mouseup = () => {
       this.#base.ref.current.updatePosState();
       this.#base.ref.current.updateSizeState();
-      this.#in.forEach(ic=>{ ic.ref.current.setPosWithDiff(false, hadamard(revX, d)); });
-      this.#out.forEach(oc=>{ oc.ref.current.setPosWithDiff(true, d); });
+      this.#in.forEach(ic=>{ ic.ref.current.setPosWithDiff(false); });
+      this.#out.forEach(oc=>{ oc.ref.current.setPosWithDiff(true); });
       window.removeEventListener('mousemove', mousemove);
       window.removeEventListener('mouseup', mouseup);
     }
