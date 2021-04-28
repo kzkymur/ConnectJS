@@ -2,7 +2,7 @@ import React, { MutableRefObject } from 'react';
 import { BaseType, ConnectionType, DataTypes } from '@/store/node/types';
 import { Handler as ConnectionHandler } from '@/component/Connection';
 import { Handler as BaseHandler, Props as BaseProps } from '@/component/Base';
-import Vector, { add, subtract, multiply, hadamard, signFilter } from '@/utils/vector';
+import Vector, { subtract, multiply, hadamard, signFilter } from '@/utils/vector';
 import { border } from '@/config';
 
 class Props {
@@ -55,7 +55,6 @@ class Props {
   }
 
   private posChange: (e: React.MouseEvent<HTMLDivElement>) => void = e => {
-    const pos = this.#base.ref.current.getPos();
     let s = { x: e.clientX, y: e.clientY };
     const mousemove = (e: MouseEvent) => {
       const m = { x: e.clientX, y: e.clientY, };
@@ -66,8 +65,8 @@ class Props {
     }
     const mouseup = () => {
       if (this.#base.ref.current.updatePosState()) {
-        this.#in.forEach(ic=>{ ic.ref.current.setPosWithDiff(false)});
-        this.#out.forEach(oc=>{ oc.ref.current.setPosWithDiff(true)});
+        this.#in.forEach(ic=>{ ic.ref.current.setPos()});
+        this.#out.forEach(oc=>{ oc.ref.current.setPos()});
       } else {
         this.#openCP(this.#base.id);
       }
@@ -93,8 +92,8 @@ class Props {
     const mouseup = () => {
       this.#base.ref.current.updatePosState();
       this.#base.ref.current.updateSizeState();
-      this.#in.forEach(ic=>{ ic.ref.current.setPosWithDiff(false); });
-      this.#out.forEach(oc=>{ oc.ref.current.setPosWithDiff(true); });
+      this.#in.forEach(ic=>{ ic.ref.current.setPos(); });
+      this.#out.forEach(oc=>{ oc.ref.current.setPos(); });
       window.removeEventListener('mousemove', mousemove);
       window.removeEventListener('mouseup', mouseup);
     }

@@ -7,8 +7,8 @@ export type Handler = {
   changeView: (start: Vector, end: Vector) => void;
   changeViewWithDiff: (isInput: boolean, diff: Vector) => void;
   setType: (type: DataType) => void;
-  setPos: (start: Vector, end: Vector) => void;
-  setPosWithDiff: (isInput: boolean, diff?: Vector) => void;
+  setPos: () => void;
+  setPosWithDiff: (isInput: boolean, diff: Vector) => void;
   getPos: () => { start: Vector; end: Vector };
 }
 type Props = {
@@ -42,19 +42,14 @@ const Connection = forwardRef<Handler, Props>((props, fRef) => {
   const setType = (type: DataType) => {
     // update();
   }
-  const setPos = (newS: Vector, newE: Vector) => {
-    if (s !== newS) setS(newS);
-    if (e !== newE) setE(newE);
+  const setPos = () => {
+    const value = ref.current!.attributes[1].value.split(' ');
+    setS({ x: Number(value[1]), y: Number(value[2])});
+    setE({ x: Number(value[9]), y: Number(value[10])});
   }
-  const setPosWithDiff = (isInput: boolean, diff?: Vector) => {
-    if (diff!==undefined) {
-      if (isInput) setS(add(getPos().start, diff));
-      else setE(add(getPos().end, diff));
-    } else {
-      const value = ref.current!.attributes[1].value.split(' ');
-      if (isInput) setS({ x: Number(value[1]), y: Number(value[2])});
-      else setE({ x: Number(value[9]), y: Number(value[10])});
-    }
+  const setPosWithDiff = (isInput: boolean, diff: Vector) => {
+    if (isInput) setS(add(getPos().start, diff));
+    else setE(add(getPos().end, diff));
   }
   const getPos = () => ({ start: s, end: e, });
 

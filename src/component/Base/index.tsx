@@ -17,9 +17,9 @@ export type Handler = {
   getPos: () => Vector;
   getSize: () => Vector;
   updatePosStyle: (v: Vector) => boolean;
-  updatePosState: (v?: Vector) => boolean;
+  updatePosState: () => boolean;
   updateSizeStyle: (v: Vector) => Vector;
-  updateSizeState: (v?: Vector) => Vector;
+  updateSizeState: () => Vector;
 }
 export type Props = {
   property: BaseType;
@@ -53,12 +53,8 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
     ref.current.style.left = px(v.x), ref.current.style.top = px(v.y);
     return true;
   }
-  const updatePosState = (v?: Vector) => {
-    let strLeft, strTop;
-    if (v !== undefined) {
-      const bcr = ref.current.getBoundingClientRect();
-      strLeft = px(bcr.left), strTop = px(bcr.top);
-    } else { strLeft = ref.current.style.left, strTop = ref.current.style.top; }
+  const updatePosState = () => {
+    const strLeft = ref.current.style.left, strTop = ref.current.style.top;
     if (baseStyle.top !== strTop || baseStyle.left !== strLeft) {
       updatePos(strTop, strLeft);
       return true;
@@ -75,11 +71,9 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
     ref.current.style.width = px(v.x), ref.current.style.height = px(v.y);
     return f;
   }
-  const updateSizeState = (v?: Vector) => {
+  const updateSizeState = () => {
     const bcr = ref.current.getBoundingClientRect();
-    v = v !== undefined ? 
-      { x: Math.max(v.x, minBaseWidth), y: Math.max(v.y, minBaseHeight) } :
-      { x: bcr.width, y: bcr.height };
+    const v = { x: bcr.width, y: bcr.height };
     ref.current.style.zIndex = String(-1 * v.x * v.y);
     const strWidth = px(v.x);
     const strHeight = px(calcMainHeight(v.y, inputs, outputs));
