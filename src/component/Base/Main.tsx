@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { ReactNode, RefObject } from 'react';
 import style from '@/style/Base/Main.scss';
 
 type Props = {
-  element: React.ReactNode;
-  fRef: React.RefObject<HTMLDivElement>;
+  element: ReactNode;
+  fRef: RefObject<HTMLDivElement>;
 }
 
 const Main: React.FC<Props> = props => {

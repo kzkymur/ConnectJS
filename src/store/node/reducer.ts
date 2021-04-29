@@ -231,6 +231,39 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
       }];
       break;
     }
+    case ActionTypes.updateConnectionPos: {
+      const oldCon = state.connections.filter(c => c.id === action.payload.id)[0];
+      if (oldCon === undefined) return state;
+      state = {
+        ...state,
+        bases: state.bases.map(c => c.id === action.payload.id ? {
+          ...c,
+          s: action.payload.s,
+          e: action.payload.e,
+        } : c),
+      };
+      reverseActions = [{
+        type: ActionTypes.updateConnectionPos,
+        payload: { id: action.payload.id, s: oldCon.s, e: oldCon.e },
+      }];
+      break;
+    }
+    case ActionTypes.updateConnectionType: {
+      const oldCon = state.connections.filter(c => c.id === action.payload.id)[0];
+      if (oldCon === undefined) return state;
+      state = {
+        ...state,
+        bases: state.bases.map(c => c.id === action.payload.id ? {
+          ...c,
+          type: action.payload.type,
+        } : c),
+      };
+      reverseActions = [{
+        type: ActionTypes.updateConnectionType,
+        payload: { id: action.payload.id, type: oldCon.type },
+      }];
+      break;
+    }
 
     case ActionTypes.undo: {
       const reverseElement = state.reverseActionBranch.current.prev;
