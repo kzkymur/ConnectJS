@@ -29,6 +29,7 @@ export default reducer;
 type ReducerLogic = (state: State, action: Action, operationType: OperationType) => State;
 const reducerLogic: ReducerLogic = (state, action, operationType) => {
   console.log(action);
+  if (action.type===ActionTypes.mult) for (const a of action.payload.actions) console.log(a);
   let reverseActions: Action[];
   switch (action.type) {
     case ActionTypes.add: {
