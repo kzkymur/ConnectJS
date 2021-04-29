@@ -109,8 +109,8 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
           ...b,
           width: action.payload.width,
           height: action.payload.height,
-          top: action.payload.top,
-          left: action.payload.left,
+          // top: action.payload.top,
+          // left: action.payload.left,
         } : b),
       };
       reverseActions = [{
@@ -275,6 +275,9 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
       const reverseElement = state.reverseActionBranch.current.next;
       if (reverseElement===undefined) return state;
       return { ...reverseElement.actions.reduce((a, s, i) => reducerLogic(a, s, reverseElement.actions.length === i+1 ? OperationTypes.forward : OperationTypes.store), state) };
+    }
+    case ActionTypes.mult: {
+      return { ...action.payload.actions.reduce((a, s, i) => reducerLogic(a, s, i+1 === action.payload.actions.length ? OperationTypes.branch : OperationTypes.store), state) };
     }
 
     default: return state; // 再描画しない〜〜

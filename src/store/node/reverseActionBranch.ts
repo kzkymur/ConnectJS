@@ -90,8 +90,9 @@ export default class ReverseActionBranch {
   }
 
   private branch: OperatingMethod = (actions) => {
+    this.store(actions);
     const newElm: Element = {
-      actions,
+      actions: this.actionQue,
       prev: this.current,
       next: {},
     }; 
@@ -110,6 +111,7 @@ export default class ReverseActionBranch {
     this.current.next = newElm;
     const newPartition: Partition = { prev: newElm, };
     newElm.next = newPartition;
+    this.actionQue = [];
     this.current = newPartition;
   }
   private forward: OperatingMethod = (actions) => {
