@@ -2,17 +2,18 @@ import React, { MutableRefObject } from 'react';
 import { BaseType, ConnectionType, DataTypes } from '@/store/node/types';
 import { Handler as ConnectionHandler } from '@/component/Connection';
 import { Handler as BaseHandler, Props as BaseProps } from '@/component/Base';
-import Vector, { add, subtract } from '@/utils/vector';
+import Vector, { subtract, multiply, hadamard, signFilter } from '@/utils/vector';
+import { border } from '@/config';
 
 class Props {
   #base: BaseType & { ref: MutableRefObject<BaseHandler>; };
   #in: ConnectionInfo[]; 
   #out: ConnectionInfo[];
   #openCP: (id:number) => void;
-  #isSizeChanging: boolean = true;
   #ncr: MutableRefObject<ConnectionHandler>;
   #ncir: MutableRefObject<NewConnectionInfo>;
   #addConnection: (c: ConnectionType) => void;
+  #isOnBorder: boolean = true;
   readonly property: BaseType;
 
   constructor ( base: BaseType & { ref: MutableRefObject<BaseHandler>; },
@@ -33,55 +34,74 @@ class Props {
     this.#addConnection = addConnection;
   }
 
-  posChange: (e: React.MouseEvent<HTMLDivElement>) => void = e => {
-    this.#isSizeChanging = false;
-    const pos = this.#base.ref.current.getPos();
-    const s = {x: e.clientX, y: e.clientY };
-    const mousemove = (e: MouseEvent) => {
-      const eClient = { x: e.clientX, y: e.clientY, };
-      const diff = subtract(eClient, s);
-      this.#base.ref.current.updatePosStyle(add(diff, pos));
-      this.#in.forEach(ic=>{ ic.ref.current.changeViewWithDiff(false, diff); });
-      this.#out.forEach(oc=>{ oc.ref.current.changeViewWithDiff(true, diff); });
+  onMouseMove: (e: React.MouseEvent<HTMLDivElement>) => void = e => {
+    const bcr = e.currentTarget.getBoundingClientRect();
+    const m = {x: e.clientX, y: e.clientY };
+    const left = bcr.x, right = bcr.x + bcr.width, top = bcr.y, bottom = bcr.y + bcr.height;
+    const isLeftSide = left - border < m.x && m.x < left + border, isRightSide = right - border < m.x && m.x < right + border;
+    const isUpperSide = top - border < m.y && m.y < top + border, isLowerSide = bottom - border < m.y && m.y < bottom + border;
+    let cursor;
+    if (isLeftSide || isRightSide || isUpperSide || isLowerSide) {
+      cursor = (isLeftSide && isUpperSide) || (isRightSide && isLowerSide) ? 'nwse' :
+        (isLeftSide && isLowerSide) || (isRightSide && isUpperSide) ? 'nesw' :
+        isLeftSide || isRightSide ? 'ew' : 'ns';
+      cursor = `${cursor}-resize`;
+      this.#isOnBorder = true;
+    } else {
+      cursor = 'default';
+      this.#isOnBorder = false;
     }
-    const mouseup = (e: MouseEvent) => {
-      const eClient = { x: e.clientX, y: e.clientY, };
-      const diff = subtract(eClient, s);
-      if (this.#base.ref.current.updatePosState(add(diff, pos))) {
-        this.#in.forEach(ic=>{ ic.ref.current.setPosWithDiff(false, diff)});
-        this.#out.forEach(oc=>{ oc.ref.current.setPosWithDiff(true, diff)});
+    e.currentTarget.style.cursor = cursor;
+  }
+
+  private posChange: (e: React.MouseEvent<HTMLDivElement>) => void = e => {
+    let s = { x: e.clientX, y: e.clientY };
+    const mousemove = (e: MouseEvent) => {
+      const m = { x: e.clientX, y: e.clientY, };
+      const sm = subtract(m, s); s = m;
+      this.#base.ref.current.updatePosStyle(sm);
+      this.#in.forEach(ic=>{ ic.ref.current.changeViewWithDiff(false, sm); });
+      this.#out.forEach(oc=>{ oc.ref.current.changeViewWithDiff(true, sm); });
+    }
+    const mouseup = () => {
+      if (this.#base.ref.current.updatePosState()) {
+        this.#in.forEach(ic=>{ ic.ref.current.setPos()});
+        this.#out.forEach(oc=>{ oc.ref.current.setPos()});
       } else {
         this.#openCP(this.#base.id);
       }
       window.removeEventListener('mousemove', mousemove);
       window.removeEventListener('mouseup', mouseup);
-      this.#isSizeChanging = true;
     }
     window.addEventListener('mousemove', mousemove);
     window.addEventListener('mouseup', mouseup);
   }
-  sizeChange: (e: React.MouseEvent<HTMLDivElement>) => void = e => {
-    if (!this.#isSizeChanging) return;
-    const s = {x: e.clientX, y: e.clientY };
+  private sizeChange: (e: React.MouseEvent<HTMLDivElement>) => void = e => {
+    const bcr = e.currentTarget.getBoundingClientRect();
+    const c = { x: bcr.x + bcr.width / 2, y: bcr.y + bcr.height / 2 };
+    let s = { x: e.clientX, y: e.clientY };
+    const cs = subtract(s, c), signs = signFilter(cs), revX = { x: -1, y: 1 };
     const mousemove = (e: MouseEvent) => {
-      const eClient = { x: e.clientX, y: e.clientY, };
-      const diff = subtract(eClient, s);
-      this.#base.ref.current.updateSizeStyle();
-      this.#in.forEach(ic=>{ ic.ref.current.changeViewWithDiff(false, {x: 0, y: diff.y}); });
-      this.#out.forEach(oc=>{ oc.ref.current.changeViewWithDiff(true, diff); });
+      const m = { x: e.clientX, y: e.clientY };
+      const sm = subtract(m, s), d = hadamard(sm, signs); s = m;
+      const f = this.#base.ref.current.updateSizeStyle(multiply(d, 2));
+      this.#base.ref.current.updatePosStyle(multiply(hadamard(d, f),-1));
+      this.#in.forEach(ic=>{ ic.ref.current.changeViewWithDiff(false, hadamard(hadamard(revX, d), f)); });
+      this.#out.forEach(oc=>{ oc.ref.current.changeViewWithDiff(true, hadamard(d, f)); });
     }
-    const mouseup = (e: MouseEvent) => {
-      const eClient = { x: e.clientX, y: e.clientY, };
-      const diff = subtract(eClient, s);
-      if (this.#base.ref.current.updateSizeState()) {
-        this.#in.forEach(ic=>{ ic.ref.current.setPosWithDiff(false, {x: 0, y: diff.y})});
-        this.#out.forEach(oc=>{ oc.ref.current.setPosWithDiff(true, diff)});
-      }
+    const mouseup = () => {
+      this.#base.ref.current.updateSizeState();
+      this.#in.forEach(ic=>{ ic.ref.current.setPos(); });
+      this.#out.forEach(oc=>{ oc.ref.current.setPos(); });
       window.removeEventListener('mousemove', mousemove);
       window.removeEventListener('mouseup', mouseup);
     }
     window.addEventListener('mousemove', mousemove);
     window.addEventListener('mouseup', mouseup);
+  }
+  onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void = e => {
+    if (this.#isOnBorder) this.sizeChange(e);
+    else this.posChange(e);
   }
 
   operateNewConnection: (isInput: boolean, id: number) => () => void = (isInput, id) => () => {

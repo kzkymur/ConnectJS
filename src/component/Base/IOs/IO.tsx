@@ -14,6 +14,7 @@ type Props = {
 
 const IO = forwardRef<Vector, Props>((props, fRef) => {
   const [ ref ] = useState<React.RefObject<HTMLDivElement>>(React.createRef<HTMLDivElement>());
+  const stopEventPropagation = (e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation();
   useImperativeHandle(fRef, ()=>{
     if (ref.current === null) return { x:0, y:0};
     const joint = ref.current;
@@ -25,7 +26,9 @@ const IO = forwardRef<Vector, Props>((props, fRef) => {
   });
 
   return (
-    <div className={`${style.container} ${!props.isInput ? style.output : ''}`}>
+    <div className={`${style.container} ${!props.isInput ? style.output : ''}`}
+      onMouseDown={stopEventPropagation}
+    >
       <div className={style.jointContainer}>
         <div className={style.joint} ref={ref}
           onMouseDown={props.operateNewConnection}

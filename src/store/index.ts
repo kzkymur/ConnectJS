@@ -6,7 +6,6 @@ const rootReducer = combineReducers({
 	nodeReducer,
   panelReducer,
 });
-// const rootReducer = guiReducer;
 
 export type RootState = ReturnType<typeof rootReducer>;
 

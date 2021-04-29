@@ -18,9 +18,9 @@ export const updateNameAction = (id: number, name: string): Action => ({
   type: ActionTypes.updateName,
   payload: { id, name, },
 });
-export const updateSizeAction = (id: number, width: string, height: string): Action => ({
+export const updateSizeAction = (id: number, width: string, height: string, top: string, left: string): Action => ({
   type: ActionTypes.updateSize,
-  payload: { id, width, height, },
+  payload: { id, width, height, top, left },
 });
 export const updatePosAction = (id: number, top: string, left: string): Action => ({
   type: ActionTypes.updatePos,

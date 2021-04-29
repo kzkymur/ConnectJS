@@ -17,7 +17,6 @@ export default reducer;
 
 type ReducerLogic = (state: State, action: Action | NodeAction) => State;
 const reducerLogic: ReducerLogic = (state, action) => {
-  console.log(action);
   switch (action.type) {
     case ActionTypes.openCP: {
       if(state.cpIdsList[0].indexOf(action.payload.id)>-1) {
