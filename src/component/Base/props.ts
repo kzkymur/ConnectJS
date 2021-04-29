@@ -90,7 +90,6 @@ class Props {
       this.#out.forEach(oc=>{ oc.ref.current.changeViewWithDiff(true, hadamard(d, f)); });
     }
     const mouseup = () => {
-      this.#base.ref.current.updatePosState();
       this.#base.ref.current.updateSizeState();
       this.#in.forEach(ic=>{ ic.ref.current.setPos(); });
       this.#out.forEach(oc=>{ oc.ref.current.setPos(); });

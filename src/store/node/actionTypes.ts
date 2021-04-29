@@ -1,5 +1,5 @@
-import { Action } from 'redux';
-import { BaseType, ConnectionType, DataType } from './types';
+import { Action } from 'redux'; import { BaseType, ConnectionType, DataType } from './types';
+import Vector from '@/utils/vector';
 
 export const ActionTypes = {
   add: "ADD",
@@ -15,8 +15,10 @@ export const ActionTypes = {
   redo: "REDO",
 
   addConnection: "ADDCONNECTION",
-  updateConnection: "UPDATECONNECTION",
   deleteConnection: "DELETECONNECTION",
+  updateConnection: "UPDATECONNECTION",
+  updateConnectionPos: "UPDATECONNECTIONPOS",
+  updateConnectionType: "UPDATECONNECTIONTYPE",
 } as const;
 
 // Actionの型定義
@@ -45,6 +47,8 @@ interface UpdateSize extends Action {
     id: number;
     width: string;
     height: string;
+    top: string;
+    left: string;
   };
 }
 interface UpdatePos extends Action {
@@ -79,18 +83,35 @@ interface AddConnection extends Action {
   type: typeof ActionTypes.addConnection; 
   payload: ConnectionType;
 }
-interface UpdateConnection extends Action { 
-  type: typeof ActionTypes.updateConnection; 
-  payload: ConnectionType;
-}
 interface DeleteConnection extends Action { 
   type: typeof ActionTypes.deleteConnection; 
   payload: { id: number; };
 }
-type NodeAction = 
-  Add | Delete | 
+interface UpdateConnection extends Action { 
+  type: typeof ActionTypes.updateConnection; 
+  payload: ConnectionType;
+}
+interface UpdateConnectionPos extends Action { 
+  type: typeof ActionTypes.updateConnectionPos;
+  payload: {
+    id: number;
+    s: Vector;
+    e: Vector;
+  };
+}
+interface UpdateConnectionType extends Action { 
+  type: typeof ActionTypes.updateConnectionType;
+  payload: {
+    id: number;
+    type: DataType;
+  };
+}
+
+type NodeAction =
+  Add | Delete |
   Update | UpdateName | UpdateSize | UpdatePos |
   AddSocket | DeleteSocket |
-  Undo | Redo | 
-  AddConnection | UpdateConnection | DeleteConnection; 
+  Undo | Redo |
+  AddConnection | DeleteConnection |
+  UpdateConnection | UpdateConnectionPos | UpdateConnectionType;
 export default NodeAction;

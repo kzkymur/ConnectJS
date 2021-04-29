@@ -108,6 +108,8 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
           ...b,
           width: action.payload.width,
           height: action.payload.height,
+          top: action.payload.top,
+          left: action.payload.left,
         } : b),
       };
       reverseActions = [{
@@ -116,6 +118,8 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
           id: action.payload.id, 
           width: oldBase.width,
           height: oldBase.height,
+          top: oldBase.top,
+          left: oldBase.left,
         },
       }];
       break;

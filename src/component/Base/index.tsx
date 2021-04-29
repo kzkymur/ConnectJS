@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useImperativeHandle, forwardRef } from 'react';
+import React, { useEffect, useState, useRef, useImperativeHandle, forwardRef, ReactNode, RefObject } from 'react';
 import { useDispatch } from 'react-redux';
 import { BaseType, Socket } from '@/store/node/types';
 import { updateAction, updateSizeAction, updatePosAction } from '@/store/node/actions';
@@ -31,13 +31,13 @@ export type Props = {
 
 const Base = forwardRef<Handler, Props>((props, fRef) => {
   const { property } = props;
-  const [ ref ] = useState(React.useRef<HTMLDivElement>({} as HTMLDivElement));
+  const [ ref ] = useState(useRef<HTMLDivElement>({} as HTMLDivElement));
   const [ iosRef ] = useState(useRef({} as IOsHandler));
   const { id, inputs, outputs, width, top, left, name, height } = property;
-  let element: React.ReactNode;
+  let element: ReactNode;
   const dispatch = useDispatch();
   const updateFunc = (c: BaseType) => dispatch(updateAction(c));
-  const updateSize = (width: string, height: string) => dispatch(updateSizeAction(id, width, height));
+  const updateSize = (width: string, height: string, top: string, left: string) => dispatch(updateSizeAction(id, width, height, top, left));
   const updatePos = (top: string, left: string) => dispatch(updatePosAction(id, top, left));
   let baseStyle: BaseType = property;
   const [ mainRef ] = useState(useRef<HTMLDivElement>({} as HTMLDivElement));
@@ -54,9 +54,9 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
     return true;
   }
   const updatePosState = () => {
-    const strLeft = ref.current.style.left, strTop = ref.current.style.top;
-    if (baseStyle.top !== strTop || baseStyle.left !== strLeft) {
-      updatePos(strTop, strLeft);
+    const top = ref.current.style.top, left = ref.current.style.left;
+    if (baseStyle.top !== top || baseStyle.left !== left) {
+      updatePos(top, left);
       return true;
     }
     return false;
@@ -75,10 +75,10 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
     const bcr = ref.current.getBoundingClientRect();
     const v = { x: bcr.width, y: bcr.height };
     ref.current.style.zIndex = String(-1 * v.x * v.y);
-    const strWidth = px(v.x);
-    const strHeight = px(calcMainHeight(v.y, inputs, outputs));
-    const f = { x: Number(baseStyle.width !== strWidth), y: Number(baseStyle.height !== strHeight) };
-    if (f.x || f.y) updateSize(strWidth, strHeight);
+    const width = px(v.x), height = px(calcMainHeight(v.y, inputs, outputs));
+    const top = ref.current.style.top, left = ref.current.style.left;
+    const f = { x: Number(baseStyle.width !== width), y: Number(baseStyle.height !== height) };
+    if (f.x || f.y) updateSize(width, height, top, left);
     return f;
   }
   const keepSizeStyle = () => {
@@ -133,5 +133,5 @@ export default Base;
 const calcMainHeight = (height: number, inputs: Array<Socket>, outputs: Array<Socket>): number => (height - optBarHeight * (Math.max(inputs.length, outputs.length)+1));
 
 const headerProps = (id: number, name: string) => ({ id, name, });
-const mainProps = (element: React.ReactNode, fRef: React.RefObject<HTMLDivElement>) => ({ element, fRef });
+const mainProps = (element: ReactNode, fRef: RefObject<HTMLDivElement>) => ({ element, fRef });
 const IOsProps = (id: number, inputs: Socket[], outputs: Socket[], createIONameUpdate: (isInput: boolean, index: number) => (name: string) => void, operateNewConnection: (isInput: boolean ,id: number) => () => void, registerNewConnection: (isInput: boolean ,id: number) => () => void) => ({ id, inputs, outputs, createIONameUpdate, operateNewConnection, registerNewConnection });
