@@ -13,6 +13,7 @@ export const ActionTypes = {
 
   undo: "UNDO",
   redo: "REDO",
+  mult: "MULT",
 
   addConnection: "ADDCONNECTION",
   deleteConnection: "DELETECONNECTION",
@@ -78,6 +79,10 @@ interface DeleteSocket extends Action {
 
 interface Undo extends Action { type: typeof ActionTypes.undo; }
 interface Redo extends Action { type: typeof ActionTypes.redo; }
+interface Mult extends Action {
+  type: typeof ActionTypes.mult;
+  payload: { actions: Action[]; };
+}
 
 interface AddConnection extends Action { 
   type: typeof ActionTypes.addConnection; 
@@ -111,7 +116,7 @@ type NodeAction =
   Add | Delete |
   Update | UpdateName | UpdateSize | UpdatePos |
   AddSocket | DeleteSocket |
-  Undo | Redo |
+  Undo | Redo | Mult |
   AddConnection | DeleteConnection |
   UpdateConnection | UpdateConnectionPos | UpdateConnectionType;
 export default NodeAction;

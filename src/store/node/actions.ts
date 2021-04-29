@@ -36,6 +36,10 @@ export const deleteSocketAction = (baseId: number, isInput: boolean, id: number)
 });
 export const undoAction = (): Action => ({ type: ActionTypes.undo, });
 export const redoAction = (): Action => ({ type: ActionTypes.redo, });
+export const multAction = (actions: Action[]): Action => ({
+  type: ActionTypes.mult,
+  payload: { actions, },
+});
 
 export const addConnectionAction = (param: ConnectionType): Action => ({
   type: ActionTypes.addConnection, 
