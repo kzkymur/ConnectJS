@@ -53,21 +53,15 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
     }
     case ActionTypes.delete: {
       const deletedBase = state.bases.filter(b => b.id === action.payload.id)[0];
-      const deletedConnections = state.connections.filter(c => c.iBaseId === action.payload.id || c.oBaseId === action.payload.id);
       if (deletedBase === undefined) return state;
       state = {
         ...state,
         bases: state.bases.filter(b => b.id !== action.payload.id),
-        connections: state.connections.filter(c => c.iBaseId !== action.payload.id && c.oBaseId !== action.payload.id),
       };
       reverseActions = [{
         type: ActionTypes.add,
         payload: { base: deletedBase },
       }];
-      deletedConnections.forEach(c => { reverseActions.push({
-        type: ActionTypes.addConnection,
-        payload: { ...c },
-      }) })
       break;
     }
 
@@ -109,8 +103,6 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
           ...b,
           width: action.payload.width,
           height: action.payload.height,
-          // top: action.payload.top,
-          // left: action.payload.left,
         } : b),
       };
       reverseActions = [{
@@ -119,8 +111,6 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
           id: action.payload.id, 
           width: oldBase.width,
           height: oldBase.height,
-          top: oldBase.top,
-          left: oldBase.left,
         },
       }];
       break;

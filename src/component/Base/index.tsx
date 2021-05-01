@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useImperativeHandle, forwardRef, ReactNode, RefObject } from 'react';
 import { useDispatch } from 'react-redux';
 import { BaseType, Socket } from '@/store/node/types';
-import { updateAction, updateSizeAction, updatePosAction } from '@/store/node/actions';
+import { updateAction, updateSizeAction, updatePosAction, multAction } from '@/store/node/actions';
 import Header from './Header';
 import Main from './Main';
 import IOs, { Handler as IOsHandler } from './IOs';
@@ -37,7 +37,10 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
   let element: ReactNode;
   const dispatch = useDispatch();
   const updateFunc = (c: BaseType) => dispatch(updateAction(c));
-  const updateSize = (width: string, height: string, top: string, left: string) => dispatch(updateSizeAction(id, width, height, top, left));
+  const updateSize = (width: string, height: string, top: string, left: string) => dispatch(multAction([
+      updatePosAction(id, top, left),
+      updateSizeAction(id, width, height),
+    ]));
   const updatePos = (top: string, left: string) => dispatch(updatePosAction(id, top, left));
   let baseStyle: BaseType = property;
   const [ mainRef ] = useState(useRef<HTMLDivElement>({} as HTMLDivElement));

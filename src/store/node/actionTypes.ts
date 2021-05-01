@@ -48,8 +48,6 @@ interface UpdateSize extends Action {
     id: number;
     width: string;
     height: string;
-    top: string;
-    left: string;
   };
 }
 interface UpdatePos extends Action {
