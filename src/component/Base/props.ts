@@ -13,6 +13,7 @@ class Props {
   #ncr: MutableRefObject<ConnectionHandler>;
   #ncir: MutableRefObject<NewConnectionInfo>;
   #addConnection: (c: ConnectionType) => void;
+  deleteFunc: () => void;
   #isOnBorder: boolean = true;
   readonly property: BaseType;
 
@@ -23,6 +24,7 @@ class Props {
     newConnectionRef: MutableRefObject<ConnectionHandler>,
     newConnectionInfoRef: MutableRefObject<NewConnectionInfo>,
     addConnection: (c: ConnectionType) => void,
+    deleteFunc: () => void,
   ) {
     this.#base = base;
     this.property = base;
@@ -32,6 +34,7 @@ class Props {
     this.#ncr = newConnectionRef;
     this.#ncir = newConnectionInfoRef;
     this.#addConnection = addConnection;
+    this.deleteFunc = deleteFunc;
   }
 
   onMouseMove: (e: React.MouseEvent<HTMLDivElement>) => void = e => {
@@ -151,8 +154,9 @@ export default function baseProps (
   newConnectionRef: MutableRefObject<ConnectionHandler>,
   newConnectionInfoRef: MutableRefObject<NewConnectionInfo>,
   addConnection: (c: ConnectionType) => void,
+  credeleteFunc: (id: number, cIds: number[]) => () => void,
 ): BaseProps {
-  const obj = new Props(base, inputConnections, outputConnections, openCP, newConnectionRef, newConnectionInfoRef, addConnection);
+  const obj = new Props(base, inputConnections, outputConnections, openCP, newConnectionRef, newConnectionInfoRef, addConnection, credeleteFunc(base.id, [ ...inputConnections.map(c=>c.id), ...outputConnections.map(c=>c.id), ]));
   return { ...obj };
 }
 

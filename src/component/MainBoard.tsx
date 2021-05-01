@@ -9,6 +9,7 @@ import baseProps, { NewConnectionInfo } from './Base/props';
 import Panel from './Panel';
 import Connection, { Handler as ConnectionHandler } from './Connection';
 import useIdRef, { mergeSourceAndIdRefs } from '@/utils/useIdRef';
+import { deleteAction } from '@/utils/actions';
 import style from '@/style/MainBoard.css'; 
 import Vector from '@/utils/vector';
 
@@ -25,6 +26,7 @@ const MainBoard: React.FC = () => {
   const dispatch = useDispatch();
   const openCPFunc = (id: number) => dispatch(openCPAction(id));
   const addConnection = (c: ConnectionType) => dispatch(addConnectionAction(c));
+  const credeleteFunc = (id: number, cIds: number[]) => () => dispatch(deleteAction(id, cIds));
 
   // controlPanel系
   const createSetCPIndex = (cpIndex: number) => {
@@ -44,7 +46,7 @@ const MainBoard: React.FC = () => {
 
   return (
     <div className={style.mainBoard}>
-      {bases.map(b=><Base key={b.id} ref={b.ref} {...baseProps(b, cons.filter(c=>c.iBaseId==b.id), cons.filter(c=>c.oBaseId==b.id), openCPFunc, newConRef, newConInfoRef, addConnection)}/>)}
+      {bases.map(b=><Base key={b.id} ref={b.ref} {...baseProps(b, cons.filter(c=>c.iBaseId==b.id), cons.filter(c=>c.oBaseId==b.id), openCPFunc, newConRef, newConInfoRef, addConnection, credeleteFunc)}/>)}
       {cpIdsList.map((ids: number[], i)=>{
         if(ids[0]===undefined) return;
         let bases: BaseType[] = [];
