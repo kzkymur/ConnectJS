@@ -44,7 +44,7 @@ interface UpdateName extends Action {
 }
 interface UpdateSize extends Action {
   type: typeof ActionTypes.updateSize;
-  payload: { 
+  payload: {
     id: number;
     width: string;
     height: string;
