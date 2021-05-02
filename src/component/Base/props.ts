@@ -165,12 +165,12 @@ class Props {
   }
 
   deleteFunc = () => { this.#dispatch(deleteAction(this.#base.id, [ ...this.#in.map(c=>c.id), ...this.#out.map(c=>c.id), ])); }
-  updateSize = (top: string, left: string, width: string, height: string) => {
+  private updateSize = (top: string, left: string, width: string, height: string) => {
     this.#dispatch(multAction([
       updatePosSizeAction(this.#base.id, top, left, width, height),
     ]));
   }
-  updatePos = (top: string, left: string) => this.#dispatch(updatePosAction(this.#base.id, top, left));
+  private updatePos = (top: string, left: string) => this.#dispatch(updatePosAction(this.#base.id, top, left));
 }
 
 export default function baseProps (

@@ -1,5 +1,6 @@
 import Action, { ActionTypes } from './actionTypes';
 import { BaseType, ConnectionType, DataType } from './types';
+import Vector from '@/utils/vector';
 
 export const addAction = (base: BaseType): Action => ({
   type: ActionTypes.add,
@@ -42,12 +43,20 @@ export const multAction = (actions: Action[]): Action => ({
 });
 
 export const addConnectionAction = (param: ConnectionType): Action => ({
-  type: ActionTypes.addConnection, 
+  type: ActionTypes.addConnection,
   payload: param,
 });
 export const updateConnectionAction = (param: ConnectionType): Action => ({ 
   type: ActionTypes.updateConnection, 
   payload: param,
+});
+export const updateConnectionTypeAction = (id: number, type: DataType): Action => ({ 
+  type: ActionTypes.updateConnectionType,
+  payload: { id, type },
+});
+export const updateConnectionPosAction = (id: number, s: Vector, e: Vector): Action => ({ 
+  type: ActionTypes.updateConnectionPos,
+  payload: { id, s, e },
 });
 export const deleteConnectionAction = (id: number): Action => ({
   type: ActionTypes.deleteConnection,

@@ -26,8 +26,6 @@ export type Props = {
   operateNewConnection: (isInput: boolean, id: number) => () => void;
   registerNewConnection: (isInput: boolean, id: number) => () => void;
   deleteFunc: () => void;
-  updateSize: (top: string, left: string, width: string, height: string) => void;
-  updatePos: (top: string, left: string) => void;
 }
 
 const Base = forwardRef<Handler, Props>((props, fRef) => {
