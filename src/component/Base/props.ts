@@ -1,7 +1,7 @@
 import React, { MutableRefObject } from 'react';
 import { BaseType, ConnectionType, DataTypes } from '@/store/node/types';
 import NodeAction from '@/store/node/actionTypes';
-import { updatePosAction, multAction } from '@/store/node/actions';
+import { multAction, updatePosAction, updateConnectionPosAction } from '@/store/node/actions';
 import { Handler as ConnectionHandler } from '@/component/Connection';
 import { Handler as BaseHandler, Props as BaseProps } from '@/component/Base';
 import { px } from '@/utils';
@@ -80,12 +80,7 @@ class Props {
       return false;
     }
     const mouseup = () => {
-      if (isPosUpdate()) {
-        this.#in.forEach(ic=>{ ic.ref.current.setPos()});
-        this.#out.forEach(oc=>{ oc.ref.current.setPos()});
-      } else {
-        this.#openCP(this.#base.id);
-      }
+      if (!isPosUpdate()) this.#openCP(this.#base.id);
       window.removeEventListener('mousemove', mousemove);
       window.removeEventListener('mouseup', mouseup);
     }
@@ -107,14 +102,12 @@ class Props {
     }
     const updateSizeState = () => {
       const v = this.#base.ref.current.getSize();
-      const width = px(v.x), height = px(calcMainHeight(v.y, this.#in, this.#out));
+      const width = px(v.x), height = px(calcMainHeight(v.y, this.#base.inputs.length, this.#base.outputs.length));
       const pos = this.#base.ref.current.getPos();
       if (this.#base.width !== width || this.#base.height !== height) this.updateSize(px(pos.y), px(pos.x), width, height);
     }
     const mouseup = () => {
       updateSizeState();
-      this.#in.forEach(ic=>{ ic.ref.current.setPos(); });
-      this.#out.forEach(oc=>{ oc.ref.current.setPos(); });
       window.removeEventListener('mousemove', mousemove);
       window.removeEventListener('mouseup', mouseup);
     }
@@ -165,12 +158,19 @@ class Props {
   }
 
   deleteFunc = () => { this.#dispatch(deleteAction(this.#base.id, [ ...this.#in.map(c=>c.id), ...this.#out.map(c=>c.id), ])); }
+
   private updateSize = (top: string, left: string, width: string, height: string) => {
-    this.#dispatch(multAction([
-      updatePosSizeAction(this.#base.id, top, left, width, height),
-    ]));
+    const actions = [ updatePosSizeAction(this.#base.id, top, left, width, height), ];
+    this.#in.forEach(c=>actions.push(updateConnectionPosAction(c.id, c.s, this.#base.ref.current.getJointPos(true, c.iId))));
+    this.#out.forEach(c=>actions.push(updateConnectionPosAction(c.id, this.#base.ref.current.getJointPos(false, c.oId), c.e)));
+    this.#dispatch(multAction(actions));
   }
-  private updatePos = (top: string, left: string) => this.#dispatch(updatePosAction(this.#base.id, top, left));
+  private updatePos = (top: string, left: string) => {
+    const actions = [ updatePosAction(this.#base.id, top, left), ];
+    this.#in.forEach(c=>actions.push(updateConnectionPosAction(c.id, c.s, this.#base.ref.current.getJointPos(true, c.iId))));
+    this.#out.forEach(c=>actions.push(updateConnectionPosAction(c.id, this.#base.ref.current.getJointPos(false, c.oId), c.e)));
+    this.#dispatch(multAction(actions));
+  }
 }
 
 export default function baseProps (
@@ -195,4 +195,4 @@ export type NewConnectionInfo = {
   s?: Vector;
 };
 
-const calcMainHeight = (height: number, inputs: Array<ConnectionType>, outputs: Array<ConnectionType>): number => (height - optBarHeight * (Math.max(inputs.length, outputs.length)+1));
+const calcMainHeight = (height: number, nInputs: number, nOutputs: number): number => (height - optBarHeight * (Math.max(nInputs, nOutputs)+1));

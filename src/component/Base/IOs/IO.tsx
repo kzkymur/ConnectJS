@@ -1,9 +1,12 @@
-import React, { useState, forwardRef, useImperativeHandle } from 'react';
+import React, { useRef, forwardRef, useImperativeHandle } from 'react';
 import { Socket } from '@/store/node/types';
 import NameBox from '@/component/atom/NameBox';
 import Vector from '@/utils/vector';
 import style from '@/style/Base/IOs/IO.scss';
 
+export type Handler = {
+  getPos: () => Vector;
+}
 type Props = {
   socket: Socket;
   socketNameUpdate: (name: string) => void;
@@ -12,18 +15,21 @@ type Props = {
   registerNewConnection: () => void;
 }
 
-const IO = forwardRef<Vector, Props>((props, fRef) => {
-  const [ ref ] = useState<React.RefObject<HTMLDivElement>>(React.createRef<HTMLDivElement>());
+const IO = forwardRef<Handler, Props>((props, fRef) => {
+  const ref = useRef<HTMLDivElement>({} as HTMLDivElement);
   const stopEventPropagation = (e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation();
-  useImperativeHandle(fRef, ()=>{
+  const getPos = () => {
     if (ref.current === null) return { x:0, y:0};
     const joint = ref.current;
     const jointRect = joint.getBoundingClientRect();
     return {
       x: jointRect.left + joint.offsetWidth / 2,
       y: jointRect.top + joint.offsetHeight / 2,
-    };
-  });
+    }
+  }
+  useImperativeHandle(fRef, ()=>({
+    getPos,
+  }));
 
   return (
     <div className={`${style.container} ${!props.isInput ? style.output : ''}`}

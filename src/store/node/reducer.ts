@@ -225,9 +225,10 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
     case ActionTypes.updateConnectionPos: {
       const oldCon = state.connections.filter(c => c.id === action.payload.id)[0];
       if (oldCon === undefined) return state;
+      console.log(action.payload);
       state = {
         ...state,
-        bases: state.bases.map(c => c.id === action.payload.id ? {
+        connections: state.connections.map(c => c.id === action.payload.id ? {
           ...c,
           s: action.payload.s,
           e: action.payload.e,
@@ -244,7 +245,7 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
       if (oldCon === undefined) return state;
       state = {
         ...state,
-        bases: state.bases.map(c => c.id === action.payload.id ? {
+        connections: state.connections.map(c => c.id === action.payload.id ? {
           ...c,
           type: action.payload.type,
         } : c),

@@ -1,6 +1,6 @@
 import React, { forwardRef, useImperativeHandle } from 'react';
 import { Socket } from '@/store/node/types';
-import IO from './IO';
+import IO, { Handler as IOHandler } from './IO';
 import { getIndex } from '@/utils';
 import Vector from '@/utils/vector';
 import useIdRef, { mergeSourceAndIdRefs } from '@/utils/useIdRef';
@@ -20,21 +20,21 @@ type Props = {
 }
 
 const IOs = forwardRef<Handler, Props>((props, fRef) => {
-  const inputIdRefs = useIdRef<Vector>(props.inputs);
-  const inputs = mergeSourceAndIdRefs<Socket, Vector>(props.inputs, inputIdRefs);
-  const outputIdRefs = useIdRef<Vector>(props.outputs);
-  const outputs = mergeSourceAndIdRefs<Socket, Vector>(props.outputs, outputIdRefs);
+  const inputIdRefs = useIdRef<IOHandler>(props.inputs);
+  const inputs = mergeSourceAndIdRefs<Socket, IOHandler>(props.inputs, inputIdRefs);
+  const outputIdRefs = useIdRef<IOHandler>(props.outputs);
+  const outputs = mergeSourceAndIdRefs<Socket, IOHandler>(props.outputs, outputIdRefs);
 
   const getJointPos = (isInput: boolean, id: number) => {
     const sockets = isInput ? inputs : outputs;
     const i = getIndex(sockets, id);
-    if (i!==-1) return sockets[i].ref.current;
+    if (i!==-1) return sockets[i].ref.current.getPos();
     return { x:0, y:0 };
   }
   const getAllJointPos = (isInput: boolean) => {
     const sockets = isInput ? inputs : outputs;
     const jps: Vector[] = [];
-    sockets.forEach(s=>{jps.push(s.ref.current)});
+    sockets.forEach(s=>{jps.push(s.ref.current.getPos())});
     return jps;
   }
   useImperativeHandle(fRef, ()=>({
