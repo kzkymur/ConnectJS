@@ -259,15 +259,23 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
     case ActionTypes.undo: {
       const reverseElement = state.reverseActionBranch.current.prev;
       if (reverseElement===undefined) return state;
-      return { ...reverseElement.actions.reduce((a, s, i) => reducerLogic(a, s, reverseElement.actions.length === i+1 ? OperationTypes.backward : OperationTypes.store), state) };
+      state = { ...reverseElement.actions.reduce((a, s) => reducerLogic(a, s, OperationTypes.store), state) };
+      reverseActions = [];
+      operationType = OperationTypes.backward;
+      break;
     }
     case ActionTypes.redo: {
       const reverseElement = state.reverseActionBranch.current.next;
       if (reverseElement===undefined) return state;
-      return { ...reverseElement.actions.reduce((a, s, i) => reducerLogic(a, s, reverseElement.actions.length === i+1 ? OperationTypes.forward : OperationTypes.store), state) };
+      state = { ...reverseElement.actions.reduce((a, s) => reducerLogic(a, s, OperationTypes.store), state) };
+      reverseActions = [];
+      operationType = OperationTypes.forward;
+      break;
     }
     case ActionTypes.mult: {
-      return { ...action.payload.actions.reduce((a, s, i) => reducerLogic(a, s, i+1 === action.payload.actions.length ? OperationTypes.branch : OperationTypes.store), state) };
+      state = { ...action.payload.actions.reduce((a, s) => reducerLogic(a, s, OperationTypes.store), state) };
+      reverseActions = [];
+      break;
     }
 
     default: return state; // 再描画しない〜〜
