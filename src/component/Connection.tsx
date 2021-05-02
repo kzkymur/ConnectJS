@@ -7,8 +7,6 @@ export type Handler = {
   changeView: (start: Vector, end: Vector) => void;
   changeViewWithDiff: (isInput: boolean, diff: Vector) => void;
   setType: (type: DataType) => void;
-  setPos: () => void;
-  setPosWithDiff: (isInput: boolean, diff: Vector) => void;
   getPos: () => { start: Vector; end: Vector };
 }
 type Props = {
@@ -20,14 +18,11 @@ type Props = {
 
 const Connection = forwardRef<Handler, Props>((props, fRef) => {
   const ref = useRef<SVGPathElement>(null);
-  let [s, setS] = useState(props.s);
-  let [e, setE] = useState(props.e);
+  let s = props.s, e = props.e;
   useImperativeHandle(fRef, ()=>({
     changeView,
     changeViewWithDiff,
     setType,
-    setPos,
-    setPosWithDiff,
     getPos,
   }));
 
@@ -41,15 +36,6 @@ const Connection = forwardRef<Handler, Props>((props, fRef) => {
   }
   const setType = (type: DataType) => {
     // update();
-  }
-  const setPos = () => {
-    const value = ref.current!.attributes[1].value.split(' ');
-    setS({ x: Number(value[1]), y: Number(value[2])});
-    setE({ x: Number(value[9]), y: Number(value[10])});
-  }
-  const setPosWithDiff = (isInput: boolean, diff: Vector) => {
-    if (isInput) setS(add(getPos().start, diff));
-    else setE(add(getPos().end, diff));
   }
   const getPos = () => ({ start: s, end: e, });
 

@@ -1,5 +1,6 @@
 import Action, { ActionTypes } from './actionTypes';
 import { BaseType, ConnectionType, DataType } from './types';
+import Vector from '@/utils/vector';
 
 export const addAction = (base: BaseType): Action => ({
   type: ActionTypes.add,
@@ -18,9 +19,9 @@ export const updateNameAction = (id: number, name: string): Action => ({
   type: ActionTypes.updateName,
   payload: { id, name, },
 });
-export const updateSizeAction = (id: number, width: string, height: string, top: string, left: string): Action => ({
+export const updateSizeAction = (id: number, width: string, height: string): Action => ({
   type: ActionTypes.updateSize,
-  payload: { id, width, height, top, left },
+  payload: { id, width, height, },
 });
 export const updatePosAction = (id: number, top: string, left: string): Action => ({
   type: ActionTypes.updatePos,
@@ -36,14 +37,26 @@ export const deleteSocketAction = (baseId: number, isInput: boolean, id: number)
 });
 export const undoAction = (): Action => ({ type: ActionTypes.undo, });
 export const redoAction = (): Action => ({ type: ActionTypes.redo, });
+export const multAction = (actions: Action[]): Action => ({
+  type: ActionTypes.mult,
+  payload: { actions, },
+});
 
 export const addConnectionAction = (param: ConnectionType): Action => ({
-  type: ActionTypes.addConnection, 
+  type: ActionTypes.addConnection,
   payload: param,
 });
 export const updateConnectionAction = (param: ConnectionType): Action => ({ 
   type: ActionTypes.updateConnection, 
   payload: param,
+});
+export const updateConnectionTypeAction = (id: number, type: DataType): Action => ({ 
+  type: ActionTypes.updateConnectionType,
+  payload: { id, type },
+});
+export const updateConnectionPosAction = (id: number, s: Vector, e: Vector): Action => ({ 
+  type: ActionTypes.updateConnectionPos,
+  payload: { id, s, e },
 });
 export const deleteConnectionAction = (id: number): Action => ({
   type: ActionTypes.deleteConnection,

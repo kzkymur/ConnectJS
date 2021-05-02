@@ -41,10 +41,11 @@ const MainBoard: React.FC = () => {
       }
     }
   }, [cpIdsList]);
+  console.log(cons);
 
   return (
     <div className={style.mainBoard}>
-      {bases.map(b=><Base key={b.id} ref={b.ref} {...baseProps(b, cons.filter(c=>c.iBaseId==b.id), cons.filter(c=>c.oBaseId==b.id), openCPFunc, newConRef, newConInfoRef, addConnection)}/>)}
+      {bases.map(b=><Base key={b.id} ref={b.ref} {...baseProps(b, cons.filter(c=>c.iBaseId==b.id), cons.filter(c=>c.oBaseId==b.id), openCPFunc, newConRef, newConInfoRef, addConnection, dispatch)}/>)}
       {cpIdsList.map((ids: number[], i)=>{
         if(ids[0]===undefined) return;
         let bases: BaseType[] = [];

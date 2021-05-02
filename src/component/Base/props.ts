@@ -1,9 +1,13 @@
 import React, { MutableRefObject } from 'react';
 import { BaseType, ConnectionType, DataTypes } from '@/store/node/types';
+import NodeAction from '@/store/node/actionTypes';
+import { multAction, updatePosAction, updateConnectionPosAction } from '@/store/node/actions';
 import { Handler as ConnectionHandler } from '@/component/Connection';
 import { Handler as BaseHandler, Props as BaseProps } from '@/component/Base';
+import { px } from '@/utils';
 import Vector, { subtract, multiply, hadamard, signFilter } from '@/utils/vector';
-import { border } from '@/config';
+import { deleteAction, updatePosSizeAction } from '@/utils/actions';
+import { border, optBarHeight } from '@/config';
 
 class Props {
   #base: BaseType & { ref: MutableRefObject<BaseHandler>; };
@@ -13,6 +17,7 @@ class Props {
   #ncr: MutableRefObject<ConnectionHandler>;
   #ncir: MutableRefObject<NewConnectionInfo>;
   #addConnection: (c: ConnectionType) => void;
+  #dispatch: (action: NodeAction) => void;
   #isOnBorder: boolean = true;
   readonly property: BaseType;
 
@@ -23,6 +28,7 @@ class Props {
     newConnectionRef: MutableRefObject<ConnectionHandler>,
     newConnectionInfoRef: MutableRefObject<NewConnectionInfo>,
     addConnection: (c: ConnectionType) => void,
+    dispatch: (action: NodeAction) => void,
   ) {
     this.#base = base;
     this.property = base;
@@ -32,6 +38,7 @@ class Props {
     this.#ncr = newConnectionRef;
     this.#ncir = newConnectionInfoRef;
     this.#addConnection = addConnection;
+    this.#dispatch = dispatch;
   }
 
   onMouseMove: (e: React.MouseEvent<HTMLDivElement>) => void = e => {
@@ -63,13 +70,17 @@ class Props {
       this.#in.forEach(ic=>{ ic.ref.current.changeViewWithDiff(false, sm); });
       this.#out.forEach(oc=>{ oc.ref.current.changeViewWithDiff(true, sm); });
     }
-    const mouseup = () => {
-      if (this.#base.ref.current.updatePosState()) {
-        this.#in.forEach(ic=>{ ic.ref.current.setPos()});
-        this.#out.forEach(oc=>{ oc.ref.current.setPos()});
-      } else {
-        this.#openCP(this.#base.id);
+    const isPosUpdate = () => {
+      const { x, y } = this.#base.ref.current.getPos();
+      const top = px(y), left = px(x);
+      if (left !== this.#base.left || top !== this.#base.top) {
+        this.updatePos(top, left);
+        return true;
       }
+      return false;
+    }
+    const mouseup = () => {
+      if (!isPosUpdate()) this.#openCP(this.#base.id);
       window.removeEventListener('mousemove', mousemove);
       window.removeEventListener('mouseup', mouseup);
     }
@@ -89,10 +100,14 @@ class Props {
       this.#in.forEach(ic=>{ ic.ref.current.changeViewWithDiff(false, hadamard(hadamard(revX, d), f)); });
       this.#out.forEach(oc=>{ oc.ref.current.changeViewWithDiff(true, hadamard(d, f)); });
     }
+    const updateSizeState = () => {
+      const v = this.#base.ref.current.getSize();
+      const width = px(v.x), height = px(calcMainHeight(v.y, this.#base.inputs.length, this.#base.outputs.length));
+      const pos = this.#base.ref.current.getPos();
+      if (this.#base.width !== width || this.#base.height !== height) this.updateSize(px(pos.y), px(pos.x), width, height);
+    }
     const mouseup = () => {
-      this.#base.ref.current.updateSizeState();
-      this.#in.forEach(ic=>{ ic.ref.current.setPos(); });
-      this.#out.forEach(oc=>{ oc.ref.current.setPos(); });
+      updateSizeState();
       window.removeEventListener('mousemove', mousemove);
       window.removeEventListener('mouseup', mouseup);
     }
@@ -141,6 +156,21 @@ class Props {
       e: isInput ?  e : ncir.s,
     })
   }
+
+  deleteFunc = () => { this.#dispatch(deleteAction(this.#base.id, [ ...this.#in.map(c=>c.id), ...this.#out.map(c=>c.id), ])); }
+
+  private updateSize = (top: string, left: string, width: string, height: string) => {
+    const actions = [ updatePosSizeAction(this.#base.id, top, left, width, height), ];
+    this.#in.forEach(c=>actions.push(updateConnectionPosAction(c.id, c.s, this.#base.ref.current.getJointPos(true, c.iId))));
+    this.#out.forEach(c=>actions.push(updateConnectionPosAction(c.id, this.#base.ref.current.getJointPos(false, c.oId), c.e)));
+    this.#dispatch(multAction(actions));
+  }
+  private updatePos = (top: string, left: string) => {
+    const actions = [ updatePosAction(this.#base.id, top, left), ];
+    this.#in.forEach(c=>actions.push(updateConnectionPosAction(c.id, c.s, this.#base.ref.current.getJointPos(true, c.iId))));
+    this.#out.forEach(c=>actions.push(updateConnectionPosAction(c.id, this.#base.ref.current.getJointPos(false, c.oId), c.e)));
+    this.#dispatch(multAction(actions));
+  }
 }
 
 export default function baseProps (
@@ -151,8 +181,9 @@ export default function baseProps (
   newConnectionRef: MutableRefObject<ConnectionHandler>,
   newConnectionInfoRef: MutableRefObject<NewConnectionInfo>,
   addConnection: (c: ConnectionType) => void,
+  dispatch: (action: NodeAction) => void,
 ): BaseProps {
-  const obj = new Props(base, inputConnections, outputConnections, openCP, newConnectionRef, newConnectionInfoRef, addConnection);
+  const obj = new Props(base, inputConnections, outputConnections, openCP, newConnectionRef, newConnectionInfoRef, addConnection, dispatch);
   return { ...obj };
 }
 
@@ -163,3 +194,5 @@ export type NewConnectionInfo = {
   id?: number;
   s?: Vector;
 };
+
+const calcMainHeight = (height: number, nInputs: number, nOutputs: number): number => (height - optBarHeight * (Math.max(nInputs, nOutputs)+1));
