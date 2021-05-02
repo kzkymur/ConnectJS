@@ -1,8 +1,11 @@
 import React, { MutableRefObject } from 'react';
 import { BaseType, ConnectionType, DataTypes } from '@/store/node/types';
+import NodeAction from '@/store/node/actionTypes';
+import { updatePosAction } from '@/store/node/actions';
 import { Handler as ConnectionHandler } from '@/component/Connection';
 import { Handler as BaseHandler, Props as BaseProps } from '@/component/Base';
 import Vector, { subtract, multiply, hadamard, signFilter } from '@/utils/vector';
+import { deleteAction, updatePosSizeAction } from '@/utils/actions';
 import { border } from '@/config';
 
 class Props {
@@ -14,6 +17,8 @@ class Props {
   #ncir: MutableRefObject<NewConnectionInfo>;
   #addConnection: (c: ConnectionType) => void;
   deleteFunc: () => void;
+  updateSize: (top: string, left: string, width: string, height: string) => void;
+  updatePos: (top: string, left: string) => void;
   #isOnBorder: boolean = true;
   readonly property: BaseType;
 
@@ -24,7 +29,7 @@ class Props {
     newConnectionRef: MutableRefObject<ConnectionHandler>,
     newConnectionInfoRef: MutableRefObject<NewConnectionInfo>,
     addConnection: (c: ConnectionType) => void,
-    deleteFunc: () => void,
+    dispatch: (action: NodeAction) => void,
   ) {
     this.#base = base;
     this.property = base;
@@ -34,7 +39,9 @@ class Props {
     this.#ncr = newConnectionRef;
     this.#ncir = newConnectionInfoRef;
     this.#addConnection = addConnection;
-    this.deleteFunc = deleteFunc;
+    this.deleteFunc = () => dispatch(deleteAction(base.id, [ ...inputConnections.map(c=>c.id), ...outputConnections.map(c=>c.id), ]));
+    this.updateSize = (top: string, left: string, width: string, height: string) => dispatch(updatePosSizeAction(base.id, top, left, width, height));
+    this.updatePos = (top: string, left: string) => dispatch(updatePosAction(base.id, top, left));
   }
 
   onMouseMove: (e: React.MouseEvent<HTMLDivElement>) => void = e => {
@@ -154,9 +161,9 @@ export default function baseProps (
   newConnectionRef: MutableRefObject<ConnectionHandler>,
   newConnectionInfoRef: MutableRefObject<NewConnectionInfo>,
   addConnection: (c: ConnectionType) => void,
-  credeleteFunc: (id: number, cIds: number[]) => () => void,
+  dispatch: (action: NodeAction) => void,
 ): BaseProps {
-  const obj = new Props(base, inputConnections, outputConnections, openCP, newConnectionRef, newConnectionInfoRef, addConnection, credeleteFunc(base.id, [ ...inputConnections.map(c=>c.id), ...outputConnections.map(c=>c.id), ]));
+  const obj = new Props(base, inputConnections, outputConnections, openCP, newConnectionRef, newConnectionInfoRef, addConnection, dispatch);
   return { ...obj };
 }
 
