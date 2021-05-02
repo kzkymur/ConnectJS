@@ -17,9 +17,7 @@ export type Handler = {
   getPos: () => Vector;
   getSize: () => Vector;
   updatePosStyle: (v: Vector) => boolean;
-  updatePosState: () => boolean;
   updateSizeStyle: (v: Vector) => Vector;
-  updateSizeState: () => Vector;
 }
 export type Props = {
   property: BaseType;
@@ -40,7 +38,6 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
   let element: ReactNode;
   const dispatch = useDispatch();
   const updateFunc = (c: BaseType) => dispatch(updateAction(c));
-  const baseStyle: BaseType = property;
   const mainRef = useRef<HTMLDivElement>({} as HTMLDivElement);
 
   const getJointPos = (isInput: boolean, id: number) => iosRef.current.getJointPos(isInput, id);
@@ -54,14 +51,6 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
     ref.current.style.left = px(v.x), ref.current.style.top = px(v.y);
     return true;
   }
-  const updatePosState = () => {
-    const top = ref.current.style.top, left = ref.current.style.left;
-    if (baseStyle.top !== top || baseStyle.left !== left) {
-      props.updatePos(top, left);
-      return true;
-    }
-    return false;
-  }
   const updateSizeStyle = (v: Vector) => {
     const f = { x: 1, y: 1 };
     v = { x: Math.max(v.x+px2n(ref.current.style.width), minBaseWidth), y: Math.max(v.y+px2n(ref.current.style.height), minBaseHeight) };
@@ -70,16 +59,6 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
     mainRef.current.style.height = px(calcMainHeight(v.y, inputs, outputs));
     ref.current.style.zIndex = String(-1 * v.x * v.y);
     ref.current.style.width = px(v.x), ref.current.style.height = px(v.y);
-    return f;
-  }
-  const updateSizeState = () => {
-    const bcr = ref.current.getBoundingClientRect();
-    const v = { x: bcr.width, y: bcr.height };
-    ref.current.style.zIndex = String(-1 * v.x * v.y);
-    const width = px(v.x), height = px(calcMainHeight(v.y, inputs, outputs));
-    const top = ref.current.style.top, left = ref.current.style.left;
-    const f = { x: Number(baseStyle.width !== width), y: Number(baseStyle.height !== height) };
-    if (f.x || f.y) props.updateSize(top, left, width, height);
     return f;
   }
   const keepSizeStyle = () => {
@@ -92,9 +71,7 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
     getPos,
     getSize,
     updatePosStyle,
-    updatePosState,
     updateSizeStyle,
-    updateSizeState,
   }));
 
   useEffect(()=>{

@@ -1,12 +1,13 @@
 import React, { MutableRefObject } from 'react';
 import { BaseType, ConnectionType, DataTypes } from '@/store/node/types';
 import NodeAction from '@/store/node/actionTypes';
-import { updatePosAction } from '@/store/node/actions';
+import { updatePosAction, multAction } from '@/store/node/actions';
 import { Handler as ConnectionHandler } from '@/component/Connection';
 import { Handler as BaseHandler, Props as BaseProps } from '@/component/Base';
+import { px } from '@/utils';
 import Vector, { subtract, multiply, hadamard, signFilter } from '@/utils/vector';
 import { deleteAction, updatePosSizeAction } from '@/utils/actions';
-import { border } from '@/config';
+import { border, optBarHeight } from '@/config';
 
 class Props {
   #base: BaseType & { ref: MutableRefObject<BaseHandler>; };
@@ -16,9 +17,7 @@ class Props {
   #ncr: MutableRefObject<ConnectionHandler>;
   #ncir: MutableRefObject<NewConnectionInfo>;
   #addConnection: (c: ConnectionType) => void;
-  deleteFunc: () => void;
-  updateSize: (top: string, left: string, width: string, height: string) => void;
-  updatePos: (top: string, left: string) => void;
+  #dispatch: (action: NodeAction) => void;
   #isOnBorder: boolean = true;
   readonly property: BaseType;
 
@@ -39,9 +38,7 @@ class Props {
     this.#ncr = newConnectionRef;
     this.#ncir = newConnectionInfoRef;
     this.#addConnection = addConnection;
-    this.deleteFunc = () => dispatch(deleteAction(base.id, [ ...inputConnections.map(c=>c.id), ...outputConnections.map(c=>c.id), ]));
-    this.updateSize = (top: string, left: string, width: string, height: string) => dispatch(updatePosSizeAction(base.id, top, left, width, height));
-    this.updatePos = (top: string, left: string) => dispatch(updatePosAction(base.id, top, left));
+    this.#dispatch = dispatch;
   }
 
   onMouseMove: (e: React.MouseEvent<HTMLDivElement>) => void = e => {
@@ -73,8 +70,17 @@ class Props {
       this.#in.forEach(ic=>{ ic.ref.current.changeViewWithDiff(false, sm); });
       this.#out.forEach(oc=>{ oc.ref.current.changeViewWithDiff(true, sm); });
     }
+    const isPosUpdate = () => {
+      const { x, y } = this.#base.ref.current.getPos();
+      const top = px(y), left = px(x);
+      if (left !== this.#base.left || top !== this.#base.top) {
+        this.updatePos(top, left);
+        return true;
+      }
+      return false;
+    }
     const mouseup = () => {
-      if (this.#base.ref.current.updatePosState()) {
+      if (isPosUpdate()) {
         this.#in.forEach(ic=>{ ic.ref.current.setPos()});
         this.#out.forEach(oc=>{ oc.ref.current.setPos()});
       } else {
@@ -99,8 +105,14 @@ class Props {
       this.#in.forEach(ic=>{ ic.ref.current.changeViewWithDiff(false, hadamard(hadamard(revX, d), f)); });
       this.#out.forEach(oc=>{ oc.ref.current.changeViewWithDiff(true, hadamard(d, f)); });
     }
+    const updateSizeState = () => {
+      const v = this.#base.ref.current.getSize();
+      const width = px(v.x), height = px(calcMainHeight(v.y, this.#in, this.#out));
+      const pos = this.#base.ref.current.getPos();
+      if (this.#base.width !== width || this.#base.height !== height) this.updateSize(px(pos.y), px(pos.x), width, height);
+    }
     const mouseup = () => {
-      this.#base.ref.current.updateSizeState();
+      updateSizeState();
       this.#in.forEach(ic=>{ ic.ref.current.setPos(); });
       this.#out.forEach(oc=>{ oc.ref.current.setPos(); });
       window.removeEventListener('mousemove', mousemove);
@@ -151,6 +163,14 @@ class Props {
       e: isInput ?  e : ncir.s,
     })
   }
+
+  deleteFunc = () => { this.#dispatch(deleteAction(this.#base.id, [ ...this.#in.map(c=>c.id), ...this.#out.map(c=>c.id), ])); }
+  updateSize = (top: string, left: string, width: string, height: string) => {
+    this.#dispatch(multAction([
+      updatePosSizeAction(this.#base.id, top, left, width, height),
+    ]));
+  }
+  updatePos = (top: string, left: string) => this.#dispatch(updatePosAction(this.#base.id, top, left));
 }
 
 export default function baseProps (
@@ -174,3 +194,5 @@ export type NewConnectionInfo = {
   id?: number;
   s?: Vector;
 };
+
+const calcMainHeight = (height: number, inputs: Array<ConnectionType>, outputs: Array<ConnectionType>): number => (height - optBarHeight * (Math.max(inputs.length, outputs.length)+1));
