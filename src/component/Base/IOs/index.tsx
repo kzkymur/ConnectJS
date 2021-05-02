@@ -21,7 +21,6 @@ type Props = {
 
 const IOs = forwardRef<Handler, Props>((props, fRef) => {
   const inputIdRefs = useIdRef<Vector>(props.inputs);
-  console.log(inputIdRefs)
   const inputs = mergeSourceAndIdRefs<Socket, Vector>(props.inputs, inputIdRefs);
   const outputIdRefs = useIdRef<Vector>(props.outputs);
   const outputs = mergeSourceAndIdRefs<Socket, Vector>(props.outputs, outputIdRefs);
