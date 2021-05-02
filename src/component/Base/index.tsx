@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useImperativeHandle, forwardRef, ReactNode, RefObject } from 'react';
+import React, { useEffect, useRef, useImperativeHandle, forwardRef, ReactNode, RefObject } from 'react';
 import { useDispatch } from 'react-redux';
 import { BaseType, Socket } from '@/store/node/types';
 import { updateAction, updatePosAction } from '@/store/node/actions';
@@ -33,16 +33,16 @@ export type Props = {
 
 const Base = forwardRef<Handler, Props>((props, fRef) => {
   const { property } = props;
-  const [ ref ] = useState(useRef<HTMLDivElement>({} as HTMLDivElement));
-  const [ iosRef ] = useState(useRef({} as IOsHandler));
+  const ref = useRef<HTMLDivElement>({} as HTMLDivElement);
+  const iosRef = useRef({} as IOsHandler);
   const { id, inputs, outputs, width, top, left, name, height } = property;
   let element: ReactNode;
   const dispatch = useDispatch();
   const updateFunc = (c: BaseType) => dispatch(updateAction(c));
   const updateSize = (top: string, left: string, width: string, height: string) => dispatch(updatePosSizeAction(id, top, left, width, height));
   const updatePos = (top: string, left: string) => dispatch(updatePosAction(id, top, left));
-  let baseStyle: BaseType = property;
-  const [ mainRef ] = useState(useRef<HTMLDivElement>({} as HTMLDivElement));
+  const baseStyle: BaseType = property;
+  const mainRef = useRef<HTMLDivElement>({} as HTMLDivElement);
 
   const getJointPos = (isInput: boolean, id: number) => iosRef.current.getJointPos(isInput, id);
   const getAllJointPos = (isInput: boolean) => iosRef.current.getAllJointPos(isInput);
@@ -115,7 +115,7 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
     newProperty[key] = sockets.map((s, i) => {
       if (i===index) s.name = name;
       return s;
-    }) 
+    })
     updateFunc(newProperty);
   }
   return (
@@ -127,7 +127,7 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
       <Main {...mainProps(element, mainRef)}/>
       <IOs {...IOsProps(id, inputs, outputs, createIONameUpdate, props.operateNewConnection, props.registerNewConnection)} ref={iosRef}/>
     </div>
-  )
+  );
 });
 
 export default Base;
