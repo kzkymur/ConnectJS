@@ -1,18 +1,24 @@
 import React, { MutableRefObject } from 'react';
 import { BaseType, ConnectionType, DataTypes } from '@/store/node/types';
+import NodeAction from '@/store/node/actionTypes';
+import { multAction, updatePosAction, updateConnectionPosAction } from '@/store/node/actions';
 import { Handler as ConnectionHandler } from '@/component/Connection';
 import { Handler as BaseHandler, Props as BaseProps } from '@/component/Base';
-import Vector, { add, subtract } from '@/utils/vector';
+import { px } from '@/utils';
+import Vector, { subtract, multiply, hadamard, signFilter } from '@/utils/vector';
+import { deleteAction, updatePosSizeAction } from '@/utils/actions';
+import { border, optBarHeight } from '@/config';
 
 class Props {
   #base: BaseType & { ref: MutableRefObject<BaseHandler>; };
   #in: ConnectionInfo[]; 
   #out: ConnectionInfo[];
   #openCP: (id:number) => void;
-  #isSizeChanging: boolean = true;
   #ncr: MutableRefObject<ConnectionHandler>;
   #ncir: MutableRefObject<NewConnectionInfo>;
   #addConnection: (c: ConnectionType) => void;
+  #dispatch: (action: NodeAction) => void;
+  #isOnBorder: boolean = true;
   readonly property: BaseType;
 
   constructor ( base: BaseType & { ref: MutableRefObject<BaseHandler>; },
@@ -22,6 +28,7 @@ class Props {
     newConnectionRef: MutableRefObject<ConnectionHandler>,
     newConnectionInfoRef: MutableRefObject<NewConnectionInfo>,
     addConnection: (c: ConnectionType) => void,
+    dispatch: (action: NodeAction) => void,
   ) {
     this.#base = base;
     this.property = base;
@@ -31,57 +38,85 @@ class Props {
     this.#ncr = newConnectionRef;
     this.#ncir = newConnectionInfoRef;
     this.#addConnection = addConnection;
+    this.#dispatch = dispatch;
   }
 
-  posChange: (e: React.MouseEvent<HTMLDivElement>) => void = e => {
-    this.#isSizeChanging = false;
-    const pos = this.#base.ref.current.getPos();
-    const s = {x: e.clientX, y: e.clientY };
-    const mousemove = (e: MouseEvent) => {
-      const eClient = { x: e.clientX, y: e.clientY, };
-      const diff = subtract(eClient, s);
-      this.#base.ref.current.updatePosStyle(add(diff, pos));
-      this.#in.forEach(ic=>{ ic.ref.current.changeViewWithDiff(false, diff); });
-      this.#out.forEach(oc=>{ oc.ref.current.changeViewWithDiff(true, diff); });
+  onMouseMove: (e: React.MouseEvent<HTMLDivElement>) => void = e => {
+    const bcr = e.currentTarget.getBoundingClientRect();
+    const m = {x: e.clientX, y: e.clientY };
+    const left = bcr.x, right = bcr.x + bcr.width, top = bcr.y, bottom = bcr.y + bcr.height;
+    const isLeftSide = left - border < m.x && m.x < left + border, isRightSide = right - border < m.x && m.x < right + border;
+    const isUpperSide = top - border < m.y && m.y < top + border, isLowerSide = bottom - border < m.y && m.y < bottom + border;
+    let cursor;
+    if (isLeftSide || isRightSide || isUpperSide || isLowerSide) {
+      cursor = (isLeftSide && isUpperSide) || (isRightSide && isLowerSide) ? 'nwse' :
+        (isLeftSide && isLowerSide) || (isRightSide && isUpperSide) ? 'nesw' :
+        isLeftSide || isRightSide ? 'ew' : 'ns';
+      cursor = `${cursor}-resize`;
+      this.#isOnBorder = true;
+    } else {
+      cursor = 'default';
+      this.#isOnBorder = false;
     }
-    const mouseup = (e: MouseEvent) => {
-      const eClient = { x: e.clientX, y: e.clientY, };
-      const diff = subtract(eClient, s);
-      if (this.#base.ref.current.updatePosState(add(diff, pos))) {
-        this.#in.forEach(ic=>{ ic.ref.current.setPosWithDiff(false, diff)});
-        this.#out.forEach(oc=>{ oc.ref.current.setPosWithDiff(true, diff)});
-      } else {
-        this.#openCP(this.#base.id);
+    e.currentTarget.style.cursor = cursor;
+  }
+
+  private posChange: (e: React.MouseEvent<HTMLDivElement>) => void = e => {
+    let s = { x: e.clientX, y: e.clientY };
+    const mousemove = (e: MouseEvent) => {
+      const m = { x: e.clientX, y: e.clientY, };
+      const sm = subtract(m, s); s = m;
+      this.#base.ref.current.updatePosStyle(sm);
+      this.#in.forEach(ic=>{ ic.ref.current.changeViewWithDiff(false, sm); });
+      this.#out.forEach(oc=>{ oc.ref.current.changeViewWithDiff(true, sm); });
+    }
+    const isPosUpdate = () => {
+      const { x, y } = this.#base.ref.current.getPos();
+      const top = px(y), left = px(x);
+      if (left !== this.#base.left || top !== this.#base.top) {
+        this.updatePos(top, left);
+        return true;
       }
+      return false;
+    }
+    const mouseup = () => {
+      if (!isPosUpdate()) this.#openCP(this.#base.id);
       window.removeEventListener('mousemove', mousemove);
       window.removeEventListener('mouseup', mouseup);
-      this.#isSizeChanging = true;
     }
     window.addEventListener('mousemove', mousemove);
     window.addEventListener('mouseup', mouseup);
   }
-  sizeChange: (e: React.MouseEvent<HTMLDivElement>) => void = e => {
-    if (!this.#isSizeChanging) return;
-    const s = {x: e.clientX, y: e.clientY };
+  private sizeChange: (e: React.MouseEvent<HTMLDivElement>) => void = e => {
+    const bcr = e.currentTarget.getBoundingClientRect();
+    const c = { x: bcr.x + bcr.width / 2, y: bcr.y + bcr.height / 2 };
+    let s = { x: e.clientX, y: e.clientY };
+    const cs = subtract(s, c), signs = signFilter(cs), revX = { x: -1, y: 1 };
     const mousemove = (e: MouseEvent) => {
-      const eClient = { x: e.clientX, y: e.clientY, };
-      const diff = subtract(eClient, s);
-      this.#base.ref.current.updateSizeStyle();
-      this.#in.forEach(ic=>{ ic.ref.current.changeViewWithDiff(false, {x: 0, y: diff.y}); });
-      this.#out.forEach(oc=>{ oc.ref.current.changeViewWithDiff(true, diff); });
+      const m = { x: e.clientX, y: e.clientY };
+      const sm = subtract(m, s), d = hadamard(sm, signs); s = m;
+      const f = this.#base.ref.current.updateSizeStyle(multiply(d, 2));
+      this.#base.ref.current.updatePosStyle(multiply(hadamard(d, f),-1));
+      this.#in.forEach(ic=>{ ic.ref.current.changeViewWithDiff(false, hadamard(hadamard(revX, d), f)); });
+      this.#out.forEach(oc=>{ oc.ref.current.changeViewWithDiff(true, hadamard(d, f)); });
     }
-    const mouseup = (e: MouseEvent) => {
-      const eClient = { x: e.clientX, y: e.clientY, };
-      const diff = subtract(eClient, s);
-      if (this.#base.ref.current.updateSizeState()) {
-        this.#in.forEach(ic=>{ ic.ref.current.setPosWithDiff(false, {x: 0, y: diff.y})});
-        this.#out.forEach(oc=>{ oc.ref.current.setPosWithDiff(true, diff)});
-      }
+    const updateSizeState = () => {
+      const v = this.#base.ref.current.getSize();
+      const width = px(v.x), height = px(calcMainHeight(v.y, this.#base.inputs.length, this.#base.outputs.length));
+      const pos = this.#base.ref.current.getPos();
+      if (this.#base.width !== width || this.#base.height !== height) this.updateSize(px(pos.y), px(pos.x), width, height);
+    }
+    const mouseup = () => {
+      updateSizeState();
       window.removeEventListener('mousemove', mousemove);
       window.removeEventListener('mouseup', mouseup);
     }
     window.addEventListener('mousemove', mousemove);
     window.addEventListener('mouseup', mouseup);
+  }
+  onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void = e => {
+    if (this.#isOnBorder) this.sizeChange(e);
+    else this.posChange(e);
   }
 
   operateNewConnection: (isInput: boolean, id: number) => () => void = (isInput, id) => () => {
@@ -121,6 +156,21 @@ class Props {
       e: isInput ?  e : ncir.s,
     })
   }
+
+  deleteFunc = () => { this.#dispatch(deleteAction(this.#base.id, [ ...this.#in.map(c=>c.id), ...this.#out.map(c=>c.id), ])); }
+
+  private updateSize = (top: string, left: string, width: string, height: string) => {
+    const actions = [ updatePosSizeAction(this.#base.id, top, left, width, height), ];
+    this.#in.forEach(c=>actions.push(updateConnectionPosAction(c.id, c.s, this.#base.ref.current.getJointPos(true, c.iId))));
+    this.#out.forEach(c=>actions.push(updateConnectionPosAction(c.id, this.#base.ref.current.getJointPos(false, c.oId), c.e)));
+    this.#dispatch(multAction(actions));
+  }
+  private updatePos = (top: string, left: string) => {
+    const actions = [ updatePosAction(this.#base.id, top, left), ];
+    this.#in.forEach(c=>actions.push(updateConnectionPosAction(c.id, c.s, this.#base.ref.current.getJointPos(true, c.iId))));
+    this.#out.forEach(c=>actions.push(updateConnectionPosAction(c.id, this.#base.ref.current.getJointPos(false, c.oId), c.e)));
+    this.#dispatch(multAction(actions));
+  }
 }
 
 export default function baseProps (
@@ -131,8 +181,9 @@ export default function baseProps (
   newConnectionRef: MutableRefObject<ConnectionHandler>,
   newConnectionInfoRef: MutableRefObject<NewConnectionInfo>,
   addConnection: (c: ConnectionType) => void,
+  dispatch: (action: NodeAction) => void,
 ): BaseProps {
-  const obj = new Props(base, inputConnections, outputConnections, openCP, newConnectionRef, newConnectionInfoRef, addConnection);
+  const obj = new Props(base, inputConnections, outputConnections, openCP, newConnectionRef, newConnectionInfoRef, addConnection, dispatch);
   return { ...obj };
 }
 
@@ -143,3 +194,5 @@ export type NewConnectionInfo = {
   id?: number;
   s?: Vector;
 };
+
+const calcMainHeight = (height: number, nInputs: number, nOutputs: number): number => (height - optBarHeight * (Math.max(nInputs, nOutputs)+1));

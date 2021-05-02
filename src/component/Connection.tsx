@@ -7,8 +7,6 @@ export type Handler = {
   changeView: (start: Vector, end: Vector) => void;
   changeViewWithDiff: (isInput: boolean, diff: Vector) => void;
   setType: (type: DataType) => void;
-  setPos: (start: Vector, end: Vector) => void;
-  setPosWithDiff: (isInput: boolean, diff: Vector) => void;
   getPos: () => { start: Vector; end: Vector };
 }
 type Props = {
@@ -20,14 +18,11 @@ type Props = {
 
 const Connection = forwardRef<Handler, Props>((props, fRef) => {
   const ref = useRef<SVGPathElement>(null);
-  const [s, setS] = useState(props.s);
-  const [e, setE] = useState(props.e);
+  let s = props.s, e = props.e;
   useImperativeHandle(fRef, ()=>({
     changeView,
     changeViewWithDiff,
     setType,
-    setPos,
-    setPosWithDiff,
     getPos,
   }));
 
@@ -35,18 +30,12 @@ const Connection = forwardRef<Handler, Props>((props, fRef) => {
     ref.current!.attributes[1].value = calcDList(s,e,props.curving);
   }
   const changeViewWithDiff = (isInput: boolean, diff: Vector) => {
-    ref.current!.attributes[1].value = isInput ? calcDList(add(s,diff),e,props.curving) : calcDList(s,add(e,diff),props.curving);
+    if (isInput) s = add(s,diff);
+    else e = add(e,diff);
+    ref.current!.attributes[1].value = calcDList(s,e,props.curving);
   }
   const setType = (type: DataType) => {
     // update();
-  }
-  const setPos = (newS: Vector, newE: Vector) => {
-    if (s !== newS) setS(newS);
-    if (e !== newE) setE(newE);
-  }
-  const setPosWithDiff = (isInput: boolean, diff: Vector) => {
-    if (isInput) setS(add(getPos().start, diff));
-    else setE(add(getPos().end, diff));
   }
   const getPos = () => ({ start: s, end: e, });
 

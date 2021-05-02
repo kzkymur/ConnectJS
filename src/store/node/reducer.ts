@@ -29,6 +29,7 @@ export default reducer;
 type ReducerLogic = (state: State, action: Action, operationType: OperationType) => State;
 const reducerLogic: ReducerLogic = (state, action, operationType) => {
   console.log(action);
+  if (action.type===ActionTypes.mult) for (const a of action.payload.actions) console.log(a);
   let reverseActions: Action[];
   switch (action.type) {
     case ActionTypes.add: {
@@ -52,21 +53,15 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
     }
     case ActionTypes.delete: {
       const deletedBase = state.bases.filter(b => b.id === action.payload.id)[0];
-      const deletedConnections = state.connections.filter(c => c.iBaseId === action.payload.id || c.oBaseId === action.payload.id);
       if (deletedBase === undefined) return state;
       state = {
         ...state,
         bases: state.bases.filter(b => b.id !== action.payload.id),
-        connections: state.connections.filter(c => c.iBaseId !== action.payload.id && c.oBaseId !== action.payload.id),
       };
       reverseActions = [{
         type: ActionTypes.add,
         payload: { base: deletedBase },
       }];
-      deletedConnections.forEach(c => { reverseActions.push({
-        type: ActionTypes.addConnection,
-        payload: { ...c },
-      }) })
       break;
     }
 
@@ -227,16 +222,61 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
       }];
       break;
     }
+    case ActionTypes.updateConnectionPos: {
+      const oldCon = state.connections.filter(c => c.id === action.payload.id)[0];
+      if (oldCon === undefined) return state;
+      console.log(action.payload);
+      state = {
+        ...state,
+        connections: state.connections.map(c => c.id === action.payload.id ? {
+          ...c,
+          s: action.payload.s,
+          e: action.payload.e,
+        } : c),
+      };
+      reverseActions = [{
+        type: ActionTypes.updateConnectionPos,
+        payload: { id: action.payload.id, s: oldCon.s, e: oldCon.e },
+      }];
+      break;
+    }
+    case ActionTypes.updateConnectionType: {
+      const oldCon = state.connections.filter(c => c.id === action.payload.id)[0];
+      if (oldCon === undefined) return state;
+      state = {
+        ...state,
+        connections: state.connections.map(c => c.id === action.payload.id ? {
+          ...c,
+          type: action.payload.type,
+        } : c),
+      };
+      reverseActions = [{
+        type: ActionTypes.updateConnectionType,
+        payload: { id: action.payload.id, type: oldCon.type },
+      }];
+      break;
+    }
 
     case ActionTypes.undo: {
       const reverseElement = state.reverseActionBranch.current.prev;
       if (reverseElement===undefined) return state;
-      return { ...reverseElement.actions.reduce((a, s, i) => reducerLogic(a, s, reverseElement.actions.length === i+1 ? OperationTypes.backward : OperationTypes.store), state) };
+      state = { ...reverseElement.actions.reduce((a, s) => reducerLogic(a, s, OperationTypes.store), state) };
+      reverseActions = [];
+      operationType = OperationTypes.backward;
+      break;
     }
     case ActionTypes.redo: {
       const reverseElement = state.reverseActionBranch.current.next;
       if (reverseElement===undefined) return state;
-      return { ...reverseElement.actions.reduce((a, s, i) => reducerLogic(a, s, reverseElement.actions.length === i+1 ? OperationTypes.forward : OperationTypes.store), state) };
+      state = { ...reverseElement.actions.reduce((a, s) => reducerLogic(a, s, OperationTypes.store), state) };
+      reverseActions = [];
+      operationType = OperationTypes.forward;
+      break;
+    }
+    case ActionTypes.mult: {
+      state = { ...action.payload.actions.reduce((a, s) => reducerLogic(a, s, OperationTypes.store), state) };
+      reverseActions = [];
+      break;
     }
 
     default: return state; // 再描画しない〜〜

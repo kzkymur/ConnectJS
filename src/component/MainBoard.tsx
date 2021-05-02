@@ -42,13 +42,10 @@ const MainBoard: React.FC = () => {
     }
   }, [cpIdsList]);
   console.log(cons);
-  console.log(bases);
 
   return (
     <div className={style.mainBoard}>
-      {bases.map(b=>{
-        return <Base key={b.id} ref={b.ref} {...baseProps(b, cons.filter(c=>c.iBaseId==b.id), cons.filter(c=>c.oBaseId==b.id), openCPFunc, newConRef, newConInfoRef, addConnection)}/>
-      })}
+      {bases.map(b=><Base key={b.id} ref={b.ref} {...baseProps(b, cons.filter(c=>c.iBaseId==b.id), cons.filter(c=>c.oBaseId==b.id), openCPFunc, newConRef, newConInfoRef, addConnection, dispatch)}/>)}
       {cpIdsList.map((ids: number[], i)=>{
         if(ids[0]===undefined) return;
         let bases: BaseType[] = [];
@@ -56,7 +53,7 @@ const MainBoard: React.FC = () => {
         return <Panel key={i} {...pProps(bases, cpIndexes[i], createSetCPIndex(i))}/>
       })}
       <svg className={style.connectionPanel}>
-        {cons.map(c => <Connection key={c.id} ref={c.ref} {...cProps(c.type, props.curving, c.s, c.e)}/> )}
+        {cons.map(c=><Connection key={c.id} ref={c.ref} {...cProps(c.type, props.curving, c.s, c.e)}/>)}
         <Connection ref={newConRef} {...cProps(DataTypes.Framebuffer,props.curving,{x:0,y:0},{x:0,y:0})}/>
       </svg>
     </div>

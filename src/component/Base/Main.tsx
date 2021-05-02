@@ -1,17 +1,14 @@
-import React from 'react';
+import React, { ReactNode, RefObject } from 'react';
 import style from '@/style/Base/Main.scss';
 
 type Props = {
-  element: React.ReactNode;
-  posChange: (e: React.MouseEvent<HTMLDivElement>) => void;
-  fRef: React.RefObject<HTMLDivElement>;
+  element: ReactNode;
+  fRef: RefObject<HTMLDivElement>;
 }
 
 const Main: React.FC<Props> = props => {
   return (
-    <div ref={props.fRef} className={style.main} 
-        onMouseDown={props.posChange}
-    >
+    <div ref={props.fRef} className={style.main}>
       {props.element}
     </div>
   )

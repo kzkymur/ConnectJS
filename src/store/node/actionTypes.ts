@@ -1,5 +1,5 @@
-import { Action } from 'redux';
-import { BaseType, ConnectionType, DataType } from './types';
+import { Action } from 'redux'; import { BaseType, ConnectionType, DataType } from './types';
+import Vector from '@/utils/vector';
 
 export const ActionTypes = {
   add: "ADD",
@@ -13,10 +13,13 @@ export const ActionTypes = {
 
   undo: "UNDO",
   redo: "REDO",
+  mult: "MULT",
 
   addConnection: "ADDCONNECTION",
-  updateConnection: "UPDATECONNECTION",
   deleteConnection: "DELETECONNECTION",
+  updateConnection: "UPDATECONNECTION",
+  updateConnectionPos: "UPDATECONNECTIONPOS",
+  updateConnectionType: "UPDATECONNECTIONTYPE",
 } as const;
 
 // Actionの型定義
@@ -41,7 +44,7 @@ interface UpdateName extends Action {
 }
 interface UpdateSize extends Action {
   type: typeof ActionTypes.updateSize;
-  payload: { 
+  payload: {
     id: number;
     width: string;
     height: string;
@@ -74,23 +77,44 @@ interface DeleteSocket extends Action {
 
 interface Undo extends Action { type: typeof ActionTypes.undo; }
 interface Redo extends Action { type: typeof ActionTypes.redo; }
+interface Mult extends Action {
+  type: typeof ActionTypes.mult;
+  payload: { actions: Action[]; };
+}
 
 interface AddConnection extends Action { 
   type: typeof ActionTypes.addConnection; 
-  payload: ConnectionType;
-}
-interface UpdateConnection extends Action { 
-  type: typeof ActionTypes.updateConnection; 
   payload: ConnectionType;
 }
 interface DeleteConnection extends Action { 
   type: typeof ActionTypes.deleteConnection; 
   payload: { id: number; };
 }
-type NodeAction = 
-  Add | Delete | 
+interface UpdateConnection extends Action { 
+  type: typeof ActionTypes.updateConnection; 
+  payload: ConnectionType;
+}
+interface UpdateConnectionPos extends Action { 
+  type: typeof ActionTypes.updateConnectionPos;
+  payload: {
+    id: number;
+    s: Vector;
+    e: Vector;
+  };
+}
+interface UpdateConnectionType extends Action { 
+  type: typeof ActionTypes.updateConnectionType;
+  payload: {
+    id: number;
+    type: DataType;
+  };
+}
+
+type NodeAction =
+  Add | Delete |
   Update | UpdateName | UpdateSize | UpdatePos |
   AddSocket | DeleteSocket |
-  Undo | Redo | 
-  AddConnection | UpdateConnection | DeleteConnection; 
+  Undo | Redo | Mult |
+  AddConnection | DeleteConnection |
+  UpdateConnection | UpdateConnectionPos | UpdateConnectionType;
 export default NodeAction;
