@@ -7,9 +7,8 @@ import Main from './Main';
 import IOs, { Handler as IOsHandler } from './IOs';
 import { px, px2n } from '@/utils';
 import Vector from '@/utils/vector';
-import { minBaseWidth, minBaseHeight } from '@/config';
-import style, { optionalbarHeight } from '@/style/Base.scss';
-const optBarHeight = px2n(optionalbarHeight);
+import { minBaseWidth, minBaseHeight, optBarHeight, borderWidth } from '@/config';
+import style from '@/style/Base.scss';
 
 export type Handler = {
   getJointPos: (isInput: boolean, id: number) => Vector;
@@ -61,7 +60,7 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
   }
   const keepSizeStyle = () => {
     mainRef.current.style.height = height;
-    ref.current.style.height = px(px2n(height) + optBarHeight * (Math.max(inputs.length, outputs.length)+1));
+    ref.current.style.height = px(px2n(height) + optBarHeight * (Math.max(inputs.length, outputs.length)+1)-borderWidth*2);
   }
   useImperativeHandle(fRef, ()=>({
     getJointPos,
@@ -75,7 +74,7 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
   useEffect(()=>{
     let elm;
     elm = ref.current;
-    elm.style.width = width;
+    elm.style.width = px(px2n(width)-borderWidth*2);
     elm.style.top = top;
     elm.style.left = left;
     elm.style.opacity = '1';

@@ -4,3 +4,4 @@ export const minBaseHeight = 80; // px
 export const initBaseWidth = 160; // px
 export const initBaseHeight = 120; // px
 export const optBarHeight = 20; // px
+export const borderWidth = 5; // px
