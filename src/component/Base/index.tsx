@@ -58,10 +58,6 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
     ref.current.style.width = px(v.x), ref.current.style.height = px(v.y);
     return f;
   }
-  const keepSizeStyle = () => {
-    mainRef.current.style.height = height;
-    ref.current.style.height = px(px2n(height) + optBarHeight * (Math.max(inputs.length, outputs.length)+1)-borderWidth*2);
-  }
   useImperativeHandle(fRef, ()=>({
     getJointPos,
     getAllJointPos,
@@ -78,7 +74,8 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
     elm.style.top = top;
     elm.style.left = left;
     elm.style.opacity = '1';
-    keepSizeStyle();
+    mainRef.current.style.height = px(px2n(height) - borderWidth * 2);
+    ref.current.style.height = px(px2n(height) + optBarHeight * (Math.max(inputs.length, outputs.length)+1) - borderWidth * 2);
   })
 
   const createIONameUpdate = (isInput: boolean, index: number) => (name: string) => {
