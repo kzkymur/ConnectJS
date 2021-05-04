@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { BaseType, NodeModeNames, Socket, DataTypes, DataType } from '@/store/node/types';
+import { BaseType, NodeModeNames, DataTypes, DataType } from '@/store/node/types';
 import { updateAction, addSocketAction } from '@/store/node/actions';
 import { closeCPAction, closeAllCPAction } from '@/store/panel/actions';
 import NameBox from './atom/NameBox';
@@ -8,13 +8,11 @@ import style from '@/style/ControllPanel.css';
 
 type Props = {
   bases: BaseType[];
-  index: number;
-  setIndex: (i: number) => void;
 }
 
 const Panel: React.FC<Props> = props => {
   const dispatch = useDispatch();
-  const index = props.index;
+  const [index, setIndex] = useState<number>(0);
   const updateFunc = (c: BaseType) => dispatch(updateAction(c));
 
   const nameUpdate = (name: string) => {
@@ -29,7 +27,7 @@ const Panel: React.FC<Props> = props => {
     const changeIndexFunc = (e: React.MouseEvent<HTMLInputElement>) => {
       if (index!==newIndex) {
         e.preventDefault();
-        props.setIndex(newIndex);
+        setIndex(newIndex);
       }
     }
     return changeIndexFunc;
@@ -38,9 +36,9 @@ const Panel: React.FC<Props> = props => {
     const closeFunc = () => {
       dispatch(closeCPAction(closeIndex));
       if (closeIndex===index) {
-        props.setIndex(0);
+        setIndex(0);
       } else if (closeIndex < index) {
-        props.setIndex(index-1);
+        setIndex(index-1);
       }
     }
     return closeFunc;
