@@ -45,7 +45,6 @@ const Panel: React.FC<Props> = props => {
   }
 
   let defaultOutputType: DataType;
-  // switch (props.bases[index].mode.name) {
   switch (props.bases[index] ? props.bases[index].mode.name : props.bases[0].mode.name) {
     case NodeModeNames.Canvas: {
       defaultOutputType = DataTypes.Framebuffer;
