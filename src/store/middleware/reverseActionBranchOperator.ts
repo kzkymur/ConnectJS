@@ -29,6 +29,7 @@ const reverseActionBranchOperator: Middleware = store => next => (action: NodeAc
   }
 
   reccurent(action);
+
   switch (action.type) {
     case NodeActionTypes.undo: {
       next(backwardAction());

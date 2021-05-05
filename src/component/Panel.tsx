@@ -45,7 +45,8 @@ const Panel: React.FC<Props> = props => {
   }
 
   let defaultOutputType: DataType;
-  switch (props.bases[index] ? props.bases[index].mode.name : props.bases[0].mode.name) {
+  const base = props.bases[index] ? props.bases[index] : props.bases[0];
+  switch (base.mode.name) {
     case NodeModeNames.Canvas: {
       defaultOutputType = DataTypes.Framebuffer;
       break;
@@ -56,21 +57,19 @@ const Panel: React.FC<Props> = props => {
   }
   const addInput = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    dispatch(addSocketAction(props.bases[index].id, true, defaultOutputType));
+    dispatch(addSocketAction(base.id, true, defaultOutputType));
   }
   const addOutput = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    dispatch(addSocketAction(props.bases[index].id, false, defaultOutputType));
+    dispatch(addSocketAction(base.id, false, defaultOutputType));
   }
 
-  let i = -1;
   return (
     <div className={style.controllPanel}>
       <div className={style.headerContainer}>
-        {props.bases.map(b=>{
-          i++;
+        {props.bases.map((b,i)=>{
           return(
-            <div className={`${style.cpTabContainer} ${i===index ? style.activeCPTabContainer : ''}`} key={i}>
+            <div className={`${style.cpTabContainer} ${i===index ? style.activeCPTabContainer : ''}`} key={b.id}>
               <NameBox className={style.nameBoxInCP}
                 name={b.name}
                 updateFunc={nameUpdate}
@@ -82,17 +81,11 @@ const Panel: React.FC<Props> = props => {
       </div>
       <div className={style.inputContainer}>
         <button onClick={addInput}>Add</button>
-        {props.bases[index].inputs.map((input)=>{
-          i++;
-          return <input className={style.ioElm}type='text' defaultValue={i} key={i}/>
-        })}
+        {base.inputs.map((input,i)=> <input className={style.ioElm}type='text' defaultValue={i} key={input.id}/> )}
       </div>
       <div className={style.inputContainer}>
         <button onClick={addOutput}>Add</button>
-        {props.bases[index].outputs.map((output)=>{
-          i++;
-          return <input className={style.ioElm}type='text' defaultValue={i} key={i}/>
-        })}
+        {base.outputs.map((output,i)=> <input className={style.ioElm}type='text' defaultValue={i} key={output.id}/> )}
       </div>
     </div>
   )
