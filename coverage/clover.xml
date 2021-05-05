@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1620219554954" clover="3.2.0">
+  <project timestamp="1620219554954" name="All files">
+    <metrics statements="8" coveredstatements="8" conditionals="8" coveredconditionals="4" methods="8" coveredmethods="7" elements="24" coveredelements="19" complexity="0" loc="8" ncloc="8" packages="1" files="1" classes="1"/>
+    <file name="vector.ts" path="/Users/yamaurakazuki/Work/ConnectJS/src/utils/vector.ts">
+      <metrics statements="8" coveredstatements="8" conditionals="8" coveredconditionals="4" methods="8" coveredmethods="7"/>
+      <line num="7" count="1" type="stmt"/>
+      <line num="8" count="1" type="stmt"/>
+      <line num="9" count="1" type="stmt"/>
+      <line num="10" count="1" type="stmt"/>
+      <line num="11" count="1" type="stmt"/>
+      <line num="12" count="1" type="cond" truecount="2" falsecount="2"/>
+      <line num="13" count="1" type="cond" truecount="2" falsecount="2"/>
+      <line num="14" count="1" type="stmt"/>
+    </file>
+  </project>
+</coverage>
