@@ -10,8 +10,7 @@ const useDispatchMock = useDispatch as jest.Mock
 
 describe('<MainBoard />', () => {
   test('render', () => {
-    useSelectorMock.mockReturnValue(initNodeState)
-    useSelectorMock.mockReturnValue(initPanelState)
+    useSelectorMock.mockReturnValueOnce(initNodeState).mockReturnValue(initPanelState.cpIdsList)
     useDispatchMock.mockReturnValue(jest.fn())
     const component = renderer.create( <MainBoard/> );
   });

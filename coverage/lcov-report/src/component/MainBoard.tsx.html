@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">44.44% </span>
+                <span class="strong">68.18% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>20/45</span>
+                <span class='fraction'>30/44</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">50% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>1/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">7.14% </span>
+                <span class="strong">21.43% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/14</span>
+                <span class='fraction'>3/14</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">58.82% </span>
+                <span class="strong">84.85% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>20/34</span>
+                <span class='fraction'>28/33</span>
             </div>
         
             
@@ -55,7 +55,7 @@
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
         </p>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line medium'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -105,8 +105,7 @@
 <a name='L46'></a><a href='#L46'>46</a>
 <a name='L47'></a><a href='#L47'>47</a>
 <a name='L48'></a><a href='#L48'>48</a>
-<a name='L49'></a><a href='#L49'>49</a>
-<a name='L50'></a><a href='#L50'>50</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L49'></a><a href='#L49'>49</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
@@ -121,24 +120,23 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -171,23 +169,22 @@ import Vector from '@/utils/vector';
 &nbsp;
 const MainBoard: React.FC = () =&gt; {
   const props = useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.nodeReducer)</span>;
-  console.log(props);
   const cpIdsList = useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.panelReducer.cpIdsList)</span>;
   const baseIdRefs = useIdRef&lt;BaseHandler&gt;(props.bases);
   const bases = mergeSourceAndIdRefs&lt;BaseType, BaseHandler&gt;(props.bases, baseIdRefs);
-  const connectionIdRefs = <span class="cstat-no" title="statement not covered" >useIdRef&lt;ConnectionHandler&gt;(props.connections);</span>
-  const cons = <span class="cstat-no" title="statement not covered" >mergeSourceAndIdRefs&lt;ConnectionType, ConnectionHandler&gt;(props.connections, connectionIdRefs);</span>
-  const newConRef = <span class="cstat-no" title="statement not covered" >useRef&lt;ConnectionHandler&gt;({} as ConnectionHandler);</span>
-  const newConInfoRef = <span class="cstat-no" title="statement not covered" >useRef&lt;NewConnectionInfo&gt;({});</span>
-  const dispatch = <span class="cstat-no" title="statement not covered" >useDispatch();</span>
-  const openCPFunc = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(i</span>d: number) =&gt; <span class="cstat-no" title="statement not covered" >dispatch(openCPAction(id));</span></span>
-  const addConnection = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(c</span>: ConnectionType) =&gt; <span class="cstat-no" title="statement not covered" >dispatch(addConnectionAction(c));</span></span>
+  const connectionIdRefs = useIdRef&lt;ConnectionHandler&gt;(props.connections);
+  const cons = mergeSourceAndIdRefs&lt;ConnectionType, ConnectionHandler&gt;(props.connections, connectionIdRefs);
+  const newConRef = useRef&lt;ConnectionHandler&gt;({} as ConnectionHandler);
+  const newConInfoRef = useRef&lt;NewConnectionInfo&gt;({});
+  const dispatch = useDispatch();
+  const openCPFunc = <span class="fstat-no" title="function not covered" >(i</span>d: number) =&gt; <span class="cstat-no" title="statement not covered" >dispatch(openCPAction(id));</span>
+  const addConnection = <span class="fstat-no" title="function not covered" >(c</span>: ConnectionType) =&gt; <span class="cstat-no" title="statement not covered" >dispatch(addConnectionAction(c));</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  return (</span>
+  return (
     &lt;div className={style.mainBoard}&gt;
       {bases.map(<span class="fstat-no" title="function not covered" >b=</span>&gt;<span class="cstat-no" title="statement not covered" >&lt;Base key={b.id} r</span>ef={b.ref} {...baseProps(b, cons.filter(<span class="fstat-no" title="function not covered" >c=</span>&gt;<span class="cstat-no" title="statement not covered" >c.iBaseId==b.id)</span>, cons.filter(<span class="fstat-no" title="function not covered" >c=</span>&gt;<span class="cstat-no" title="statement not covered" >c.oBaseId==b.id)</span>, openCPFunc, newConRef, newConInfoRef, addConnection, dispatch)}/&gt;)}
-      {cpIdsList.map(<span class="fstat-no" title="function not covered" >(i</span>ds, i)=&gt;{
-<span class="cstat-no" title="statement not covered" >        if(ids[0]===undefined) <span class="cstat-no" title="statement not covered" >return;</span></span>
+      {cpIdsList.map((ids, i)=&gt;{
+        <span class="missing-if-branch" title="else path not taken" >E</span>if(ids[0]===undefined) return;
         let bases: BaseType[] = <span class="cstat-no" title="statement not covered" >[];</span>
 <span class="cstat-no" title="statement not covered" >        ids.forEach(<span class="fstat-no" title="function not covered" >id=</span>&gt;{ <span class="cstat-no" title="statement not covered" >bases.push(props.bases.filter(<span class="fstat-no" title="function not covered" >c=</span>&gt;<span class="cstat-no" title="statement not covered" >c.id===id)</span>[0]); </span>})</span>
 <span class="cstat-no" title="statement not covered" >        return &lt;Panel key={i} {...pProps(bases)}/&gt;</span>
@@ -203,7 +200,7 @@ const MainBoard: React.FC = () =&gt; {
 export default MainBoard;
 &nbsp;
 const pProps = <span class="fstat-no" title="function not covered" >(b</span>ases: BaseType[]) =&gt; (<span class="cstat-no" title="statement not covered" >{ bases })</span>;
-const cProps = <span class="fstat-no" title="function not covered" >(t</span>ype: DataType, curving: number, start: Vector, end: Vector) =&gt; (<span class="cstat-no" title="statement not covered" >{ type, curving, s: start, e: end })</span>;
+const cProps = (type: DataType, curving: number, start: Vector, end: Vector) =&gt; ({ type, curving, s: start, e: end });
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -211,7 +208,7 @@ const cProps = <span class="fstat-no" title="function not covered" >(t</span>ype
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Thu May 06 2021 00:53:30 GMT+0900 (日本標準時)
+                at Thu May 06 2021 01:06:42 GMT+0900 (日本標準時)
             </div>
         </div>
         <script src="../../prettify.js"></script>

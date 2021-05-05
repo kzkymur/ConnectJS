@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1620230010366" clover="3.2.0">
-  <project timestamp="1620230010366" name="All files">
-    <metrics statements="739" coveredstatements="247" conditionals="306" coveredconditionals="46" methods="211" coveredmethods="24" elements="1256" coveredelements="317" complexity="0" loc="739" ncloc="739" packages="12" files="35" classes="35"/>
+<coverage generated="1620230802327" clover="3.2.0">
+  <project timestamp="1620230802327" name="All files">
+    <metrics statements="738" coveredstatements="270" conditionals="306" coveredconditionals="49" methods="211" coveredmethods="29" elements="1255" coveredelements="348" complexity="0" loc="738" ncloc="738" packages="12" files="35" classes="35"/>
     <package name="src">
       <metrics statements="7" coveredstatements="7" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
       <file name="config.ts" path="/Users/yamaurakazuki/Work/ConnectJS/src/config.ts">
@@ -16,7 +16,7 @@
       </file>
     </package>
     <package name="src.component">
-      <metrics statements="127" coveredstatements="55" conditionals="20" coveredconditionals="0" methods="39" coveredmethods="4"/>
+      <metrics statements="126" coveredstatements="76" conditionals="20" coveredconditionals="1" methods="39" coveredmethods="9"/>
       <file name="AddWindow.tsx" path="/Users/yamaurakazuki/Work/ConnectJS/src/component/AddWindow.tsx">
         <metrics statements="16" coveredstatements="11" conditionals="4" coveredconditionals="0" methods="3" coveredmethods="2"/>
         <line num="1" count="1" type="stmt"/>
@@ -37,30 +37,30 @@
         <line num="49" count="1" type="stmt"/>
       </file>
       <file name="Connection.tsx" path="/Users/yamaurakazuki/Work/ConnectJS/src/component/Connection.tsx">
-        <metrics statements="23" coveredstatements="6" conditionals="2" coveredconditionals="0" methods="7" coveredmethods="0"/>
+        <metrics statements="23" coveredstatements="19" conditionals="2" coveredconditionals="0" methods="7" coveredmethods="3"/>
         <line num="1" count="1" type="stmt"/>
         <line num="3" count="1" type="stmt"/>
         <line num="4" count="1" type="stmt"/>
         <line num="19" count="1" type="stmt"/>
-        <line num="20" count="0" type="stmt"/>
-        <line num="21" count="0" type="stmt"/>
-        <line num="22" count="0" type="stmt"/>
-        <line num="29" count="0" type="stmt"/>
+        <line num="20" count="1" type="stmt"/>
+        <line num="21" count="1" type="stmt"/>
+        <line num="22" count="1" type="stmt"/>
+        <line num="29" count="1" type="stmt"/>
         <line num="30" count="0" type="stmt"/>
-        <line num="32" count="0" type="stmt"/>
+        <line num="32" count="1" type="stmt"/>
         <line num="33" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="34" count="0" type="stmt"/>
         <line num="35" count="0" type="stmt"/>
-        <line num="37" count="0" type="stmt"/>
-        <line num="40" count="0" type="stmt"/>
-        <line num="42" count="0" type="stmt"/>
+        <line num="37" count="1" type="stmt"/>
+        <line num="40" count="1" type="stmt"/>
+        <line num="42" count="1" type="stmt"/>
         <line num="48" count="1" type="stmt"/>
         <line num="50" count="1" type="stmt"/>
-        <line num="51" count="0" type="stmt"/>
-        <line num="52" count="0" type="stmt"/>
-        <line num="53" count="0" type="stmt"/>
-        <line num="54" count="0" type="stmt"/>
-        <line num="55" count="0" type="stmt"/>
+        <line num="51" count="1" type="stmt"/>
+        <line num="52" count="1" type="stmt"/>
+        <line num="53" count="1" type="stmt"/>
+        <line num="54" count="1" type="stmt"/>
+        <line num="55" count="1" type="stmt"/>
       </file>
       <file name="Header.tsx" path="/Users/yamaurakazuki/Work/ConnectJS/src/component/Header.tsx">
         <metrics statements="9" coveredstatements="9" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="1"/>
@@ -75,7 +75,7 @@
         <line num="18" count="1" type="stmt"/>
       </file>
       <file name="MainBoard.tsx" path="/Users/yamaurakazuki/Work/ConnectJS/src/component/MainBoard.tsx">
-        <metrics statements="34" coveredstatements="20" conditionals="2" coveredconditionals="0" methods="14" coveredmethods="1"/>
+        <metrics statements="33" coveredstatements="28" conditionals="2" coveredconditionals="1" methods="14" coveredmethods="3"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
         <line num="4" count="1" type="stmt"/>
@@ -88,28 +88,27 @@
         <line num="11" count="1" type="stmt"/>
         <line num="12" count="1" type="stmt"/>
         <line num="15" count="1" type="stmt"/>
-        <line num="16" count="2" type="stmt"/>
-        <line num="17" count="2" type="stmt"/>
-        <line num="18" count="2" type="stmt"/>
-        <line num="19" count="2" type="stmt"/>
+        <line num="16" count="1" type="stmt"/>
+        <line num="17" count="1" type="stmt"/>
+        <line num="18" count="1" type="stmt"/>
+        <line num="19" count="1" type="stmt"/>
         <line num="20" count="1" type="stmt"/>
-        <line num="21" count="0" type="stmt"/>
-        <line num="22" count="0" type="stmt"/>
-        <line num="23" count="0" type="stmt"/>
-        <line num="24" count="0" type="stmt"/>
-        <line num="25" count="0" type="stmt"/>
-        <line num="26" count="0" type="stmt"/>
-        <line num="27" count="0" type="stmt"/>
-        <line num="29" count="0" type="stmt"/>
-        <line num="31" count="0" type="stmt"/>
-        <line num="33" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="21" count="1" type="stmt"/>
+        <line num="22" count="1" type="stmt"/>
+        <line num="23" count="1" type="stmt"/>
+        <line num="24" count="1" type="stmt"/>
+        <line num="25" count="1" type="stmt"/>
+        <line num="26" count="1" type="stmt"/>
+        <line num="28" count="1" type="stmt"/>
+        <line num="30" count="0" type="stmt"/>
+        <line num="32" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="33" count="0" type="stmt"/>
         <line num="34" count="0" type="stmt"/>
         <line num="35" count="0" type="stmt"/>
-        <line num="36" count="0" type="stmt"/>
-        <line num="39" count="0" type="stmt"/>
-        <line num="46" count="1" type="stmt"/>
+        <line num="38" count="0" type="stmt"/>
+        <line num="45" count="1" type="stmt"/>
+        <line num="47" count="1" type="stmt"/>
         <line num="48" count="1" type="stmt"/>
-        <line num="49" count="1" type="stmt"/>
       </file>
       <file name="Panel.tsx" path="/Users/yamaurakazuki/Work/ConnectJS/src/component/Panel.tsx">
         <metrics statements="45" coveredstatements="9" conditionals="12" coveredconditionals="0" methods="13" coveredmethods="0"/>
@@ -684,7 +683,7 @@
       </file>
     </package>
     <package name="src.style">
-      <metrics statements="50" coveredstatements="31" conditionals="30" coveredconditionals="21" methods="10" coveredmethods="5"/>
+      <metrics statements="50" coveredstatements="33" conditionals="30" coveredconditionals="23" methods="10" coveredmethods="5"/>
       <file name="Base.scss" path="/Users/yamaurakazuki/Work/ConnectJS/src/style/Base.scss">
         <metrics statements="10" coveredstatements="6" conditionals="6" coveredconditionals="4" methods="2" coveredmethods="1"/>
         <line num="1" count="1" type="stmt"/>
@@ -699,13 +698,13 @@
         <line num="23" count="0" type="stmt"/>
       </file>
       <file name="Connection.scss" path="/Users/yamaurakazuki/Work/ConnectJS/src/style/Connection.scss">
-        <metrics statements="10" coveredstatements="6" conditionals="6" coveredconditionals="4" methods="2" coveredmethods="1"/>
+        <metrics statements="10" coveredstatements="7" conditionals="6" coveredconditionals="5" methods="2" coveredmethods="1"/>
         <line num="1" count="1" type="stmt"/>
         <line num="3" count="1" type="cond" truecount="3" falsecount="1"/>
         <line num="4" count="1" type="stmt"/>
         <line num="7" count="1" type="stmt"/>
-        <line num="9" count="1" type="cond" truecount="1" falsecount="1"/>
-        <line num="10" count="0" type="stmt"/>
+        <line num="9" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="10" count="1" type="stmt"/>
         <line num="12" count="1" type="stmt"/>
         <line num="16" count="0" type="stmt"/>
         <line num="20" count="0" type="stmt"/>
@@ -738,13 +737,13 @@
         <line num="23" count="0" type="stmt"/>
       </file>
       <file name="MainBoard.css" path="/Users/yamaurakazuki/Work/ConnectJS/src/style/MainBoard.css">
-        <metrics statements="10" coveredstatements="6" conditionals="6" coveredconditionals="4" methods="2" coveredmethods="1"/>
+        <metrics statements="10" coveredstatements="7" conditionals="6" coveredconditionals="5" methods="2" coveredmethods="1"/>
         <line num="1" count="1" type="stmt"/>
         <line num="3" count="1" type="cond" truecount="3" falsecount="1"/>
         <line num="4" count="1" type="stmt"/>
         <line num="7" count="1" type="stmt"/>
-        <line num="9" count="1" type="cond" truecount="1" falsecount="1"/>
-        <line num="10" count="0" type="stmt"/>
+        <line num="9" count="3" type="cond" truecount="2" falsecount="0"/>
+        <line num="10" count="2" type="stmt"/>
         <line num="12" count="1" type="stmt"/>
         <line num="16" count="0" type="stmt"/>
         <line num="20" count="0" type="stmt"/>
@@ -853,7 +852,7 @@
         <line num="2" count="1" type="stmt"/>
         <line num="6" count="1" type="stmt"/>
         <line num="7" count="2" type="stmt"/>
-        <line num="8" count="1" type="stmt"/>
+        <line num="8" count="2" type="stmt"/>
         <line num="9" count="0" type="stmt"/>
         <line num="10" count="0" type="stmt"/>
         <line num="11" count="0" type="stmt"/>
@@ -867,8 +866,8 @@
         <line num="21" count="0" type="stmt"/>
         <line num="22" count="0" type="stmt"/>
         <line num="25" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="27" count="1" type="stmt"/>
-        <line num="31" count="1" type="stmt"/>
+        <line num="27" count="2" type="stmt"/>
+        <line num="31" count="2" type="stmt"/>
       </file>
       <file name="vector.ts" path="/Users/yamaurakazuki/Work/ConnectJS/src/utils/vector.ts">
         <metrics statements="8" coveredstatements="8" conditionals="8" coveredconditionals="4" methods="8" coveredmethods="7"/>

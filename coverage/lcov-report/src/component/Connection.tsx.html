@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">17.65% </span>
+                <span class="strong">82.35% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>6/34</span>
+                <span class='fraction'>28/34</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">42.86% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/7</span>
+                <span class='fraction'>3/7</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">26.09% </span>
+                <span class="strong">82.61% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>6/23</span>
+                <span class='fraction'>19/23</span>
             </div>
         
             
@@ -55,7 +55,7 @@
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
         </p>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -132,29 +132,29 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -163,11 +163,11 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React, { useRef, useState, useImperativeHandle, forwardRef } from 'react'; 
 import { DataType } from '@/store/node/types';
@@ -187,30 +187,30 @@ type Props = {
   e: Vector;
 }
 &nbsp;
-const Connection = forwardRef&lt;Handler, Props&gt;(<span class="fstat-no" title="function not covered" >(p</span>rops, fRef) =&gt; {
-  const ref = <span class="cstat-no" title="statement not covered" >useRef&lt;SVGPathElement&gt;(null);</span>
-  let s = <span class="cstat-no" title="statement not covered" >props.s,</span> e = <span class="cstat-no" title="statement not covered" >props.e;</span>
-<span class="cstat-no" title="statement not covered" >  useImperativeHandle(fRef, <span class="fstat-no" title="function not covered" >()=</span>&gt;(<span class="cstat-no" title="statement not covered" >{</span></span>
+const Connection = forwardRef&lt;Handler, Props&gt;((props, fRef) =&gt; {
+  const ref = useRef&lt;SVGPathElement&gt;(null);
+  let s = props.s, e = props.e;
+  useImperativeHandle(fRef, ()=&gt;({
     changeView,
     changeViewWithDiff,
     setType,
     getPos,
   }));
 &nbsp;
-  const changeView = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(s</span>: Vector, e: Vector) =&gt; {</span>
+  const changeView = <span class="fstat-no" title="function not covered" >(s</span>: Vector, e: Vector) =&gt; {
 <span class="cstat-no" title="statement not covered" >    ref.current!.attributes[1].value = calcDList(s,e,props.curving);</span>
   }
-  const changeViewWithDiff = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(i</span>sInput: boolean, diff: Vector) =&gt; {</span>
+  const changeViewWithDiff = <span class="fstat-no" title="function not covered" >(i</span>sInput: boolean, diff: Vector) =&gt; {
 <span class="cstat-no" title="statement not covered" >    if (isInput) <span class="cstat-no" title="statement not covered" >s = add(s,diff);</span></span>
     else <span class="cstat-no" title="statement not covered" >e = add(e,diff);</span>
 <span class="cstat-no" title="statement not covered" >    ref.current!.attributes[1].value = calcDList(s,e,props.curving);</span>
   }
-  const setType = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(t</span>ype: DataType) =&gt; {</span>
+  const setType = <span class="fstat-no" title="function not covered" >(t</span>ype: DataType) =&gt; {
     // update();
   }
-  const getPos = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; (<span class="cstat-no" title="statement not covered" >{ start: s, end: e, })</span>;</span>
+  const getPos = <span class="fstat-no" title="function not covered" >() =</span>&gt; (<span class="cstat-no" title="statement not covered" >{ start: s, end: e, })</span>;
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  return (</span>
+  return (
     &lt;path className={style.connectionLine} ref={ref}
       d={calcDList(s, e, props.curving)}/&gt;	
   );
@@ -218,12 +218,12 @@ const Connection = forwardRef&lt;Handler, Props&gt;(<span class="fstat-no" title
 &nbsp;
 export default Connection;
 &nbsp;
-const calcDList = <span class="fstat-no" title="function not covered" >(s</span>: Vector, e: Vector, curving: number) =&gt; {
-  let dList :(number | string)[] = <span class="cstat-no" title="statement not covered" >['M'];</span> <span class="cstat-no" title="statement not covered" >dList[3] = 'Q'; <span class="cstat-no" title="statement not covered" ></span>dList[8] = 'T';</span>
-<span class="cstat-no" title="statement not covered" >  dList[1] = s.x; <span class="cstat-no" title="statement not covered" ></span>dList[2] = s.y; <span class="cstat-no" title="statement not covered" ></span>dList[9] = e.x; <span class="cstat-no" title="statement not covered" ></span>dList[10] = e.y;</span>
-<span class="cstat-no" title="statement not covered" >  dList[4] = Math.abs((e.x-s.x)*curving)+s.x; <span class="cstat-no" title="statement not covered" ></span>dList[5] = s.y;</span>
-<span class="cstat-no" title="statement not covered" >  dList[6] = (s.x + e.x) / 2; <span class="cstat-no" title="statement not covered" ></span>dList[7] = (s.y + e.y) / 2;</span>
-<span class="cstat-no" title="statement not covered" >  return dList.join(' ');</span>
+const calcDList = (s: Vector, e: Vector, curving: number) =&gt; {
+  let dList :(number | string)[] = ['M']; dList[3] = 'Q'; dList[8] = 'T';
+  dList[1] = s.x; dList[2] = s.y; dList[9] = e.x; dList[10] = e.y;
+  dList[4] = Math.abs((e.x-s.x)*curving)+s.x; dList[5] = s.y;
+  dList[6] = (s.x + e.x) / 2; dList[7] = (s.y + e.y) / 2;
+  return dList.join(' ');
 }
 &nbsp;</pre></td></tr></table></pre>
 
@@ -232,7 +232,7 @@ const calcDList = <span class="fstat-no" title="function not covered" >(s</span>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Thu May 06 2021 00:53:30 GMT+0900 (日本標準時)
+                at Thu May 06 2021 01:06:42 GMT+0900 (日本標準時)
             </div>
         </div>
         <script src="../../prettify.js"></script>
