@@ -1,9 +1,9 @@
 import { Reducer } from 'redux';
 import Action, { ActionTypes } from './actionTypes';
 import { BaseType, ConnectionType } from './types';
-import ReverseActionBranch, { OperationTypes, OperationType } from './reverseActionBranch';
+import ReverseActionBranch, { OperationTypes } from './reverseActionBranch';
 
-interface State {
+export interface State {
   bases: BaseType[];
   baseLatestId: number;
   connectionLatestId: number;
@@ -20,17 +20,8 @@ const initialState: State = {
   curving: 0.5,
 };
 
-type ReducerType = Reducer<State, Action>;
-const reducer: ReducerType = (state = initialState, action) => {
-  return reducerLogic(state, action, OperationTypes.branch);
-}
-export default reducer;
-
-type ReducerLogic = (state: State, action: Action, operationType: OperationType) => State;
-const reducerLogic: ReducerLogic = (state, action, operationType) => {
+const reducer: Reducer<State, Action> = (state = initialState, action) => {
   console.log(action);
-  if (action.type===ActionTypes.mult) for (const a of action.payload.actions) console.log(a);
-  let reverseActions: Action[];
   switch (action.type) {
     case ActionTypes.add: {
       let latestId = state.baseLatestId;
@@ -45,10 +36,6 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
         baseLatestId: latestId,
         bases: [ ...state.bases, base ],
       };
-      reverseActions = [{
-        type: ActionTypes.delete,
-        payload: { id: base.id },
-      }];
       break;
     }
     case ActionTypes.delete: {
@@ -58,10 +45,6 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
         ...state,
         bases: state.bases.filter(b => b.id !== action.payload.id),
       };
-      reverseActions = [{
-        type: ActionTypes.add,
-        payload: { base: deletedBase },
-      }];
       break;
     }
 
@@ -72,10 +55,6 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
         ...state,
         bases: state.bases.map(c => c.id === action.payload.base.id ? action.payload.base : c),
       };
-      reverseActions = [{
-        type: ActionTypes.update,
-        payload: { base: oldBase },
-      }];
       break;
     }
     case ActionTypes.updateName: {
@@ -88,10 +67,6 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
           name: action.payload.name,
         } : c),
       };
-      reverseActions = [{
-        type: ActionTypes.updateName,
-        payload: { id: action.payload.id, name: oldBase.name },
-      }];
       break;
     }
     case ActionTypes.updateSize: {
@@ -105,14 +80,6 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
           height: action.payload.height,
         } : b),
       };
-      reverseActions = [{
-        type: ActionTypes.updateSize,
-        payload: {
-          id: action.payload.id, 
-          width: oldBase.width,
-          height: oldBase.height,
-        },
-      }];
       break;
     }
     case ActionTypes.updatePos: {
@@ -126,14 +93,6 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
           left: action.payload.left,
         } : b),
       };
-      reverseActions = [{
-        type: ActionTypes.updatePos,
-        payload: {
-          id: action.payload.id,
-          top: oldBase.top,
-          left: oldBase.left,
-        },
-      }];
       break;
     }
 
@@ -158,20 +117,9 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
           }] : b.outputs,
         } : b),
       };
-      const base = state.bases.filter(b=>b.id===action.payload.baseId)[0];
-      reverseActions = [{
-        type: ActionTypes.deleteSocket,
-        payload: {
-          baseId: action.payload.baseId,
-          isInput: action.payload.isInput,
-          id: action.payload.isInput ? base.inputsLatestId : base.outputsLatestId,
-        },
-      }];
       break;
     }
     case ActionTypes.deleteSocket: {
-      const base = state.bases.filter(b=>b.id===action.payload.baseId)[0];
-      const deletedSocket = action.payload.isInput ? base.inputs.filter(i => i.id === action.payload.id)[0] : base.outputs.filter(o => o.id === action.payload.id)[0];
       state = {
         ...state,
         bases: state.bases.map(b => b.id === action.payload.baseId ? {
@@ -180,14 +128,6 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
           outputs: !action.payload.isInput ? b.outputs.filter(o => o.id !== action.payload.id) : b.outputs,
         } : b),
       };
-      reverseActions = [{
-        type: ActionTypes.addSocket,
-        payload: {
-          baseId: action.payload.baseId,
-          isInput: action.payload.isInput,
-          type: deletedSocket.type,
-        },
-      }];
       break;
     }
 
@@ -203,10 +143,6 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
         connections: [ ...state.connections, connection ],
         connectionLatestId: latestId,
       }
-      reverseActions = [{
-        type: ActionTypes.deleteConnection,
-        payload: { id: connection.id, },
-      }];
       break;
     }
     case ActionTypes.deleteConnection: {
@@ -216,10 +152,6 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
         ...state,
         connections: state.connections.filter(c => c.id !== action.payload.id),
       };
-      reverseActions = [{
-        type: ActionTypes.addConnection,
-        payload: deletedConnection, 
-      }];
       break;
     }
     case ActionTypes.updateConnectionPos: {
@@ -234,10 +166,6 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
           e: action.payload.e,
         } : c),
       };
-      reverseActions = [{
-        type: ActionTypes.updateConnectionPos,
-        payload: { id: action.payload.id, s: oldCon.s, e: oldCon.e },
-      }];
       break;
     }
     case ActionTypes.updateConnectionType: {
@@ -250,40 +178,29 @@ const reducerLogic: ReducerLogic = (state, action, operationType) => {
           type: action.payload.type,
         } : c),
       };
-      reverseActions = [{
-        type: ActionTypes.updateConnectionType,
-        payload: { id: action.payload.id, type: oldCon.type },
-      }];
       break;
     }
 
-    case ActionTypes.undo: {
-      const reverseElement = state.reverseActionBranch.current.prev;
-      if (reverseElement===undefined) return state;
-      state = { ...reverseElement.actions.reduce((a, s) => reducerLogic(a, s, OperationTypes.store), state) };
-      reverseActions = [];
-      operationType = OperationTypes.backward;
+    case ActionTypes.branch: {
+      state = { ...state, reverseActionBranch: state.reverseActionBranch.operate(OperationTypes.branch) };
       break;
     }
-    case ActionTypes.redo: {
-      const reverseElement = state.reverseActionBranch.current.next;
-      if (reverseElement===undefined) return state;
-      state = { ...reverseElement.actions.reduce((a, s) => reducerLogic(a, s, OperationTypes.store), state) };
-      reverseActions = [];
-      operationType = OperationTypes.forward;
+    case ActionTypes.forward: {
+      state = { ...state, reverseActionBranch: state.reverseActionBranch.operate(OperationTypes.forward) };
       break;
     }
-    case ActionTypes.mult: {
-      state = { ...action.payload.actions.reduce((a, s) => reducerLogic(a, s, OperationTypes.store), state) };
-      reverseActions = [];
+    case ActionTypes.backward: {
+      state = { ...state, reverseActionBranch: state.reverseActionBranch.operate(OperationTypes.backward) };
+      break;
+    }
+    case ActionTypes.store: {
+      state = { ...state, reverseActionBranch: state.reverseActionBranch.operate(OperationTypes.store, action.payload) };
       break;
     }
 
     default: return state; // 再描画しない〜〜
   }
 
-  return {
-    ...state,
-    reverseActionBranch: state.reverseActionBranch.operate(reverseActions, operationType),
-  }
+  return { ...state, }
 }
+export default reducer;

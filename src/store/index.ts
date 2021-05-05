@@ -1,6 +1,7 @@
-import { combineReducers, createStore } from 'redux';
+import { combineReducers, createStore, applyMiddleware } from 'redux';
 import nodeReducer from './node/reducer';
 import panelReducer from './panel/reducer';
+import middlewares from './middleware';
 
 const rootReducer = combineReducers({
 	nodeReducer,
@@ -9,6 +10,6 @@ const rootReducer = combineReducers({
 
 export type RootState = ReturnType<typeof rootReducer>;
 
-const store = createStore(rootReducer);
+const store = createStore(rootReducer, applyMiddleware(...middlewares));
 
 export default store;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store';
 import { addConnectionAction } from '@/store/node/actions';
@@ -21,26 +21,9 @@ const MainBoard: React.FC = () => {
   const cons = mergeSourceAndIdRefs<ConnectionType, ConnectionHandler>(props.connections, connectionIdRefs);
   const newConRef = useRef<ConnectionHandler>({} as ConnectionHandler);
   const newConInfoRef = useRef<NewConnectionInfo>({});
-  const [cpIndexes, setCPIndexes] = useState<number[]>([]);
   const dispatch = useDispatch();
   const openCPFunc = (id: number) => dispatch(openCPAction(id));
   const addConnection = (c: ConnectionType) => dispatch(addConnectionAction(c));
-
-  // controlPanel系
-  const createSetCPIndex = (cpIndex: number) => {
-    const setCPIndex = (newIndex: number) => {
-      setCPIndexes( cpIndexes.map( (oldIndex, i) => i === cpIndex ? newIndex : oldIndex ))
-    }
-    return setCPIndex
-  }
-
-  useEffect(()=>{
-    for (const i in cpIdsList) {
-      if (cpIndexes[i] === undefined) {
-        return setCPIndexes([...cpIndexes, 0]);
-      }
-    }
-  }, [cpIdsList]);
 
   return (
     <div className={style.mainBoard}>
@@ -49,7 +32,7 @@ const MainBoard: React.FC = () => {
         if(ids[0]===undefined) return;
         let bases: BaseType[] = [];
         ids.forEach(id=>{ bases.push(props.bases.filter(c=>c.id===id)[0]); })
-        return <Panel key={i} {...pProps(bases, cpIndexes[i], createSetCPIndex(i))}/>
+        return <Panel key={i} {...pProps(bases)}/>
       })}
       <svg className={style.connectionPanel}>
         {cons.map(c=><Connection key={c.id} ref={c.ref} {...cProps(c.type, props.curving, c.s, c.e)}/>)}
@@ -61,5 +44,5 @@ const MainBoard: React.FC = () => {
 
 export default MainBoard;
 
-const pProps = (bases: BaseType[], index: number, setIndex: (index: number)=>void) => ({ bases, index, setIndex, });
+const pProps = (bases: BaseType[]) => ({ bases });
 const cProps = (type: DataType, curving: number, start: Vector, end: Vector) => ({ type, curving, s: start, e: end });
