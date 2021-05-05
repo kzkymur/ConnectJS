@@ -11,7 +11,7 @@ export interface State {
   reverseActionBranch: ReverseActionBranch;
   curving: number;
 }
-const initialState: State = {
+export const initialState: State = {
   bases: [],
   baseLatestId: 0,
   connectionLatestId: 0,

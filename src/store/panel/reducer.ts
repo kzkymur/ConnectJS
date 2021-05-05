@@ -4,7 +4,7 @@ import Action, { ActionTypes } from './actionTypes';
 interface State {
   cpIdsList: number[][];
 }
-const initialState: State = {
+export const initialState: State = {
   cpIdsList: [[]],
 };
 
