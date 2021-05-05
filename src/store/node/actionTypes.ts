@@ -1,4 +1,5 @@
-import { Action } from 'redux'; import { BaseType, ConnectionType, DataType } from './types';
+import { Action } from 'redux';
+import { BaseType, ConnectionType, DataType } from './types';
 import Vector from '@/utils/vector';
 
 export const ActionTypes = {
@@ -14,6 +15,11 @@ export const ActionTypes = {
   undo: "UNDO",
   redo: "REDO",
   mult: "MULT",
+
+  branch: "BRANCH",
+  forward: "FORWARD",
+  backward: "BACKWARD",
+  store: "STORE",
 
   addConnection: "ADDCONNECTION",
   deleteConnection: "DELETECONNECTION",
@@ -79,7 +85,15 @@ interface Undo extends Action { type: typeof ActionTypes.undo; }
 interface Redo extends Action { type: typeof ActionTypes.redo; }
 interface Mult extends Action {
   type: typeof ActionTypes.mult;
-  payload: { actions: Action[]; };
+  payload: Action[];
+}
+
+interface Branch extends Action { type: typeof ActionTypes.branch; }
+interface Forward extends Action { type: typeof ActionTypes.forward; }
+interface Backward extends Action { type: typeof ActionTypes.backward; }
+interface Store extends Action {
+  type: typeof ActionTypes.store;
+  payload: Action[];
 }
 
 interface AddConnection extends Action { 
@@ -115,6 +129,7 @@ type NodeAction =
   Update | UpdateName | UpdateSize | UpdatePos |
   AddSocket | DeleteSocket |
   Undo | Redo | Mult |
+  Branch | Forward | Backward | Store |
   AddConnection | DeleteConnection |
   UpdateConnection | UpdateConnectionPos | UpdateConnectionType;
 export default NodeAction;

@@ -26,24 +26,24 @@ export type OperationType =
 
 export type ActionHistory = (Action | ActionHistory)[];
 
-type OperatingMethod = (actions: Action[]) => void;
-type OperateType = (actions: Action[], operationType: OperationType) => ReverseActionBranch;
+type OperatingMethod = (actions?: Action[]) => void;
+type OperateType = (operationType: OperationType, actions?: Action[]) => ReverseActionBranch;
 export default class ReverseActionBranch {
   current: Partition = {};
   private actionQue: Action[] = [];
   constructor (p?: Partition) { if (p !== undefined) { this.current = p; } };
-  operate: OperateType = (actions, operationType) => {
+  operate: OperateType = (operationType, actions = []) => {
     switch (operationType) {
       case OperationTypes.branch: {
-        this.branch(actions);
+        this.branch();
         break;
       }
       case OperationTypes.forward: {
-        this.forward(actions);
+        this.forward();
         break;
       }
       case OperationTypes.backward: {
-        this.backward(actions);
+        this.backward();
         break;
       }
       case OperationTypes.store: {
@@ -89,8 +89,7 @@ export default class ReverseActionBranch {
     }
   }
 
-  private branch: OperatingMethod = (actions) => {
-    this.store(actions);
+  private branch: OperatingMethod = () => {
     const newElm: Element = {
       actions: this.actionQue,
       prev: this.current,
@@ -114,23 +113,21 @@ export default class ReverseActionBranch {
     this.actionQue = [];
     this.current = newPartition;
   }
-  private forward: OperatingMethod = (actions) => {
+  private forward: OperatingMethod = () => {
     if (this.current.next !== undefined) {
-      this.store(actions);
       this.current.next.actions = this.actionQue;
       this.actionQue = [];
       this.current = this.current.next.next;
     }
   }
-  private backward: OperatingMethod = (actions) => {
+  private backward: OperatingMethod = () => {
     if (this.current.prev !== undefined) {
-      this.store(actions);
       this.current.prev.actions = this.actionQue;
       this.actionQue = [];
       this.current = this.current.prev.prev;
     }
   }
-  private store: OperatingMethod = (actions) => { this.actionQue = [...actions, ...this.actionQue]; }
+  private store: OperatingMethod = (actions = []) => { this.actionQue = [...actions, ...this.actionQue]; }
   // private search: (p: Partition) => ActionHistory = (p) => {
   //   let actionHistory: ActionHistory = [];
   //   while (p.next !== undefined) {
