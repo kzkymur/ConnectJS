@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { BaseType, NodeModeNames, Socket, DataTypes, DataType } from '@/store/node/types';
+import { BaseType, NodeModeNames, DataTypes, DataType } from '@/store/node/types';
 import { updateAction, addSocketAction } from '@/store/node/actions';
 import { closeCPAction, closeAllCPAction } from '@/store/panel/actions';
 import NameBox from './atom/NameBox';
@@ -8,13 +8,11 @@ import style from '@/style/ControllPanel.css';
 
 type Props = {
   bases: BaseType[];
-  index: number;
-  setIndex: (i: number) => void;
 }
 
 const Panel: React.FC<Props> = props => {
   const dispatch = useDispatch();
-  const index = props.index;
+  const [index, setIndex] = useState<number>(0);
   const updateFunc = (c: BaseType) => dispatch(updateAction(c));
 
   const nameUpdate = (name: string) => {
@@ -29,7 +27,7 @@ const Panel: React.FC<Props> = props => {
     const changeIndexFunc = (e: React.MouseEvent<HTMLInputElement>) => {
       if (index!==newIndex) {
         e.preventDefault();
-        props.setIndex(newIndex);
+        setIndex(newIndex);
       }
     }
     return changeIndexFunc;
@@ -38,17 +36,17 @@ const Panel: React.FC<Props> = props => {
     const closeFunc = () => {
       dispatch(closeCPAction(closeIndex));
       if (closeIndex===index) {
-        props.setIndex(0);
+        setIndex(0);
       } else if (closeIndex < index) {
-        props.setIndex(index-1);
+        setIndex(index-1);
       }
     }
     return closeFunc;
   }
 
   let defaultOutputType: DataType;
-  // switch (props.bases[index].mode.name) {
-  switch (props.bases[index] ? props.bases[index].mode.name : props.bases[0].mode.name) {
+  const base = props.bases[index] ? props.bases[index] : props.bases[0];
+  switch (base.mode.name) {
     case NodeModeNames.Canvas: {
       defaultOutputType = DataTypes.Framebuffer;
       break;
@@ -59,21 +57,19 @@ const Panel: React.FC<Props> = props => {
   }
   const addInput = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    dispatch(addSocketAction(props.bases[index].id, true, defaultOutputType));
+    dispatch(addSocketAction(base.id, true, defaultOutputType));
   }
   const addOutput = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    dispatch(addSocketAction(props.bases[index].id, false, defaultOutputType));
+    dispatch(addSocketAction(base.id, false, defaultOutputType));
   }
 
-  let i = -1;
   return (
     <div className={style.controllPanel}>
       <div className={style.headerContainer}>
-        {props.bases.map(b=>{
-          i++;
+        {props.bases.map((b,i)=>{
           return(
-            <div className={`${style.cpTabContainer} ${i===index ? style.activeCPTabContainer : ''}`} key={i}>
+            <div className={`${style.cpTabContainer} ${i===index ? style.activeCPTabContainer : ''}`} key={b.id}>
               <NameBox className={style.nameBoxInCP}
                 name={b.name}
                 updateFunc={nameUpdate}
@@ -85,17 +81,11 @@ const Panel: React.FC<Props> = props => {
       </div>
       <div className={style.inputContainer}>
         <button onClick={addInput}>Add</button>
-        {props.bases[index].inputs.map((input)=>{
-          i++;
-          return <input className={style.ioElm}type='text' defaultValue={i} key={i}/>
-        })}
+        {base.inputs.map((input,i)=> <input className={style.ioElm}type='text' defaultValue={i} key={input.id}/> )}
       </div>
       <div className={style.inputContainer}>
         <button onClick={addOutput}>Add</button>
-        {props.bases[index].outputs.map((output)=>{
-          i++;
-          return <input className={style.ioElm}type='text' defaultValue={i} key={i}/>
-        })}
+        {base.outputs.map((output,i)=> <input className={style.ioElm}type='text' defaultValue={i} key={output.id}/> )}
       </div>
     </div>
   )

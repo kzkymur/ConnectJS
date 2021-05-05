@@ -19,7 +19,10 @@ export const addAction: AddAction = (mode) => orgAddActioin({
 });
 
 type DeleteAction = (id: number, cIds: number[]) => NodeAction;
-export const deleteAction: DeleteAction = (id, cIds) => multAction([orgDeleteAction(id), ...cIds.map(cId=>deleteConnectionAction(cId))]);
+export const deleteAction: DeleteAction = (id, cIds) => multAction([
+  orgDeleteAction(id),
+  ...cIds.map(cId=>deleteConnectionAction(cId))
+]);
 
 type UpdatePosSizeAction = (id: number, top: string, left: string, width: string, height: string) => NodeAction;
 export const updatePosSizeAction: UpdatePosSizeAction = (id, top, left, width, height) => multAction([
