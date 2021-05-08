@@ -3,9 +3,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store';
 import { addConnectionAction } from '@/store/node/actions';
 import { openCPAction } from '@/store/panel/actions';
-import { BaseType, ConnectionType, DataType, DataTypes } from '@/store/node/types';
-import Base, { Handler as BaseHandler } from './Base';
-import baseProps, { NewConnectionInfo } from './Base/props';
+import { NodeType, ConnectionType, DataType, DataTypes } from '@/store/node/types';
+import Node, { Handler as NodeHandler } from './Node';
+import nodeProps, { NewConnectionInfo } from './Node/props';
 import Panel from './Panel';
 import Connection, { Handler as ConnectionHandler } from './Connection';
 import useIdRef, { mergeSourceAndIdRefs } from '@/utils/useIdRef';
@@ -15,8 +15,8 @@ import Vector from '@/utils/vector';
 const MainBoard: React.FC = () => {
   const props = useSelector((state: RootState) => state.nodeReducer);
   const cpIdsList = useSelector((state: RootState) => state.panelReducer.cpIdsList);
-  const baseIdRefs = useIdRef<BaseHandler>(props.bases);
-  const bases = mergeSourceAndIdRefs<BaseType, BaseHandler>(props.bases, baseIdRefs);
+  const nodeIdRefs = useIdRef<NodeHandler>(props.nodes);
+  const nodes = mergeSourceAndIdRefs<NodeType, NodeHandler>(props.nodes, nodeIdRefs);
   const connectionIdRefs = useIdRef<ConnectionHandler>(props.connections);
   const cons = mergeSourceAndIdRefs<ConnectionType, ConnectionHandler>(props.connections, connectionIdRefs);
   const newConRef = useRef<ConnectionHandler>({} as ConnectionHandler);
@@ -27,12 +27,12 @@ const MainBoard: React.FC = () => {
 
   return (
     <div className={style.mainBoard}>
-      {bases.map(b=><Base key={b.id} ref={b.ref} {...baseProps(b, cons.filter(c=>c.iBaseId==b.id), cons.filter(c=>c.oBaseId==b.id), openCPFunc, newConRef, newConInfoRef, addConnection, dispatch)}/>)}
+      {nodes.map(b=><Node key={b.id} ref={b.ref} {...nodeProps(b, cons.filter(c=>c.iNodeId==b.id), cons.filter(c=>c.oNodeId==b.id), openCPFunc, newConRef, newConInfoRef, addConnection, dispatch)}/>)}
       {cpIdsList.map((ids, i)=>{
         if(ids[0]===undefined) return;
-        let bases: BaseType[] = [];
-        ids.forEach(id=>{ bases.push(props.bases.filter(c=>c.id===id)[0]); })
-        return <Panel key={i} {...pProps(bases)}/>
+        let nodes: NodeType[] = [];
+        ids.forEach(id=>{ nodes.push(props.nodes.filter(c=>c.id===id)[0]); })
+        return <Panel key={i} {...pProps(nodes)}/>
       })}
       <svg className={style.connectionPanel}>
         {cons.map(c=><Connection key={c.id} ref={c.ref} {...cProps(c.type, props.curving, c.s, c.e)}/>)}
@@ -44,5 +44,5 @@ const MainBoard: React.FC = () => {
 
 export default MainBoard;
 
-const pProps = (bases: BaseType[]) => ({ bases });
+const pProps = (nodes: NodeType[]) => ({ nodes });
 const cProps = (type: DataType, curving: number, start: Vector, end: Vector) => ({ type, curving, s: start, e: end });

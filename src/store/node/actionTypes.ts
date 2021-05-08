@@ -1,5 +1,5 @@
 import { Action } from 'redux';
-import { BaseType, ConnectionType, DataType } from './types';
+import { NodeType, ConnectionType, DataType } from './types';
 import Vector from '@/utils/vector';
 
 export const ActionTypes = {
@@ -31,7 +31,7 @@ export const ActionTypes = {
 // Actionの型定義
 interface Add extends Action {
   type: typeof ActionTypes.add;
-  payload: { base: BaseType; };
+  payload: { node: NodeType; };
 }
 interface Delete extends Action {
   type: typeof ActionTypes.delete;
@@ -39,7 +39,7 @@ interface Delete extends Action {
 }
 interface Update extends Action {
   type: typeof ActionTypes.update;
-  payload: { base: BaseType; };
+  payload: { node: NodeType; };
 }
 interface UpdateName extends Action {
   type: typeof ActionTypes.updateName;
@@ -67,7 +67,7 @@ interface UpdatePos extends Action {
 interface AddSocket extends Action {
   type: typeof ActionTypes.addSocket;
   payload: {
-    baseId: number;
+    nodeId: number;
     isInput: boolean;
     type: DataType;
   };
@@ -75,7 +75,7 @@ interface AddSocket extends Action {
 interface DeleteSocket extends Action {
   type: typeof ActionTypes.deleteSocket;
   payload: {
-    baseId: number;
+    nodeId: number;
     isInput: boolean;
     id: number;
   };

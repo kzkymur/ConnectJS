@@ -40,14 +40,14 @@ interface Canvas extends Node {
 interface Processor extends Node {
 
 };
-export type BaseType = Canvas | Processor;
+export type NodeType = Canvas | Processor;
 
 export type ConnectionType = {
   type: DataType;
   id: number;
-  iBaseId: number;
+  iNodeId: number;
   iId: number;
-  oBaseId: number;
+  oNodeId: number;
   oId: number;
   s: Vector;
   e: Vector;

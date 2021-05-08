@@ -4,86 +4,86 @@ import { State } from './reducer';
 const reverseActionCreator: (state: State, action: Action) => Action[] = (state, action) => {
   switch (action.type) {
     case ActionTypes.add: {
-      let latestId = state.baseLatestId;
-      let base = { ...action.payload.base };
-      if (base.id === -1) {
+      let latestId = state.nodeLatestId;
+      let node = { ...action.payload.node };
+      if (node.id === -1) {
         latestId++;
-        base.id = latestId;
-        base.name = 'node' + String(latestId);
+        node.id = latestId;
+        node.name = 'node' + String(latestId);
       }
       return [{
         type: ActionTypes.delete,
-        payload: { id: base.id },
+        payload: { id: node.id },
       }];
     }
     case ActionTypes.delete: {
-      const deletedBase = state.bases.filter(b => b.id === action.payload.id)[0];
-      if (deletedBase === undefined) return [];
+      const deletedNode = state.nodes.filter(b => b.id === action.payload.id)[0];
+      if (deletedNode === undefined) return [];
       return [{
         type: ActionTypes.add,
-        payload: { base: deletedBase },
+        payload: { node: deletedNode },
       }];
     }
 
     case ActionTypes.update: {
-      const oldBase = state.bases.filter(b => b.id === action.payload.base.id)[0];
-      if (oldBase === undefined) return [];
+      const oldNode = state.nodes.filter(b => b.id === action.payload.node.id)[0];
+      if (oldNode === undefined) return [];
       return [{
         type: ActionTypes.update,
-        payload: { base: oldBase },
+        payload: { node: oldNode },
       }];
     }
     case ActionTypes.updateName: {
-      const oldBase = state.bases.filter(b => b.id === action.payload.id)[0];
-      if (oldBase === undefined) return [];
+      const oldNode = state.nodes.filter(b => b.id === action.payload.id)[0];
+      if (oldNode === undefined) return [];
       return [{
         type: ActionTypes.updateName,
-        payload: { id: action.payload.id, name: oldBase.name },
+        payload: { id: action.payload.id, name: oldNode.name },
       }];
     }
     case ActionTypes.updateSize: {
-      const oldBase = state.bases.filter(b => b.id === action.payload.id)[0];
-      if (oldBase === undefined) return [];
+      const oldNode = state.nodes.filter(b => b.id === action.payload.id)[0];
+      if (oldNode === undefined) return [];
       return [{
         type: ActionTypes.updateSize,
         payload: {
           id: action.payload.id, 
-          width: oldBase.width,
-          height: oldBase.height,
+          width: oldNode.width,
+          height: oldNode.height,
         },
       }];
     }
     case ActionTypes.updatePos: {
-      const oldBase = state.bases.filter(b => b.id === action.payload.id)[0];
-      if (oldBase === undefined) return [];
+      const oldNode = state.nodes.filter(b => b.id === action.payload.id)[0];
+      if (oldNode === undefined) return [];
       return [{
         type: ActionTypes.updatePos,
         payload: {
           id: action.payload.id,
-          top: oldBase.top,
-          left: oldBase.left,
+          top: oldNode.top,
+          left: oldNode.left,
         },
       }];
     }
 
     case ActionTypes.addSocket: {
-      const base = state.bases.filter(b=>b.id===action.payload.baseId)[0];
+      const node = state.nodes.filter(b=>b.id===action.payload.nodeId)[0];
       return [{
         type: ActionTypes.deleteSocket,
         payload: {
-          baseId: action.payload.baseId,
+          nodeId: action.payload.nodeId,
           isInput: action.payload.isInput,
-          id: action.payload.isInput ? base.inputsLatestId : base.outputsLatestId,
+          id: action.payload.isInput ? node.inputsLatestId : node.outputsLatestId,
         },
       }];
     }
     case ActionTypes.deleteSocket: {
-      const base = state.bases.filter(b=>b.id===action.payload.baseId)[0];
-      const deletedSocket = action.payload.isInput ? base.inputs.filter(i => i.id === action.payload.id)[0] : base.outputs.filter(o => o.id === action.payload.id)[0];
+      const node = state.nodes.filter(b=>b.id===action.payload.nodeId)[0];
+      const deletedSocket = action.payload.isInput ? node.inputs.filter(i => i.id === action.payload.id)[0] : node.outputs.filter(o => o.id === action.payload.id)[0];
       return [{
         type: ActionTypes.addSocket,
         payload: {
-          baseId: action.payload.baseId,
+          nodeId: action.payload.nodeId,
           isInput: action.payload.isInput,
           type: deletedSocket.type,
         },
