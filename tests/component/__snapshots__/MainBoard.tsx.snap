@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<MainBoard /> render 1`] = `
+<div
+  className="mainBoard"
+>
+  <svg>
+    <path
+      d="M 0 0 Q 0 0 0 0 T 0 0"
+    />
+  </svg>
+</div>
+`;

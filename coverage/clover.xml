@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1620230802327" clover="3.2.0">
-  <project timestamp="1620230802327" name="All files">
-    <metrics statements="738" coveredstatements="270" conditionals="306" coveredconditionals="49" methods="211" coveredmethods="29" elements="1255" coveredelements="348" complexity="0" loc="738" ncloc="738" packages="12" files="35" classes="35"/>
+<coverage generated="1620451484530" clover="3.2.0">
+  <project timestamp="1620451484531" name="All files">
+    <metrics statements="738" coveredstatements="270" conditionals="306" coveredconditionals="53" methods="211" coveredmethods="29" elements="1255" coveredelements="352" complexity="0" loc="738" ncloc="738" packages="12" files="35" classes="35"/>
     <package name="src">
       <metrics statements="7" coveredstatements="7" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
       <file name="config.ts" path="/Users/yamaurakazuki/Work/ConnectJS/src/config.ts">
@@ -825,7 +825,7 @@
       </file>
     </package>
     <package name="src.utils">
-      <metrics statements="42" coveredstatements="23" conditionals="16" coveredconditionals="4" methods="21" coveredmethods="9"/>
+      <metrics statements="42" coveredstatements="23" conditionals="16" coveredconditionals="8" methods="21" coveredmethods="9"/>
       <file name="actions.ts" path="/Users/yamaurakazuki/Work/ConnectJS/src/utils/actions.ts">
         <metrics statements="6" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="0"/>
         <line num="2" count="2" type="stmt"/>
@@ -870,14 +870,14 @@
         <line num="31" count="2" type="stmt"/>
       </file>
       <file name="vector.ts" path="/Users/yamaurakazuki/Work/ConnectJS/src/utils/vector.ts">
-        <metrics statements="8" coveredstatements="8" conditionals="8" coveredconditionals="4" methods="8" coveredmethods="7"/>
+        <metrics statements="8" coveredstatements="8" conditionals="8" coveredconditionals="8" methods="8" coveredmethods="7"/>
         <line num="7" count="2" type="stmt"/>
         <line num="8" count="2" type="stmt"/>
         <line num="9" count="2" type="stmt"/>
         <line num="10" count="2" type="stmt"/>
         <line num="11" count="2" type="stmt"/>
-        <line num="12" count="2" type="cond" truecount="2" falsecount="2"/>
-        <line num="13" count="2" type="cond" truecount="2" falsecount="2"/>
+        <line num="12" count="2" type="cond" truecount="4" falsecount="0"/>
+        <line num="13" count="2" type="cond" truecount="4" falsecount="0"/>
         <line num="14" count="2" type="stmt"/>
       </file>
     </package>

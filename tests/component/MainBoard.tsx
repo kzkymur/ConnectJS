@@ -13,5 +13,6 @@ describe('<MainBoard />', () => {
     useSelectorMock.mockReturnValueOnce(initNodeState).mockReturnValue(initPanelState.cpIdsList)
     useDispatchMock.mockReturnValue(jest.fn())
     const component = renderer.create( <MainBoard/> );
+    expect(component).toMatchSnapshot();
   });
 });
