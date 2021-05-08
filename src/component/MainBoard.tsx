@@ -27,7 +27,7 @@ const MainBoard: React.FC = () => {
 
   return (
     <div className={style.mainBoard}>
-      {nodes.map(b=><Node key={b.id} ref={b.ref} {...nodeProps(b, cons.filter(c=>c.iNodeId==b.id), cons.filter(c=>c.oNodeId==b.id), openCPFunc, newConRef, newConInfoRef, addConnection, dispatch)}/>)}
+      {nodes.map(n=><Node key={n.id} ref={n.ref} {...nodeProps(n, cons.filter(c=>c.iNodeId==n.id), cons.filter(c=>c.oNodeId==n.id), openCPFunc, newConRef, newConInfoRef, addConnection, dispatch)}/>)}
       {cpIdsList.map((ids, i)=>{
         if(ids[0]===undefined) return;
         let nodes: NodeType[] = [];

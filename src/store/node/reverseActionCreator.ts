@@ -17,7 +17,7 @@ const reverseActionCreator: (state: State, action: Action) => Action[] = (state,
       }];
     }
     case ActionTypes.delete: {
-      const deletedNode = state.nodes.filter(b => b.id === action.payload.id)[0];
+      const deletedNode = state.nodes.filter(n => n.id === action.payload.id)[0];
       if (deletedNode === undefined) return [];
       return [{
         type: ActionTypes.add,
@@ -26,7 +26,7 @@ const reverseActionCreator: (state: State, action: Action) => Action[] = (state,
     }
 
     case ActionTypes.update: {
-      const oldNode = state.nodes.filter(b => b.id === action.payload.node.id)[0];
+      const oldNode = state.nodes.filter(n => n.id === action.payload.node.id)[0];
       if (oldNode === undefined) return [];
       return [{
         type: ActionTypes.update,
@@ -34,7 +34,7 @@ const reverseActionCreator: (state: State, action: Action) => Action[] = (state,
       }];
     }
     case ActionTypes.updateName: {
-      const oldNode = state.nodes.filter(b => b.id === action.payload.id)[0];
+      const oldNode = state.nodes.filter(n => n.id === action.payload.id)[0];
       if (oldNode === undefined) return [];
       return [{
         type: ActionTypes.updateName,
@@ -42,7 +42,7 @@ const reverseActionCreator: (state: State, action: Action) => Action[] = (state,
       }];
     }
     case ActionTypes.updateSize: {
-      const oldNode = state.nodes.filter(b => b.id === action.payload.id)[0];
+      const oldNode = state.nodes.filter(n => n.id === action.payload.id)[0];
       if (oldNode === undefined) return [];
       return [{
         type: ActionTypes.updateSize,
@@ -54,7 +54,7 @@ const reverseActionCreator: (state: State, action: Action) => Action[] = (state,
       }];
     }
     case ActionTypes.updatePos: {
-      const oldNode = state.nodes.filter(b => b.id === action.payload.id)[0];
+      const oldNode = state.nodes.filter(n => n.id === action.payload.id)[0];
       if (oldNode === undefined) return [];
       return [{
         type: ActionTypes.updatePos,
@@ -67,7 +67,7 @@ const reverseActionCreator: (state: State, action: Action) => Action[] = (state,
     }
 
     case ActionTypes.addSocket: {
-      const node = state.nodes.filter(b=>b.id===action.payload.nodeId)[0];
+      const node = state.nodes.filter(n=>n.id===action.payload.nodeId)[0];
       return [{
         type: ActionTypes.deleteSocket,
         payload: {
@@ -78,7 +78,7 @@ const reverseActionCreator: (state: State, action: Action) => Action[] = (state,
       }];
     }
     case ActionTypes.deleteSocket: {
-      const node = state.nodes.filter(b=>b.id===action.payload.nodeId)[0];
+      const node = state.nodes.filter(n=>n.id===action.payload.nodeId)[0];
       const deletedSocket = action.payload.isInput ? node.inputs.filter(i => i.id === action.payload.id)[0] : node.outputs.filter(o => o.id === action.payload.id)[0];
       return [{
         type: ActionTypes.addSocket,

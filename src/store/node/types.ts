@@ -33,6 +33,7 @@ interface Node {
   inputs: Socket[];
   inputsLatestId: number;
   outputsLatestId: number;
+  func: (...args: DataType[]) => (DataType[] | void);
 }
 interface Canvas extends Node {
 

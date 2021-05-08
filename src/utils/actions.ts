@@ -16,6 +16,7 @@ export const addAction: AddAction = (mode) => orgAddActioin({
   inputs: [],
   outputsLatestId: 0,
   inputsLatestId: 0,
+  func: () => {},
 });
 
 type DeleteAction = (id: number, cIds: number[]) => NodeAction;

@@ -39,17 +39,17 @@ const reducer: Reducer<State, Action> = (state = initialState, action) => {
       break;
     }
     case ActionTypes.delete: {
-      const deletednode = state.nodes.filter(b => b.id === action.payload.id)[0];
+      const deletednode = state.nodes.filter(n => n.id === action.payload.id)[0];
       if (deletednode === undefined) return state;
       state = {
         ...state,
-        nodes: state.nodes.filter(b => b.id !== action.payload.id),
+        nodes: state.nodes.filter(n => n.id !== action.payload.id),
       };
       break;
     }
 
     case ActionTypes.update: {
-      const oldnode = state.nodes.filter(b => b.id === action.payload.node.id)[0];
+      const oldnode = state.nodes.filter(n => n.id === action.payload.node.id)[0];
       if (oldnode === undefined) return state;
       state = {
         ...state,
@@ -58,7 +58,7 @@ const reducer: Reducer<State, Action> = (state = initialState, action) => {
       break;
     }
     case ActionTypes.updateName: {
-      const oldnode = state.nodes.filter(b => b.id === action.payload.id)[0];
+      const oldnode = state.nodes.filter(n => n.id === action.payload.id)[0];
       if (oldnode === undefined) return state;
       state = {
         ...state,
@@ -70,28 +70,28 @@ const reducer: Reducer<State, Action> = (state = initialState, action) => {
       break;
     }
     case ActionTypes.updateSize: {
-      const oldnode = state.nodes.filter(b => b.id === action.payload.id)[0];
+      const oldnode = state.nodes.filter(n => n.id === action.payload.id)[0];
       if (oldnode === undefined) return state;
       state = {
         ...state,
-        nodes: state.nodes.map(b => b.id === action.payload.id ? {
-          ...b,
+        nodes: state.nodes.map(n => n.id === action.payload.id ? {
+          ...n,
           width: action.payload.width,
           height: action.payload.height,
-        } : b),
+        } : n),
       };
       break;
     }
     case ActionTypes.updatePos: {
-      const oldnode = state.nodes.filter(b => b.id === action.payload.id)[0];
+      const oldnode = state.nodes.filter(n => n.id === action.payload.id)[0];
       if (oldnode === undefined) return state;
       state = {
         ...state,
-        nodes: state.nodes.map(b => b.id === action.payload.id ? {
-          ...b,
+        nodes: state.nodes.map(n => n.id === action.payload.id ? {
+          ...n,
           top: action.payload.top,
           left: action.payload.left,
-        } : b),
+        } : n),
       };
       break;
     }
@@ -99,34 +99,34 @@ const reducer: Reducer<State, Action> = (state = initialState, action) => {
     case ActionTypes.addSocket: {
       state = {
         ...state,
-        nodes: state.nodes.map(b => b.id === action.payload.nodeId ? {
-          ...b,
-          inputsLatestId: action.payload.isInput ? b.inputsLatestId + 1 : b.inputsLatestId,
-          inputs: action.payload.isInput ? [...b.inputs, {
-            id: b.inputsLatestId + 1,
+        nodes: state.nodes.map(n => n.id === action.payload.nodeId ? {
+          ...n,
+          inputsLatestId: action.payload.isInput ? n.inputsLatestId + 1 : n.inputsLatestId,
+          inputs: action.payload.isInput ? [...n.inputs, {
+            id: n.inputsLatestId + 1,
             type: action.payload.type,
             name: action.payload.type,
             counterId: -1,
-          }] : b.inputs,
-          outputsLatestId: !action.payload.isInput ? b.outputsLatestId + 1 : b.outputsLatestId,
-          outputs: !action.payload.isInput ? [...b.outputs, {
-            id: b.outputsLatestId + 1,
+          }] : n.inputs,
+          outputsLatestId: !action.payload.isInput ? n.outputsLatestId + 1 : n.outputsLatestId,
+          outputs: !action.payload.isInput ? [...n.outputs, {
+            id: n.outputsLatestId + 1,
             type: action.payload.type,
             name: action.payload.type,
             counterId: -1,
-          }] : b.outputs,
-        } : b),
+          }] : n.outputs,
+        } : n),
       };
       break;
     }
     case ActionTypes.deleteSocket: {
       state = {
         ...state,
-        nodes: state.nodes.map(b => b.id === action.payload.nodeId ? {
-          ...b,
-          inputs: action.payload.isInput ? b.inputs.filter(i => i.id !== action.payload.id) : b.inputs,
-          outputs: !action.payload.isInput ? b.outputs.filter(o => o.id !== action.payload.id) : b.outputs,
-        } : b),
+        nodes: state.nodes.map(n => n.id === action.payload.nodeId ? {
+          ...n,
+          inputs: action.payload.isInput ? n.inputs.filter(i => i.id !== action.payload.id) : n.inputs,
+          outputs: !action.payload.isInput ? n.outputs.filter(o => o.id !== action.payload.id) : n.outputs,
+        } : n),
       };
       break;
     }
