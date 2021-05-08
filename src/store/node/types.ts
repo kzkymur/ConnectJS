@@ -14,15 +14,17 @@ export const DataTypes = {
   Framebuffer: 'FRAMEBUFFER',
 } as const;
 export type DataType = typeof DataTypes.Number | typeof DataTypes.NumberList | typeof DataTypes.Framebuffer;
+type SocketId = number;
 export interface Socket {
   type: DataType;
-  id: number;
+  id: SocketId;
   name: string;
   counterId: number;
 }
 
+type NodeId = number;
 interface Node {
-  id: number;
+  id: NodeId;
   name: string;
   mode: NodeMode;
   width: string;
@@ -43,13 +45,14 @@ interface Processor extends Node {
 };
 export type NodeType = Canvas | Processor;
 
+type ConnectionId = number;
 export type ConnectionType = {
   type: DataType;
-  id: number;
-  iNodeId: number;
-  iId: number;
-  oNodeId: number;
-  oId: number;
+  id: ConnectionId;
+  iNodeId: NodeId;
+  iId: SocketId;
+  oNodeId: NodeId;
+  oId: SocketId;
   s: Vector;
   e: Vector;
 }

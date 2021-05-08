@@ -157,7 +157,6 @@ const reducer: Reducer<State, Action> = (state = initialState, action) => {
     case ActionTypes.updateConnectionPos: {
       const oldCon = state.connections.filter(c => c.id === action.payload.id)[0];
       if (oldCon === undefined) return state;
-      console.log(action.payload);
       state = {
         ...state,
         connections: state.connections.map(c => c.id === action.payload.id ? {
