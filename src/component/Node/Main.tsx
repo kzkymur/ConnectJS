@@ -1,6 +1,6 @@
 import React, { ReactNode, RefObject } from 'react';
 import { useSelector } from 'react-redux';
-import style from '@/style/Base/Main.scss';
+import style from '@/style/Node/Main.scss';
 
 type Props = {
   element: ReactNode;

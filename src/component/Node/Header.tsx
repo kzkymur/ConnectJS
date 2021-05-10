@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import { updateNameAction } from '@/store/node/actions';
 import NameBox from '../atom/NameBox';
-import style from '@/style/Base/Header.scss';
+import style from '@/style/Node/Header.scss';
 
 type Props = {
   id: number;

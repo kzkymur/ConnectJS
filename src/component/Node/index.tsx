@@ -9,7 +9,7 @@ import IOs, { Handler as IOsHandler } from './IOs';
 import { px, px2n } from '@/utils';
 import Vector from '@/utils/vector';
 import { minBaseWidth, minBaseHeight, optBarHeight, borderWidth } from '@/config';
-import style from '@/style/Base.scss';
+import style from '@/style/Node.scss';
 
 export type Handler = {
   getJointPos: (isInput: boolean, id: number) => Vector;

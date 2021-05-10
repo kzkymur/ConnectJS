@@ -3,15 +3,15 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for src/utils/actions.ts</title>
+    <title>Code coverage report for src/store/node/nodeTypes.ts</title>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="../../prettify.css" />
-    <link rel="stylesheet" href="../../base.css" />
-    <link rel="shortcut icon" type="image/x-icon" href="../../favicon.png" />
+    <link rel="stylesheet" href="../../../prettify.css" />
+    <link rel="stylesheet" href="../../../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../../favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style type='text/css'>
         .coverage-summary .sorter {
-            background-image: url(../../sort-arrow-sprite.png);
+            background-image: url(../../../sort-arrow-sprite.png);
         }
     </style>
 </head>
@@ -19,13 +19,13 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/utils</a> actions.ts</h1>
+        <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/store/node</a> nodeTypes.ts</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">61.54% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>8/13</span>
+                <span class='fraction'>1/1</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/6</span>
+                <span class='fraction'>0/0</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">71.43% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>5/7</span>
+                <span class='fraction'>1/1</span>
             </div>
         
             
@@ -55,7 +55,7 @@
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
         </p>
     </div>
-    <div class='status-line medium'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -81,20 +81,7 @@
 <a name='L22'></a><a href='#L22'>22</a>
 <a name='L23'></a><a href='#L23'>23</a>
 <a name='L24'></a><a href='#L24'>24</a>
-<a name='L25'></a><a href='#L25'>25</a>
-<a name='L26'></a><a href='#L26'>26</a>
-<a name='L27'></a><a href='#L27'>27</a>
-<a name='L28'></a><a href='#L28'>28</a>
-<a name='L29'></a><a href='#L29'>29</a>
-<a name='L30'></a><a href='#L30'>30</a>
-<a name='L31'></a><a href='#L31'>31</a>
-<a name='L32'></a><a href='#L32'>32</a>
-<a name='L33'></a><a href='#L33'>33</a>
-<a name='L34'></a><a href='#L34'>34</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L25'></a><a href='#L25'>25</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -108,54 +95,40 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import NodeAction from '@/store/node/actionTypes';
-import { addAction as orgAddActioin, deleteAction as orgDeleteAction, updatePosAction, updateSizeAction, deleteConnectionAction, multAction } from '@/store/node/actions';
-import { NodeModeType } from '@/store/node/nodeTypes';
-import { initBaseWidth, initBaseHeight } from '@/config';
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Node, IgnitionNode } from './types';
 &nbsp;
-type AddAction = (mode: NodeModeType) =&gt; NodeAction;
-export const addAction: AddAction = <span class="fstat-no" title="function not covered" >(m</span>ode) =&gt; <span class="cstat-no" title="statement not covered" >orgAddActioin({</span>
-  id: -1,
-  mode: mode,
-  name: '',
-  width: `${initBaseWidth}px`,
-  height: `${initBaseHeight}px`,
-  top: `${String(40 + 20 * Math.random())}%`,
-  left: `${String(40 + 20 * Math.random())}%`,
-  outputs: [],
-  inputs: [],
-  outputsLatestId: 0,
-  inputsLatestId: 0,
-  func: <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >[],</span>
-  runEngine: <span class="fstat-no" title="function not covered" >() =</span>&gt; {}, // 一時的に
-});
+export const NodeModes = {
+  canvas: 'CANVAS',
+  processor: 'PROCESSOR',
+  counter: 'COUNTER',
+} as const;
+export type NodeModeType = 
+  typeof NodeModes.canvas |
+  typeof NodeModes.processor |
+  typeof NodeModes.counter;
 &nbsp;
-type DeleteAction = (id: number, cIds: number[]) =&gt; NodeAction;
-export const deleteAction: DeleteAction = <span class="fstat-no" title="function not covered" >(i</span>d, cIds) =&gt; <span class="cstat-no" title="statement not covered" >multAction([</span>
-  orgDeleteAction(id),
-  ...cIds.map(<span class="fstat-no" title="function not covered" >cId=</span>&gt;<span class="cstat-no" title="statement not covered" >deleteConnectionAction(cId))</span>
-]);
+interface Canvas extends Node {
+  mode: typeof NodeModes.canvas;
+}
+interface Processor extends Node {
+  mode: typeof NodeModes.processor;
+}
+interface Counter extends IgnitionNode {
+  mode: typeof NodeModes.counter;
+}
 &nbsp;
-type UpdatePosSizeAction = (id: number, top: string, left: string, width: string, height: string) =&gt; NodeAction;
-export const updatePosSizeAction: UpdatePosSizeAction = <span class="fstat-no" title="function not covered" >(i</span>d, top, left, width, height) =&gt; <span class="cstat-no" title="statement not covered" >multAction([</span>
-  updatePosAction(id, top, left),
-  updateSizeAction(id, width, height),
-]);
+type NodeType = Canvas | Processor | Counter;
+export default NodeType;
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -166,14 +139,14 @@ export const updatePosSizeAction: UpdatePosSizeAction = <span class="fstat-no" t
                 at Mon May 10 2021 15:30:24 GMT+0900 (日本標準時)
             </div>
         </div>
-        <script src="../../prettify.js"></script>
+        <script src="../../../prettify.js"></script>
         <script>
             window.onload = function () {
                 prettyPrint();
             };
         </script>
-        <script src="../../sorter.js"></script>
-        <script src="../../block-navigation.js"></script>
+        <script src="../../../sorter.js"></script>
+        <script src="../../../block-navigation.js"></script>
     </body>
 </html>
     
