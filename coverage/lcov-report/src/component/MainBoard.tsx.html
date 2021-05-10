@@ -158,9 +158,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store';
 import { addConnectionAction } from '@/store/node/actions';
 import { openCPAction } from '@/store/panel/actions';
-import { BaseType, ConnectionType, DataType, DataTypes } from '@/store/node/types';
-import Base, { Handler as BaseHandler } from './Base';
-import baseProps, { NewConnectionInfo } from './Base/props';
+import { NodeType, ConnectionType, DataType, DataTypes } from '@/store/node/types';
+import Node, { Handler as NodeHandler } from './Node';
+import nodeProps, { NewConnectionInfo } from './Node/props';
 import Panel from './Panel';
 import Connection, { Handler as ConnectionHandler } from './Connection';
 import useIdRef, { mergeSourceAndIdRefs } from '@/utils/useIdRef';
@@ -170,8 +170,8 @@ import Vector from '@/utils/vector';
 const MainBoard: React.FC = () =&gt; {
   const props = useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.nodeReducer)</span>;
   const cpIdsList = useSelector(<span class="fstat-no" title="function not covered" >(s</span>tate: RootState) =&gt; <span class="cstat-no" title="statement not covered" >state.panelReducer.cpIdsList)</span>;
-  const baseIdRefs = useIdRef&lt;BaseHandler&gt;(props.bases);
-  const bases = mergeSourceAndIdRefs&lt;BaseType, BaseHandler&gt;(props.bases, baseIdRefs);
+  const nodeIdRefs = useIdRef&lt;NodeHandler&gt;(props.nodes);
+  const nodes = mergeSourceAndIdRefs&lt;NodeType, NodeHandler&gt;(props.nodes, nodeIdRefs);
   const connectionIdRefs = useIdRef&lt;ConnectionHandler&gt;(props.connections);
   const cons = mergeSourceAndIdRefs&lt;ConnectionType, ConnectionHandler&gt;(props.connections, connectionIdRefs);
   const newConRef = useRef&lt;ConnectionHandler&gt;({} as ConnectionHandler);
@@ -182,12 +182,12 @@ const MainBoard: React.FC = () =&gt; {
 &nbsp;
   return (
     &lt;div className={style.mainBoard}&gt;
-      {bases.map(<span class="fstat-no" title="function not covered" >b=</span>&gt;<span class="cstat-no" title="statement not covered" >&lt;Base key={b.id} r</span>ef={b.ref} {...baseProps(b, cons.filter(<span class="fstat-no" title="function not covered" >c=</span>&gt;<span class="cstat-no" title="statement not covered" >c.iBaseId==b.id)</span>, cons.filter(<span class="fstat-no" title="function not covered" >c=</span>&gt;<span class="cstat-no" title="statement not covered" >c.oBaseId==b.id)</span>, openCPFunc, newConRef, newConInfoRef, addConnection, dispatch)}/&gt;)}
+      {nodes.map(<span class="fstat-no" title="function not covered" >n=</span>&gt;<span class="cstat-no" title="statement not covered" >&lt;Node key={n.id} r</span>ef={n.ref} {...nodeProps(n, cons.filter(<span class="fstat-no" title="function not covered" >c=</span>&gt;<span class="cstat-no" title="statement not covered" >c.iNodeId==n.id)</span>, cons.filter(<span class="fstat-no" title="function not covered" >c=</span>&gt;<span class="cstat-no" title="statement not covered" >c.oNodeId==n.id)</span>, openCPFunc, newConRef, newConInfoRef, addConnection, dispatch)}/&gt;)}
       {cpIdsList.map((ids, i)=&gt;{
         <span class="missing-if-branch" title="else path not taken" >E</span>if(ids[0]===undefined) return;
-        let bases: BaseType[] = <span class="cstat-no" title="statement not covered" >[];</span>
-<span class="cstat-no" title="statement not covered" >        ids.forEach(<span class="fstat-no" title="function not covered" >id=</span>&gt;{ <span class="cstat-no" title="statement not covered" >bases.push(props.bases.filter(<span class="fstat-no" title="function not covered" >c=</span>&gt;<span class="cstat-no" title="statement not covered" >c.id===id)</span>[0]); </span>})</span>
-<span class="cstat-no" title="statement not covered" >        return &lt;Panel key={i} {...pProps(bases)}/&gt;</span>
+        let nodes: NodeType[] = <span class="cstat-no" title="statement not covered" >[];</span>
+<span class="cstat-no" title="statement not covered" >        ids.forEach(<span class="fstat-no" title="function not covered" >id=</span>&gt;{ <span class="cstat-no" title="statement not covered" >nodes.push(props.nodes.filter(<span class="fstat-no" title="function not covered" >c=</span>&gt;<span class="cstat-no" title="statement not covered" >c.id===id)</span>[0]); </span>})</span>
+<span class="cstat-no" title="statement not covered" >        return &lt;Panel key={i} {...pProps(nodes)}/&gt;</span>
       })}
       &lt;svg className={style.connectionPanel}&gt;
         {cons.map(<span class="fstat-no" title="function not covered" >c=</span>&gt;<span class="cstat-no" title="statement not covered" >&lt;Connection key={c.id} r</span>ef={c.ref} {...cProps(c.type, props.curving, c.s, c.e)}/&gt;)}
@@ -199,7 +199,7 @@ const MainBoard: React.FC = () =&gt; {
 &nbsp;
 export default MainBoard;
 &nbsp;
-const pProps = <span class="fstat-no" title="function not covered" >(b</span>ases: BaseType[]) =&gt; (<span class="cstat-no" title="statement not covered" >{ bases })</span>;
+const pProps = <span class="fstat-no" title="function not covered" >(n</span>odes: NodeType[]) =&gt; (<span class="cstat-no" title="statement not covered" >{ nodes })</span>;
 const cProps = (type: DataType, curving: number, start: Vector, end: Vector) =&gt; ({ type, curving, s: start, e: end });
 &nbsp;</pre></td></tr></table></pre>
 
@@ -208,7 +208,7 @@ const cProps = (type: DataType, curving: number, start: Vector, end: Vector) =&g
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Sat May 08 2021 14:24:44 GMT+0900 (日本標準時)
+                at Sun May 09 2021 14:26:31 GMT+0900 (日本標準時)
             </div>
         </div>
         <script src="../../prettify.js"></script>

@@ -1,13 +1,5 @@
 import Vector from '@/utils/vector';
 
-export const NodeModeNames = {
-  Code: 'CODE',
-  Canvas: 'CANVAS',
-} as const;
-interface CodeMode { name: typeof NodeModeNames.Code }
-interface CanvasMode { name: typeof NodeModeNames.Canvas } 
-export type NodeMode = CodeMode | CanvasMode;
-
 export const DataTypes = {
   Number: 'NUMBER',
   NumberList: 'NUMBER_LIST',
@@ -23,10 +15,11 @@ export interface Socket {
 }
 
 type NodeId = number;
-interface Node {
+export type NodeFunc = (...args: DataType[]) => DataType[];
+export interface Node {
   id: NodeId;
   name: string;
-  mode: NodeMode;
+  mode: string;
   width: string;
   height: string;
   top: string;
@@ -35,15 +28,11 @@ interface Node {
   inputs: Socket[];
   inputsLatestId: number;
   outputsLatestId: number;
-  func: (...args: DataType[]) => (DataType[] | void);
+  func: NodeFunc;
 }
-interface Canvas extends Node {
-
-};
-interface Processor extends Node {
-
-};
-export type NodeType = Canvas | Processor;
+export interface IgnitionNode extends Node {
+  runEngine: () => void;
+}
 
 type ConnectionId = number;
 export type ConnectionType = {

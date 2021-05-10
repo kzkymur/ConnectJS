@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">5.15% </span>
+                <span class="strong">5.21% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>5/97</span>
+                <span class='fraction'>5/96</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">6.17% </span>
+                <span class="strong">6.25% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>5/81</span>
+                <span class='fraction'>5/80</span>
             </div>
         
             
@@ -262,8 +262,7 @@
 <a name='L203'></a><a href='#L203'>203</a>
 <a name='L204'></a><a href='#L204'>204</a>
 <a name='L205'></a><a href='#L205'>205</a>
-<a name='L206'></a><a href='#L206'>206</a>
-<a name='L207'></a><a href='#L207'>207</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L206'></a><a href='#L206'>206</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
@@ -420,7 +419,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -471,20 +469,20 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Reducer } from 'redux';
 import Action, { ActionTypes } from './actionTypes';
-import { BaseType, ConnectionType } from './types';
+import { NodeType, ConnectionType } from './types';
 import ReverseActionBranch, { OperationTypes } from './reverseActionBranch';
 &nbsp;
 export interface State {
-  bases: BaseType[];
-  baseLatestId: number;
+  nodes: NodeType[];
+  nodeLatestId: number;
   connectionLatestId: number;
   connections: ConnectionType[];
   reverseActionBranch: ReverseActionBranch;
   curving: number;
 }
 export const initialState: State = {
-  bases: [],
-  baseLatestId: 0,
+  nodes: [],
+  nodeLatestId: 0,
   connectionLatestId: 0,
   connections: [],
   reverseActionBranch: new ReverseActionBranch(),
@@ -495,45 +493,45 @@ const reducer: Reducer&lt;State, Action&gt; = <span class="fstat-no" title="func
 <span class="cstat-no" title="statement not covered" >  console.log(action);</span>
 <span class="cstat-no" title="statement not covered" >  switch (action.type) {</span>
     case ActionTypes.add: {
-      let latestId = <span class="cstat-no" title="statement not covered" >state.baseLatestId;</span>
-      let base = <span class="cstat-no" title="statement not covered" >{ ...action.payload.base };</span>
-<span class="cstat-no" title="statement not covered" >      if (base.id === -1) {</span>
+      let latestId = <span class="cstat-no" title="statement not covered" >state.nodeLatestId;</span>
+      let node = <span class="cstat-no" title="statement not covered" >{ ...action.payload.node };</span>
+<span class="cstat-no" title="statement not covered" >      if (node.id === -1) {</span>
 <span class="cstat-no" title="statement not covered" >        latestId++;</span>
-<span class="cstat-no" title="statement not covered" >        base.id = latestId;</span>
-<span class="cstat-no" title="statement not covered" >        base.name = 'node' + String(latestId);</span>
+<span class="cstat-no" title="statement not covered" >        node.id = latestId;</span>
+<span class="cstat-no" title="statement not covered" >        node.name = 'node' + String(latestId);</span>
       }
 <span class="cstat-no" title="statement not covered" >      state = {</span>
         ...state,
-        baseLatestId: latestId,
-        bases: [ ...state.bases, base ],
+        nodeLatestId: latestId,
+        nodes: [ ...state.nodes, node ],
       };
 <span class="cstat-no" title="statement not covered" >      break;</span>
     }
     case ActionTypes.delete: {
-      const deletedBase = <span class="cstat-no" title="statement not covered" >state.bases.filter(<span class="fstat-no" title="function not covered" >b </span>=&gt; <span class="cstat-no" title="statement not covered" >b.id === action.payload.id)</span>[0];</span>
-<span class="cstat-no" title="statement not covered" >      if (deletedBase === undefined) <span class="cstat-no" title="statement not covered" >return state;</span></span>
+      const deletednode = <span class="cstat-no" title="statement not covered" >state.nodes.filter(<span class="fstat-no" title="function not covered" >n </span>=&gt; <span class="cstat-no" title="statement not covered" >n.id === action.payload.id)</span>[0];</span>
+<span class="cstat-no" title="statement not covered" >      if (deletednode === undefined) <span class="cstat-no" title="statement not covered" >return state;</span></span>
 <span class="cstat-no" title="statement not covered" >      state = {</span>
         ...state,
-        bases: state.bases.filter(<span class="fstat-no" title="function not covered" >b </span>=&gt; <span class="cstat-no" title="statement not covered" >b.id !== action.payload.id)</span>,
+        nodes: state.nodes.filter(<span class="fstat-no" title="function not covered" >n </span>=&gt; <span class="cstat-no" title="statement not covered" >n.id !== action.payload.id)</span>,
       };
 <span class="cstat-no" title="statement not covered" >      break;</span>
     }
 &nbsp;
     case ActionTypes.update: {
-      const oldBase = <span class="cstat-no" title="statement not covered" >state.bases.filter(<span class="fstat-no" title="function not covered" >b </span>=&gt; <span class="cstat-no" title="statement not covered" >b.id === action.payload.base.id)</span>[0];</span>
-<span class="cstat-no" title="statement not covered" >      if (oldBase === undefined) <span class="cstat-no" title="statement not covered" >return state;</span></span>
+      const oldnode = <span class="cstat-no" title="statement not covered" >state.nodes.filter(<span class="fstat-no" title="function not covered" >n </span>=&gt; <span class="cstat-no" title="statement not covered" >n.id === action.payload.node.id)</span>[0];</span>
+<span class="cstat-no" title="statement not covered" >      if (oldnode === undefined) <span class="cstat-no" title="statement not covered" >return state;</span></span>
 <span class="cstat-no" title="statement not covered" >      state = {</span>
         ...state,
-        bases: state.bases.map(<span class="fstat-no" title="function not covered" >c </span>=&gt; <span class="cstat-no" title="statement not covered" >c.id === action.payload.base.id ? action.payload.base : c)</span>,
+        nodes: state.nodes.map(<span class="fstat-no" title="function not covered" >c </span>=&gt; <span class="cstat-no" title="statement not covered" >c.id === action.payload.node.id ? action.payload.node : c)</span>,
       };
 <span class="cstat-no" title="statement not covered" >      break;</span>
     }
     case ActionTypes.updateName: {
-      const oldBase = <span class="cstat-no" title="statement not covered" >state.bases.filter(<span class="fstat-no" title="function not covered" >b </span>=&gt; <span class="cstat-no" title="statement not covered" >b.id === action.payload.id)</span>[0];</span>
-<span class="cstat-no" title="statement not covered" >      if (oldBase === undefined) <span class="cstat-no" title="statement not covered" >return state;</span></span>
+      const oldnode = <span class="cstat-no" title="statement not covered" >state.nodes.filter(<span class="fstat-no" title="function not covered" >n </span>=&gt; <span class="cstat-no" title="statement not covered" >n.id === action.payload.id)</span>[0];</span>
+<span class="cstat-no" title="statement not covered" >      if (oldnode === undefined) <span class="cstat-no" title="statement not covered" >return state;</span></span>
 <span class="cstat-no" title="statement not covered" >      state = {</span>
         ...state,
-        bases: state.bases.map(<span class="fstat-no" title="function not covered" >c </span>=&gt; <span class="cstat-no" title="statement not covered" >c.id === action.payload.id ? {</span>
+        nodes: state.nodes.map(<span class="fstat-no" title="function not covered" >c </span>=&gt; <span class="cstat-no" title="statement not covered" >c.id === action.payload.id ? {</span>
           ...c,
           name: action.payload.name,
         } : c),
@@ -541,28 +539,28 @@ const reducer: Reducer&lt;State, Action&gt; = <span class="fstat-no" title="func
 <span class="cstat-no" title="statement not covered" >      break;</span>
     }
     case ActionTypes.updateSize: {
-      const oldBase = <span class="cstat-no" title="statement not covered" >state.bases.filter(<span class="fstat-no" title="function not covered" >b </span>=&gt; <span class="cstat-no" title="statement not covered" >b.id === action.payload.id)</span>[0];</span>
-<span class="cstat-no" title="statement not covered" >      if (oldBase === undefined) <span class="cstat-no" title="statement not covered" >return state;</span></span>
+      const oldnode = <span class="cstat-no" title="statement not covered" >state.nodes.filter(<span class="fstat-no" title="function not covered" >n </span>=&gt; <span class="cstat-no" title="statement not covered" >n.id === action.payload.id)</span>[0];</span>
+<span class="cstat-no" title="statement not covered" >      if (oldnode === undefined) <span class="cstat-no" title="statement not covered" >return state;</span></span>
 <span class="cstat-no" title="statement not covered" >      state = {</span>
         ...state,
-        bases: state.bases.map(<span class="fstat-no" title="function not covered" >b </span>=&gt; <span class="cstat-no" title="statement not covered" >b.id === action.payload.id ? {</span>
-          ...b,
+        nodes: state.nodes.map(<span class="fstat-no" title="function not covered" >n </span>=&gt; <span class="cstat-no" title="statement not covered" >n.id === action.payload.id ? {</span>
+          ...n,
           width: action.payload.width,
           height: action.payload.height,
-        } : b),
+        } : n),
       };
 <span class="cstat-no" title="statement not covered" >      break;</span>
     }
     case ActionTypes.updatePos: {
-      const oldBase = <span class="cstat-no" title="statement not covered" >state.bases.filter(<span class="fstat-no" title="function not covered" >b </span>=&gt; <span class="cstat-no" title="statement not covered" >b.id === action.payload.id)</span>[0];</span>
-<span class="cstat-no" title="statement not covered" >      if (oldBase === undefined) <span class="cstat-no" title="statement not covered" >return state;</span></span>
+      const oldnode = <span class="cstat-no" title="statement not covered" >state.nodes.filter(<span class="fstat-no" title="function not covered" >n </span>=&gt; <span class="cstat-no" title="statement not covered" >n.id === action.payload.id)</span>[0];</span>
+<span class="cstat-no" title="statement not covered" >      if (oldnode === undefined) <span class="cstat-no" title="statement not covered" >return state;</span></span>
 <span class="cstat-no" title="statement not covered" >      state = {</span>
         ...state,
-        bases: state.bases.map(<span class="fstat-no" title="function not covered" >b </span>=&gt; <span class="cstat-no" title="statement not covered" >b.id === action.payload.id ? {</span>
-          ...b,
+        nodes: state.nodes.map(<span class="fstat-no" title="function not covered" >n </span>=&gt; <span class="cstat-no" title="statement not covered" >n.id === action.payload.id ? {</span>
+          ...n,
           top: action.payload.top,
           left: action.payload.left,
-        } : b),
+        } : n),
       };
 <span class="cstat-no" title="statement not covered" >      break;</span>
     }
@@ -570,34 +568,34 @@ const reducer: Reducer&lt;State, Action&gt; = <span class="fstat-no" title="func
     case ActionTypes.addSocket: {
 <span class="cstat-no" title="statement not covered" >      state = {</span>
         ...state,
-        bases: state.bases.map(<span class="fstat-no" title="function not covered" >b </span>=&gt; <span class="cstat-no" title="statement not covered" >b.id === action.payload.baseId ? {</span>
-          ...b,
-          inputsLatestId: action.payload.isInput ? b.inputsLatestId + 1 : b.inputsLatestId,
-          inputs: action.payload.isInput ? [...b.inputs, {
-            id: b.inputsLatestId + 1,
+        nodes: state.nodes.map(<span class="fstat-no" title="function not covered" >n </span>=&gt; <span class="cstat-no" title="statement not covered" >n.id === action.payload.nodeId ? {</span>
+          ...n,
+          inputsLatestId: action.payload.isInput ? n.inputsLatestId + 1 : n.inputsLatestId,
+          inputs: action.payload.isInput ? [...n.inputs, {
+            id: n.inputsLatestId + 1,
             type: action.payload.type,
             name: action.payload.type,
             counterId: -1,
-          }] : b.inputs,
-          outputsLatestId: !action.payload.isInput ? b.outputsLatestId + 1 : b.outputsLatestId,
-          outputs: !action.payload.isInput ? [...b.outputs, {
-            id: b.outputsLatestId + 1,
+          }] : n.inputs,
+          outputsLatestId: !action.payload.isInput ? n.outputsLatestId + 1 : n.outputsLatestId,
+          outputs: !action.payload.isInput ? [...n.outputs, {
+            id: n.outputsLatestId + 1,
             type: action.payload.type,
             name: action.payload.type,
             counterId: -1,
-          }] : b.outputs,
-        } : b),
+          }] : n.outputs,
+        } : n),
       };
 <span class="cstat-no" title="statement not covered" >      break;</span>
     }
     case ActionTypes.deleteSocket: {
 <span class="cstat-no" title="statement not covered" >      state = {</span>
         ...state,
-        bases: state.bases.map(<span class="fstat-no" title="function not covered" >b </span>=&gt; <span class="cstat-no" title="statement not covered" >b.id === action.payload.baseId ? {</span>
-          ...b,
-          inputs: action.payload.isInput ? b.inputs.filter(<span class="fstat-no" title="function not covered" >i </span>=&gt; <span class="cstat-no" title="statement not covered" >i.id !== action.payload.id)</span> : b.inputs,
-          outputs: !action.payload.isInput ? b.outputs.filter(<span class="fstat-no" title="function not covered" >o </span>=&gt; <span class="cstat-no" title="statement not covered" >o.id !== action.payload.id)</span> : b.outputs,
-        } : b),
+        nodes: state.nodes.map(<span class="fstat-no" title="function not covered" >n </span>=&gt; <span class="cstat-no" title="statement not covered" >n.id === action.payload.nodeId ? {</span>
+          ...n,
+          inputs: action.payload.isInput ? n.inputs.filter(<span class="fstat-no" title="function not covered" >i </span>=&gt; <span class="cstat-no" title="statement not covered" >i.id !== action.payload.id)</span> : n.inputs,
+          outputs: !action.payload.isInput ? n.outputs.filter(<span class="fstat-no" title="function not covered" >o </span>=&gt; <span class="cstat-no" title="statement not covered" >o.id !== action.payload.id)</span> : n.outputs,
+        } : n),
       };
 <span class="cstat-no" title="statement not covered" >      break;</span>
     }
@@ -628,7 +626,6 @@ const reducer: Reducer&lt;State, Action&gt; = <span class="fstat-no" title="func
     case ActionTypes.updateConnectionPos: {
       const oldCon = <span class="cstat-no" title="statement not covered" >state.connections.filter(<span class="fstat-no" title="function not covered" >c </span>=&gt; <span class="cstat-no" title="statement not covered" >c.id === action.payload.id)</span>[0];</span>
 <span class="cstat-no" title="statement not covered" >      if (oldCon === undefined) <span class="cstat-no" title="statement not covered" >return state;</span></span>
-<span class="cstat-no" title="statement not covered" >      console.log(action.payload);</span>
 <span class="cstat-no" title="statement not covered" >      state = {</span>
         ...state,
         connections: state.connections.map(<span class="fstat-no" title="function not covered" >c </span>=&gt; <span class="cstat-no" title="statement not covered" >c.id === action.payload.id ? {</span>
@@ -682,7 +679,7 @@ export default reducer;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Sat May 08 2021 14:24:44 GMT+0900 (日本標準時)
+                at Sun May 09 2021 14:26:31 GMT+0900 (日本標準時)
             </div>
         </div>
         <script src="../../../prettify.js"></script>

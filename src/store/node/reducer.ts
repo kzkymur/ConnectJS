@@ -1,6 +1,7 @@
 import { Reducer } from 'redux';
 import Action, { ActionTypes } from './actionTypes';
-import { NodeType, ConnectionType } from './types';
+import { ConnectionType } from './types';
+import NodeType from './nodeTypes';
 import ReverseActionBranch, { OperationTypes } from './reverseActionBranch';
 
 export interface State {

@@ -1,5 +1,6 @@
 import React, { MutableRefObject } from 'react';
-import { NodeType, ConnectionType, DataTypes } from '@/store/node/types';
+import { ConnectionType, DataTypes } from '@/store/node/types';
+import NodeType from '@/store/node/nodeTypes';
 import NodeAction from '@/store/node/actionTypes';
 import { multAction, updatePosAction, updateConnectionPosAction } from '@/store/node/actions';
 import { Handler as ConnectionHandler } from '@/component/Connection';

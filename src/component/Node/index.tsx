@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useImperativeHandle, forwardRef, ReactNode, RefObject } from 'react';
 import { useDispatch } from 'react-redux';
-import { NodeType, Socket } from '@/store/node/types';
+import { Socket } from '@/store/node/types';
+import NodeType from '@/store/node/nodeTypes';
 import { updateAction } from '@/store/node/actions';
 import Header from './Header';
 import Main from './Main';

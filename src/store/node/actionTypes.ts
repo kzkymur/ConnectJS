@@ -1,5 +1,6 @@
 import { Action } from 'redux';
-import { NodeType, ConnectionType, DataType } from './types';
+import { ConnectionType, DataType } from './types';
+import NodeType from './nodeTypes';
 import Vector from '@/utils/vector';
 
 export const ActionTypes = {

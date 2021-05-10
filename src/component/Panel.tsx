@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { NodeType, NodeModeNames, DataTypes, DataType } from '@/store/node/types';
+import { DataType, DataTypes } from '@/store/node/types';
+import NodeType, { NodeModes } from '@/store/node/nodeTypes';
 import { updateAction, addSocketAction } from '@/store/node/actions';
 import { closeCPAction, closeAllCPAction } from '@/store/panel/actions';
 import NameBox from './atom/NameBox';
@@ -46,8 +47,8 @@ const Panel: React.FC<Props> = props => {
 
   let defaultOutputType: DataType;
   const node = props.nodes[index] ? props.nodes[index] : props.nodes[0];
-  switch (node.mode.name) {
-    case NodeModeNames.Canvas: {
+  switch (node.mode) {
+    case NodeModes.canvas: {
       defaultOutputType = DataTypes.Framebuffer;
       break;
     }

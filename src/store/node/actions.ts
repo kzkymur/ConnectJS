@@ -1,5 +1,6 @@
 import Action, { ActionTypes } from './actionTypes';
-import { NodeType, ConnectionType, DataType } from './types';
+import { ConnectionType, DataType } from './types';
+import NodeType from './nodeTypes';
 import Vector from '@/utils/vector';
 
 export const addAction = (node: NodeType): Action => ({

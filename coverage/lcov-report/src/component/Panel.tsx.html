@@ -247,27 +247,27 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { BaseType, NodeModeNames, DataTypes, DataType } from '@/store/node/types';
+import { NodeType, NodeModeNames, DataTypes, DataType } from '@/store/node/types';
 import { updateAction, addSocketAction } from '@/store/node/actions';
 import { closeCPAction, closeAllCPAction } from '@/store/panel/actions';
 import NameBox from './atom/NameBox';
 import style from '@/style/ControllPanel.css';
 &nbsp;
 type Props = {
-  bases: BaseType[];
+  nodes: NodeType[];
 }
 &nbsp;
 const Panel: React.FC&lt;Props&gt; = <span class="fstat-no" title="function not covered" >props </span>=&gt; {
   const dispatch = <span class="cstat-no" title="statement not covered" >useDispatch();</span>
   const [index, setIndex] = <span class="cstat-no" title="statement not covered" >useState&lt;number&gt;(0);</span>
-  const updateFunc = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(c</span>: BaseType) =&gt; <span class="cstat-no" title="statement not covered" >dispatch(updateAction(c));</span></span>
+  const updateFunc = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(c</span>: NodeType) =&gt; <span class="cstat-no" title="statement not covered" >dispatch(updateAction(c));</span></span>
 &nbsp;
   const nameUpdate = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(n</span>ame: string) =&gt; {</span>
-    const newBaseStyle: BaseType = <span class="cstat-no" title="statement not covered" >{</span>
-      ...props.bases[index],
+    const newnodeStyle: NodeType = <span class="cstat-no" title="statement not covered" >{</span>
+      ...props.nodes[index],
       name: name,
     };
-<span class="cstat-no" title="statement not covered" >    updateFunc(newBaseStyle);</span>
+<span class="cstat-no" title="statement not covered" >    updateFunc(newnodeStyle);</span>
   }
   const closeAllFunc = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >dispatch(closeAllCPAction());</span></span>
   const createChangeIndexFunc = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(n</span>ewIndex: number) =&gt; {</span>
@@ -292,8 +292,8 @@ const Panel: React.FC&lt;Props&gt; = <span class="fstat-no" title="function not 
   }
 &nbsp;
   let defaultOutputType: DataType;
-  const base = <span class="cstat-no" title="statement not covered" >props.bases[index] ? props.bases[index] : props.bases[0];</span>
-<span class="cstat-no" title="statement not covered" >  switch (base.mode.name) {</span>
+  const node = <span class="cstat-no" title="statement not covered" >props.nodes[index] ? props.nodes[index] : props.nodes[0];</span>
+<span class="cstat-no" title="statement not covered" >  switch (node.mode.name) {</span>
     case NodeModeNames.Canvas: {
 <span class="cstat-no" title="statement not covered" >      defaultOutputType = DataTypes.Framebuffer;</span>
 <span class="cstat-no" title="statement not covered" >      break;</span>
@@ -304,17 +304,17 @@ const Panel: React.FC&lt;Props&gt; = <span class="fstat-no" title="function not 
   }
   const addInput = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(e</span>: React.MouseEvent&lt;HTMLButtonElement&gt;) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    e.preventDefault();</span>
-<span class="cstat-no" title="statement not covered" >    dispatch(addSocketAction(base.id, true, defaultOutputType));</span>
+<span class="cstat-no" title="statement not covered" >    dispatch(addSocketAction(node.id, true, defaultOutputType));</span>
   }
   const addOutput = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(e</span>: React.MouseEvent&lt;HTMLButtonElement&gt;) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >    e.preventDefault();</span>
-<span class="cstat-no" title="statement not covered" >    dispatch(addSocketAction(base.id, false, defaultOutputType));</span>
+<span class="cstat-no" title="statement not covered" >    dispatch(addSocketAction(node.id, false, defaultOutputType));</span>
   }
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;div className={style.controllPanel}&gt;
       &lt;div className={style.headerContainer}&gt;
-        {props.bases.map(<span class="fstat-no" title="function not covered" >(b</span>,i)=&gt;{
+        {props.nodes.map(<span class="fstat-no" title="function not covered" >(b</span>,i)=&gt;{
 <span class="cstat-no" title="statement not covered" >          return(</span>
             &lt;div className={`${style.cpTabContainer} ${i===index ? style.activeCPTabContainer : ''}`} key={b.id}&gt;
               &lt;NameBox className={style.nameBoxInCP}
@@ -328,11 +328,11 @@ const Panel: React.FC&lt;Props&gt; = <span class="fstat-no" title="function not 
       &lt;/div&gt;
       &lt;div className={style.inputContainer}&gt;
         &lt;button onClick={addInput}&gt;Add&lt;/button&gt;
-        {base.inputs.map(<span class="fstat-no" title="function not covered" >(i</span>nput,i)=&gt; <span class="cstat-no" title="statement not covered" >&lt;input className={style.ioElm}type='text' defaultValue={i} key={input.id}/&gt; </span>)}
+        {node.inputs.map(<span class="fstat-no" title="function not covered" >(i</span>nput,i)=&gt; <span class="cstat-no" title="statement not covered" >&lt;input className={style.ioElm}type='text' defaultValue={i} key={input.id}/&gt; </span>)}
       &lt;/div&gt;
       &lt;div className={style.inputContainer}&gt;
         &lt;button onClick={addOutput}&gt;Add&lt;/button&gt;
-        {base.outputs.map(<span class="fstat-no" title="function not covered" >(o</span>utput,i)=&gt; <span class="cstat-no" title="statement not covered" >&lt;input className={style.ioElm}type='text' defaultValue={i} key={output.id}/&gt; </span>)}
+        {node.outputs.map(<span class="fstat-no" title="function not covered" >(o</span>utput,i)=&gt; <span class="cstat-no" title="statement not covered" >&lt;input className={style.ioElm}type='text' defaultValue={i} key={output.id}/&gt; </span>)}
       &lt;/div&gt;
     &lt;/div&gt;
   )
@@ -346,7 +346,7 @@ export default Panel;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Sat May 08 2021 14:24:44 GMT+0900 (日本標準時)
+                at Sun May 09 2021 14:26:31 GMT+0900 (日本標準時)
             </div>
         </div>
         <script src="../../prettify.js"></script>
