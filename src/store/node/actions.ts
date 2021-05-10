@@ -1,19 +1,20 @@
 import Action, { ActionTypes } from './actionTypes';
-import { BaseType, ConnectionType, DataType } from './types';
+import { ConnectionType, DataType } from './types';
+import NodeType from './nodeTypes';
 import Vector from '@/utils/vector';
 
-export const addAction = (base: BaseType): Action => ({
+export const addAction = (node: NodeType): Action => ({
   type: ActionTypes.add,
-  payload: { base: base, },
+  payload: { node, },
 });
-export const deleteAction = (baseId: number): Action => ({
+export const deleteAction = (nodeId: number): Action => ({
   type: ActionTypes.delete,
-  payload: { id: baseId, },
+  payload: { id: nodeId, },
 });
 
-export const updateAction = (base: BaseType): Action => ({
+export const updateAction = (node: NodeType): Action => ({
   type: ActionTypes.update,
-  payload: { base: base, },
+  payload: { node, },
 });
 export const updateNameAction = (id: number, name: string): Action => ({
   type: ActionTypes.updateName,
@@ -27,13 +28,13 @@ export const updatePosAction = (id: number, top: string, left: string): Action =
   type: ActionTypes.updatePos,
   payload: { id, top, left, },
 });
-export const addSocketAction = (baseId: number, isInput: boolean, type: DataType): Action => ({
+export const addSocketAction = (nodeId: number, isInput: boolean, type: DataType): Action => ({
   type: ActionTypes.addSocket,
-  payload: { baseId, isInput, type },
+  payload: { nodeId, isInput, type },
 });
-export const deleteSocketAction = (baseId: number, isInput: boolean, id: number): Action => ({
+export const deleteSocketAction = (nodeId: number, isInput: boolean, id: number): Action => ({
   type: ActionTypes.deleteSocket,
-  payload: { baseId, isInput, id },
+  payload: { nodeId, isInput, id },
 });
 export const undoAction = (): Action => ({ type: ActionTypes.undo, });
 export const redoAction = (): Action => ({ type: ActionTypes.redo, });

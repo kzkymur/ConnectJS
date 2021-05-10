@@ -4,7 +4,7 @@ import IO, { Handler as IOHandler } from './IO';
 import { getIndex } from '@/utils';
 import Vector from '@/utils/vector';
 import useIdRef, { mergeSourceAndIdRefs } from '@/utils/useIdRef';
-import style from '@/style/Base/IOs.scss';
+import style from '@/style/Node/IOs.scss';
 
 export type Handler = {
   getJointPos: (isInput: boolean, id: number) => Vector;

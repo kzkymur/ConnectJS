@@ -1,9 +1,9 @@
 import NodeAction from '@/store/node/actionTypes';
 import { addAction as orgAddActioin, deleteAction as orgDeleteAction, updatePosAction, updateSizeAction, deleteConnectionAction, multAction } from '@/store/node/actions';
-import { NodeMode } from '@/store/node/types';
+import { NodeModeType } from '@/store/node/nodeTypes';
 import { initBaseWidth, initBaseHeight } from '@/config';
 
-type AddAction = (mode: NodeMode) => NodeAction;
+type AddAction = (mode: NodeModeType) => NodeAction;
 export const addAction: AddAction = (mode) => orgAddActioin({
   id: -1,
   mode: mode,
@@ -16,6 +16,8 @@ export const addAction: AddAction = (mode) => orgAddActioin({
   inputs: [],
   outputsLatestId: 0,
   inputsLatestId: 0,
+  func: () => [],
+  runEngine: () => {}, // 一時的に
 });
 
 type DeleteAction = (id: number, cIds: number[]) => NodeAction;

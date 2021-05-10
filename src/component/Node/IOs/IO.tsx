@@ -2,7 +2,7 @@ import React, { useRef, forwardRef, useImperativeHandle } from 'react';
 import { Socket } from '@/store/node/types';
 import NameBox from '@/component/atom/NameBox';
 import Vector from '@/utils/vector';
-import style from '@/style/Base/IOs/IO.scss';
+import style from '@/style/Node/IOs/IO.scss';
 
 export type Handler = {
   getPos: () => Vector;

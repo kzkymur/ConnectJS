@@ -1,5 +1,6 @@
 import React, { ReactNode, RefObject } from 'react';
-import style from '@/style/Base/Main.scss';
+import { useSelector } from 'react-redux';
+import style from '@/style/Node/Main.scss';
 
 type Props = {
   element: ReactNode;
@@ -7,6 +8,7 @@ type Props = {
 }
 
 const Main: React.FC<Props> = props => {
+  console.log(useSelector((s)=>s));
   return (
     <div ref={props.fRef} className={style.main}>
       {props.element}

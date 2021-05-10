@@ -1,16 +1,17 @@
 import React, { MutableRefObject } from 'react';
-import { BaseType, ConnectionType, DataTypes } from '@/store/node/types';
+import { ConnectionType, DataTypes } from '@/store/node/types';
+import NodeType from '@/store/node/nodeTypes';
 import NodeAction from '@/store/node/actionTypes';
 import { multAction, updatePosAction, updateConnectionPosAction } from '@/store/node/actions';
 import { Handler as ConnectionHandler } from '@/component/Connection';
-import { Handler as BaseHandler, Props as BaseProps } from '@/component/Base';
+import { Handler as NodeHandler, Props as NodeProps } from '@/component/Node';
 import { px } from '@/utils';
 import Vector, { subtract, multiply, hadamard, signFilter } from '@/utils/vector';
 import { deleteAction, updatePosSizeAction } from '@/utils/actions';
 import { border, optBarHeight } from '@/config';
 
 class Props {
-  #base: BaseType & { ref: MutableRefObject<BaseHandler>; };
+  #node: NodeType & { ref: MutableRefObject<NodeHandler>; };
   #in: ConnectionInfo[]; 
   #out: ConnectionInfo[];
   #openCP: (id:number) => void;
@@ -19,9 +20,9 @@ class Props {
   #addConnection: (c: ConnectionType) => void;
   #dispatch: (action: NodeAction) => void;
   #isOnBorder: boolean = true;
-  readonly property: BaseType;
+  readonly property: NodeType;
 
-  constructor ( base: BaseType & { ref: MutableRefObject<BaseHandler>; },
+  constructor ( node: NodeType & { ref: MutableRefObject<NodeHandler>; },
     inputConnections: ConnectionInfo[],
     outputConnections: ConnectionInfo[],
     openCP: (id:number)=>void,
@@ -30,8 +31,8 @@ class Props {
     addConnection: (c: ConnectionType) => void,
     dispatch: (action: NodeAction) => void,
   ) {
-    this.#base = base;
-    this.property = base;
+    this.#node = node;
+    this.property = node;
     this.#in = inputConnections;
     this.#out = outputConnections;
     this.#openCP = openCP;
@@ -66,21 +67,21 @@ class Props {
     const mousemove = (e: MouseEvent) => {
       const m = { x: e.clientX, y: e.clientY, };
       const sm = subtract(m, s); s = m;
-      this.#base.ref.current.updatePosStyle(sm);
+      this.#node.ref.current.updatePosStyle(sm);
       this.#in.forEach(ic=>{ ic.ref.current.changeViewWithDiff(false, sm); });
       this.#out.forEach(oc=>{ oc.ref.current.changeViewWithDiff(true, sm); });
     }
     const isPosUpdate = () => {
-      const { x, y } = this.#base.ref.current.getPos();
+      const { x, y } = this.#node.ref.current.getPos();
       const top = px(y), left = px(x);
-      if (left !== this.#base.left || top !== this.#base.top) {
+      if (left !== this.#node.left || top !== this.#node.top) {
         this.updatePos(top, left);
         return true;
       }
       return false;
     }
     const mouseup = () => {
-      if (!isPosUpdate()) this.#openCP(this.#base.id);
+      if (!isPosUpdate()) this.#openCP(this.#node.id);
       window.removeEventListener('mousemove', mousemove);
       window.removeEventListener('mouseup', mouseup);
     }
@@ -95,16 +96,16 @@ class Props {
     const mousemove = (e: MouseEvent) => {
       const m = { x: e.clientX, y: e.clientY };
       const sm = subtract(m, s), d = hadamard(sm, signs); s = m;
-      const f = this.#base.ref.current.updateSizeStyle(multiply(d, 2));
-      this.#base.ref.current.updatePosStyle(multiply(hadamard(d, f),-1));
+      const f = this.#node.ref.current.updateSizeStyle(multiply(d, 2));
+      this.#node.ref.current.updatePosStyle(multiply(hadamard(d, f),-1));
       this.#in.forEach(ic=>{ ic.ref.current.changeViewWithDiff(false, hadamard(hadamard(revX, d), f)); });
       this.#out.forEach(oc=>{ oc.ref.current.changeViewWithDiff(true, hadamard(d, f)); });
     }
     const updateSizeState = () => {
-      const v = this.#base.ref.current.getSize();
-      const width = px(v.x), height = px(calcMainHeight(v.y, this.#base.inputs.length, this.#base.outputs.length));
-      const pos = this.#base.ref.current.getPos();
-      if (this.#base.width !== width || this.#base.height !== height) this.updateSize(px(pos.y), px(pos.x), width, height);
+      const v = this.#node.ref.current.getSize();
+      const width = px(v.x), height = px(calcMainHeight(v.y, this.#node.inputs.length, this.#node.outputs.length));
+      const pos = this.#node.ref.current.getPos();
+      if (this.#node.width !== width || this.#node.height !== height) this.updateSize(px(pos.y), px(pos.x), width, height);
     }
     const mouseup = () => {
       updateSizeState();
@@ -120,9 +121,9 @@ class Props {
   }
 
   operateNewConnection: (isInput: boolean, id: number) => () => void = (isInput, id) => () => {
-    const s = this.#base.ref.current.getJointPos(isInput, id);
+    const s = this.#node.ref.current.getJointPos(isInput, id);
     this.#ncir.current.isInput = isInput;
-    this.#ncir.current.baseId = this.#base.id;
+    this.#ncir.current.nodeId = this.#node.id;
     this.#ncir.current.id = id;
     this.#ncir.current.s = s;
     const mousemove = (e: MouseEvent) => {
@@ -142,39 +143,39 @@ class Props {
   registerNewConnection: (isInput: boolean, id: number) => () => void = (isInput, id) => () => {
     const ncir = this.#ncir.current;
     if (isInput === ncir.isInput) return;
-    if (this.#base.id === ncir.baseId) return;
-    if (ncir.baseId === undefined || ncir.isInput === undefined || ncir.id === undefined || ncir.s === undefined) return;
-    const e = this.#base.ref.current.getJointPos(isInput, id);
+    if (this.#node.id === ncir.nodeId) return;
+    if (ncir.nodeId === undefined || ncir.isInput === undefined || ncir.id === undefined || ncir.s === undefined) return;
+    const e = this.#node.ref.current.getJointPos(isInput, id);
     this.#addConnection({
       type: DataTypes.Number,
       id: -1,
-      iBaseId: isInput ? this.#base.id : ncir.baseId,
+      iNodeId: isInput ? this.#node.id : ncir.nodeId,
       iId: isInput ? id : ncir.id,
-      oBaseId: !isInput ? this.#base.id : ncir.baseId,
+      oNodeId: !isInput ? this.#node.id : ncir.nodeId,
       oId: !isInput ? id : ncir.id,
       s: !isInput ?  e : ncir.s,
       e: isInput ?  e : ncir.s,
     })
   }
 
-  deleteFunc = () => { this.#dispatch(deleteAction(this.#base.id, [ ...this.#in.map(c=>c.id), ...this.#out.map(c=>c.id), ])); }
+  deleteFunc = () => { this.#dispatch(deleteAction(this.#node.id, [ ...this.#in.map(c=>c.id), ...this.#out.map(c=>c.id), ])); }
 
   private updateSize = (top: string, left: string, width: string, height: string) => {
-    const actions = [ updatePosSizeAction(this.#base.id, top, left, width, height), ];
-    this.#in.forEach(c=>actions.push(updateConnectionPosAction(c.id, c.s, this.#base.ref.current.getJointPos(true, c.iId))));
-    this.#out.forEach(c=>actions.push(updateConnectionPosAction(c.id, this.#base.ref.current.getJointPos(false, c.oId), c.e)));
+    const actions = [ updatePosSizeAction(this.#node.id, top, left, width, height), ];
+    this.#in.forEach(c=>actions.push(updateConnectionPosAction(c.id, c.s, this.#node.ref.current.getJointPos(true, c.iId))));
+    this.#out.forEach(c=>actions.push(updateConnectionPosAction(c.id, this.#node.ref.current.getJointPos(false, c.oId), c.e)));
     this.#dispatch(multAction(actions));
   }
   private updatePos = (top: string, left: string) => {
-    const actions = [ updatePosAction(this.#base.id, top, left), ];
-    this.#in.forEach(c=>actions.push(updateConnectionPosAction(c.id, c.s, this.#base.ref.current.getJointPos(true, c.iId))));
-    this.#out.forEach(c=>actions.push(updateConnectionPosAction(c.id, this.#base.ref.current.getJointPos(false, c.oId), c.e)));
+    const actions = [ updatePosAction(this.#node.id, top, left), ];
+    this.#in.forEach(c=>actions.push(updateConnectionPosAction(c.id, c.s, this.#node.ref.current.getJointPos(true, c.iId))));
+    this.#out.forEach(c=>actions.push(updateConnectionPosAction(c.id, this.#node.ref.current.getJointPos(false, c.oId), c.e)));
     this.#dispatch(multAction(actions));
   }
 }
 
-export default function baseProps (
-  base: BaseType & { ref: MutableRefObject<BaseHandler>; },
+export default function nodeProps (
+  node: NodeType & { ref: MutableRefObject<NodeHandler>; },
   inputConnections: ConnectionInfo[],
   outputConnections: ConnectionInfo[],
   openCP: (id:number)=>void,
@@ -182,15 +183,15 @@ export default function baseProps (
   newConnectionInfoRef: MutableRefObject<NewConnectionInfo>,
   addConnection: (c: ConnectionType) => void,
   dispatch: (action: NodeAction) => void,
-): BaseProps {
-  const obj = new Props(base, inputConnections, outputConnections, openCP, newConnectionRef, newConnectionInfoRef, addConnection, dispatch);
+): NodeProps {
+  const obj = new Props(node, inputConnections, outputConnections, openCP, newConnectionRef, newConnectionInfoRef, addConnection, dispatch);
   return { ...obj };
 }
 
 type ConnectionInfo = ConnectionType & { ref: MutableRefObject<ConnectionHandler>; };
 export type NewConnectionInfo = {
   isInput?: boolean;
-  baseId?: number;
+  nodeId?: number;
   id?: number;
   s?: Vector;
 };

@@ -1,26 +1,27 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { BaseType, NodeModeNames, DataTypes, DataType } from '@/store/node/types';
+import { DataType, DataTypes } from '@/store/node/types';
+import NodeType, { NodeModes } from '@/store/node/nodeTypes';
 import { updateAction, addSocketAction } from '@/store/node/actions';
 import { closeCPAction, closeAllCPAction } from '@/store/panel/actions';
 import NameBox from './atom/NameBox';
 import style from '@/style/ControllPanel.css';
 
 type Props = {
-  bases: BaseType[];
+  nodes: NodeType[];
 }
 
 const Panel: React.FC<Props> = props => {
   const dispatch = useDispatch();
   const [index, setIndex] = useState<number>(0);
-  const updateFunc = (c: BaseType) => dispatch(updateAction(c));
+  const updateFunc = (c: NodeType) => dispatch(updateAction(c));
 
   const nameUpdate = (name: string) => {
-    const newBaseStyle: BaseType = {
-      ...props.bases[index],
+    const newnodeStyle: NodeType = {
+      ...props.nodes[index],
       name: name,
     };
-    updateFunc(newBaseStyle);
+    updateFunc(newnodeStyle);
   }
   const closeAllFunc = () => dispatch(closeAllCPAction());
   const createChangeIndexFunc = (newIndex: number) => {
@@ -45,9 +46,9 @@ const Panel: React.FC<Props> = props => {
   }
 
   let defaultOutputType: DataType;
-  const base = props.bases[index] ? props.bases[index] : props.bases[0];
-  switch (base.mode.name) {
-    case NodeModeNames.Canvas: {
+  const node = props.nodes[index] ? props.nodes[index] : props.nodes[0];
+  switch (node.mode) {
+    case NodeModes.canvas: {
       defaultOutputType = DataTypes.Framebuffer;
       break;
     }
@@ -57,17 +58,17 @@ const Panel: React.FC<Props> = props => {
   }
   const addInput = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    dispatch(addSocketAction(base.id, true, defaultOutputType));
+    dispatch(addSocketAction(node.id, true, defaultOutputType));
   }
   const addOutput = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    dispatch(addSocketAction(base.id, false, defaultOutputType));
+    dispatch(addSocketAction(node.id, false, defaultOutputType));
   }
 
   return (
     <div className={style.controllPanel}>
       <div className={style.headerContainer}>
-        {props.bases.map((b,i)=>{
+        {props.nodes.map((b,i)=>{
           return(
             <div className={`${style.cpTabContainer} ${i===index ? style.activeCPTabContainer : ''}`} key={b.id}>
               <NameBox className={style.nameBoxInCP}
@@ -81,11 +82,11 @@ const Panel: React.FC<Props> = props => {
       </div>
       <div className={style.inputContainer}>
         <button onClick={addInput}>Add</button>
-        {base.inputs.map((input,i)=> <input className={style.ioElm}type='text' defaultValue={i} key={input.id}/> )}
+        {node.inputs.map((input,i)=> <input className={style.ioElm}type='text' defaultValue={i} key={input.id}/> )}
       </div>
       <div className={style.inputContainer}>
         <button onClick={addOutput}>Add</button>
-        {base.outputs.map((output,i)=> <input className={style.ioElm}type='text' defaultValue={i} key={output.id}/> )}
+        {node.outputs.map((output,i)=> <input className={style.ioElm}type='text' defaultValue={i} key={output.id}/> )}
       </div>
     </div>
   )

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useImperativeHandle, forwardRef, ReactNode, RefObject } from 'react';
 import { useDispatch } from 'react-redux';
-import { BaseType, Socket } from '@/store/node/types';
+import { Socket } from '@/store/node/types';
+import NodeType from '@/store/node/nodeTypes';
 import { updateAction } from '@/store/node/actions';
 import Header from './Header';
 import Main from './Main';
@@ -8,7 +9,7 @@ import IOs, { Handler as IOsHandler } from './IOs';
 import { px, px2n } from '@/utils';
 import Vector from '@/utils/vector';
 import { minBaseWidth, minBaseHeight, optBarHeight, borderWidth } from '@/config';
-import style from '@/style/Base.scss';
+import style from '@/style/Node.scss';
 
 export type Handler = {
   getJointPos: (isInput: boolean, id: number) => Vector;
@@ -19,7 +20,7 @@ export type Handler = {
   updateSizeStyle: (v: Vector) => Vector;
 }
 export type Props = {
-  property: BaseType;
+  property: NodeType;
   onMouseMove: (e: React.MouseEvent<HTMLDivElement>) => void;
   onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void;
   operateNewConnection: (isInput: boolean, id: number) => () => void;
@@ -34,7 +35,7 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
   const { id, inputs, outputs, width, top, left, name, height } = property;
   let element: ReactNode;
   const dispatch = useDispatch();
-  const updateFunc = (c: BaseType) => dispatch(updateAction(c));
+  const updateFunc = (n: NodeType) => dispatch(updateAction(n));
   const mainRef = useRef<HTMLDivElement>({} as HTMLDivElement);
 
   const getJointPos = (isInput: boolean, id: number) => iosRef.current.getJointPos(isInput, id);
@@ -79,7 +80,7 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
   })
 
   const createIONameUpdate = (isInput: boolean, index: number) => (name: string) => {
-    const newProperty: BaseType = {...property};
+    const newProperty: NodeType = {...property};
     const sockets = isInput ? inputs : outputs;
     const key = isInput ? 'inputs' : 'outputs';
     newProperty[key] = sockets.map((s, i) => {
