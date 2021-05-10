@@ -69,8 +69,7 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
   }));
 
   useEffect(()=>{
-    let elm;
-    elm = ref.current;
+    const elm = ref.current;
     elm.style.width = px(px2n(width)-borderWidth*2);
     elm.style.top = top;
     elm.style.left = left;
