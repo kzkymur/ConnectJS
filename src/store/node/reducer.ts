@@ -3,6 +3,7 @@ import Action, { ActionTypes } from './actionTypes';
 import { ConnectionType } from './types';
 import NodeType from './nodeTypes';
 import ReverseActionBranch, { OperationTypes } from './reverseActionBranch';
+import Engine from './engine';
 
 export interface State {
   nodes: NodeType[];
@@ -11,6 +12,7 @@ export interface State {
   connections: ConnectionType[];
   reverseActionBranch: ReverseActionBranch;
   curving: number;
+  engines: Engine[];
 }
 export const initialState: State = {
   nodes: [],
@@ -19,6 +21,7 @@ export const initialState: State = {
   connections: [],
   reverseActionBranch: new ReverseActionBranch(),
   curving: 0.5,
+  engines: [],
 };
 
 const reducer: Reducer<State, Action> = (state = initialState, action) => {
