@@ -137,7 +137,7 @@ const reducer: Reducer<State, Action> = (state = initialState, action) => {
 
     case ActionTypes.addConnection: {
       let latestId = state.connectionLatestId;
-      let connection = { ...action.payload, }
+      let connection = { ...action.payload.connection, }
       if (connection.id === -1) {
         latestId++;
         connection.id = latestId;

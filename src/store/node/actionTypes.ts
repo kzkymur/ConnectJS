@@ -2,6 +2,7 @@ import { Action } from 'redux';
 import { ConnectionType, DataType } from './types';
 import NodeType from './nodeTypes';
 import Vector from '@/utils/vector';
+import Engine from './engine';
 
 export const ActionTypes = {
   add: "ADD",
@@ -27,6 +28,9 @@ export const ActionTypes = {
   updateConnection: "UPDATECONNECTION",
   updateConnectionPos: "UPDATECONNECTIONPOS",
   updateConnectionType: "UPDATECONNECTIONTYPE",
+
+  addEngine: "ADDENGINE",
+  deleteEngine: "DELETEENGINE",
 } as const;
 
 // Actionの型定義
@@ -99,7 +103,9 @@ interface Store extends Action {
 
 interface AddConnection extends Action { 
   type: typeof ActionTypes.addConnection; 
-  payload: ConnectionType;
+  payload: {
+    connection: ConnectionType;
+  };
 }
 interface DeleteConnection extends Action { 
   type: typeof ActionTypes.deleteConnection; 
@@ -107,7 +113,9 @@ interface DeleteConnection extends Action {
 }
 interface UpdateConnection extends Action { 
   type: typeof ActionTypes.updateConnection; 
-  payload: ConnectionType;
+  payload: {
+    connection: ConnectionType;
+  };
 }
 interface UpdateConnectionPos extends Action { 
   type: typeof ActionTypes.updateConnectionPos;
@@ -124,6 +132,18 @@ interface UpdateConnectionType extends Action {
     type: DataType;
   };
 }
+interface AddEngine extends Action { 
+  type: typeof ActionTypes.addEngine; 
+  payload: {
+    engine: Engine;
+  };
+}
+interface DeleteEngine extends Action { 
+  type: typeof ActionTypes.addEngine; 
+  payload: {
+    id: number;
+  };
+}
 
 type NodeAction =
   Add | Delete |
@@ -132,5 +152,6 @@ type NodeAction =
   Undo | Redo | Mult |
   Branch | Forward | Backward | Store |
   AddConnection | DeleteConnection |
-  UpdateConnection | UpdateConnectionPos | UpdateConnectionType;
+  UpdateConnection | UpdateConnectionPos | UpdateConnectionType |
+  AddEngine | DeleteEngine;
 export default NodeAction;

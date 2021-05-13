@@ -51,13 +51,13 @@ export const storeAction = (actions: Action[]): Action => ({
   payload: actions,
 });
 
-export const addConnectionAction = (param: ConnectionType): Action => ({
+export const addConnectionAction = (connection: ConnectionType): Action => ({
   type: ActionTypes.addConnection,
-  payload: param,
+  payload: { connection, },
 });
-export const updateConnectionAction = (param: ConnectionType): Action => ({ 
+export const updateConnectionAction = (connection: ConnectionType): Action => ({ 
   type: ActionTypes.updateConnection, 
-  payload: param,
+  payload: { connection, },
 });
 export const updateConnectionTypeAction = (id: number, type: DataType): Action => ({ 
   type: ActionTypes.updateConnectionType,
