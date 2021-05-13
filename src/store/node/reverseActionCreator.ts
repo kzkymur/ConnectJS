@@ -127,6 +127,24 @@ const reverseActionCreator: (state: State, action: Action) => Action[] = (state,
       }];
     }
 
+    case ActionTypes.addEngine: {
+      const latestId = state.nodeLatestId + 1;
+      const engine = { ...action.payload.engine };
+      if (engine.id === -1) engine.id = latestId;
+      return [{
+        type: ActionTypes.deleteEngine,
+        payload: { id: engine.id },
+      }];
+    }
+    case ActionTypes.deleteEngine: {
+      const deletedEngine = state.engines.filter(e => e.id === action.payload.id)[0];
+      if (deletedEngine === undefined) return [];
+      return [{
+        type: ActionTypes.addEngine,
+        payload: { engine: deletedEngine },
+      }];
+    }
+
     default: return [];
   }
 }

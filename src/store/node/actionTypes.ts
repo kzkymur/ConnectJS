@@ -2,7 +2,7 @@ import { Action } from 'redux';
 import { ConnectionType, DataType } from './types';
 import NodeType from './nodeTypes';
 import Vector from '@/utils/vector';
-import Engine from './engine';
+import { EngineType } from './engine';
 
 export const ActionTypes = {
   add: "ADD",
@@ -134,15 +134,11 @@ interface UpdateConnectionType extends Action {
 }
 interface AddEngine extends Action { 
   type: typeof ActionTypes.addEngine; 
-  payload: {
-    engine: Engine;
-  };
+  payload: { engine: EngineType; };
 }
 interface DeleteEngine extends Action { 
-  type: typeof ActionTypes.addEngine; 
-  payload: {
-    id: number;
-  };
+  type: typeof ActionTypes.deleteEngine; 
+  payload: { id: number; };
 }
 
 type NodeAction =

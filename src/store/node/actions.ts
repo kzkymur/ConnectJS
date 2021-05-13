@@ -2,6 +2,7 @@ import Action, { ActionTypes } from './actionTypes';
 import { ConnectionType, DataType } from './types';
 import NodeType from './nodeTypes';
 import Vector from '@/utils/vector';
+import { EngineType } from './engine'
 
 export const addAction = (node: NodeType): Action => ({
   type: ActionTypes.add,
@@ -69,5 +70,14 @@ export const updateConnectionPosAction = (id: number, s: Vector, e: Vector): Act
 });
 export const deleteConnectionAction = (id: number): Action => ({
   type: ActionTypes.deleteConnection,
+  payload: { id, },
+});
+
+export const addEngine = (engine: EngineType): Action => ({
+  type: ActionTypes.addEngine,
+  payload: { engine, },
+});
+export const deleteEngine = (id: number): Action => ({
+  type: ActionTypes.deleteEngine,
   payload: { id, },
 });

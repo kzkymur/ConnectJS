@@ -34,7 +34,7 @@ class BackNode {
   }
 }
 
-export default class Engine extends BackNode {
+export default class Engine extends BackNode implements EngineType {
   id: number;
   constructor (id: number, nodeFunc: NodeFunc) {
     super(nodeFunc,[]);
@@ -45,4 +45,9 @@ export default class Engine extends BackNode {
     this.outBackNodes.forEach((obn, i) => obn.current.setInput(obn.index,out[i]));
     console.log("ignite");
   }
+}
+
+export type EngineType = {
+  id: number;
+  ignite: () => void;
 }

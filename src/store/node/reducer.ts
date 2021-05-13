@@ -3,16 +3,17 @@ import Action, { ActionTypes } from './actionTypes';
 import { ConnectionType } from './types';
 import NodeType from './nodeTypes';
 import ReverseActionBranch, { OperationTypes } from './reverseActionBranch';
-import Engine from './engine';
+import { EngineType } from './engine';
 
 export interface State {
   nodes: NodeType[];
   nodeLatestId: number;
-  connectionLatestId: number;
   connections: ConnectionType[];
+  connectionLatestId: number;
   reverseActionBranch: ReverseActionBranch;
   curving: number;
-  engines: Engine[];
+  engines: EngineType[];
+  engineLatestId: number;
 }
 export const initialState: State = {
   nodes: [],
@@ -22,6 +23,7 @@ export const initialState: State = {
   reverseActionBranch: new ReverseActionBranch(),
   curving: 0.5,
   engines: [],
+  engineLatestId: 0,
 };
 
 const reducer: Reducer<State, Action> = (state = initialState, action) => {
@@ -198,6 +200,30 @@ const reducer: Reducer<State, Action> = (state = initialState, action) => {
     }
     case ActionTypes.store: {
       state = { ...state, reverseActionBranch: state.reverseActionBranch.operate(OperationTypes.store, action.payload) };
+      break;
+    }
+
+    case ActionTypes.addEngine: {
+      let latestId = state.engineLatestId;
+      let engine = { ...action.payload.engine };
+      if (engine.id === -1) {
+        latestId++;
+        engine.id = latestId;
+      }
+      state = {
+        ...state,
+        engineLatestId: latestId,
+        engines: [ ...state.engines, engine ],
+      };
+      break;
+    }
+    case ActionTypes.deleteEngine: {
+      const deletedEngine = state.engines.filter(e => e.id === action.payload.id)[0];
+      if (deletedEngine === undefined) return state;
+      state = {
+        ...state,
+        engines: state.engines.filter(e => e.id !== action.payload.id),
+      };
       break;
     }
 
