@@ -4,10 +4,9 @@ import { State } from './reducer';
 const reverseActionCreator: (state: State, action: Action) => Action[] = (state, action) => {
   switch (action.type) {
     case ActionTypes.add: {
-      let latestId = state.nodeLatestId;
-      let node = { ...action.payload.node };
+      const latestId = state.nodeLatestId + 1;
+      const node = { ...action.payload.node };
       if (node.id === -1) {
-        latestId++;
         node.id = latestId;
         node.name = 'node' + String(latestId);
       }
@@ -91,12 +90,9 @@ const reverseActionCreator: (state: State, action: Action) => Action[] = (state,
     }
 
     case ActionTypes.addConnection: {
-      let latestId = state.connectionLatestId;
-      let connection = { ...action.payload.connection, }
-      if (connection.id === -1) {
-        latestId++;
-        connection.id = latestId;
-      }
+      const latestId = state.connectionLatestId + 1;
+      const connection = { ...action.payload.connection, }
+      if (connection.id === -1) connection.id = latestId;
       return [{
         type: ActionTypes.deleteConnection,
         payload: { id: connection.id, },
