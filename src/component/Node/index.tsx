@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useImperativeHandle, forwardRef, ReactNode, RefObject } from 'react';
+import React, { useEffect, useRef, useImperativeHandle, forwardRef, RefObject } from 'react';
 import { useDispatch } from 'react-redux';
 import { Socket } from '@/store/node/types';
 import NodeType from '@/store/node/nodeTypes';
@@ -6,6 +6,7 @@ import { updateAction } from '@/store/node/actions';
 import Header from './Header';
 import Main from './Main';
 import IOs, { Handler as IOsHandler } from './IOs';
+import Content from '@/content';
 import { px, px2n } from '@/utils';
 import Vector from '@/utils/vector';
 import { minBaseWidth, minBaseHeight, optBarHeight, borderWidth } from '@/config';
@@ -33,7 +34,6 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
   const ref = useRef<HTMLDivElement>({} as HTMLDivElement);
   const iosRef = useRef({} as IOsHandler);
   const { id, inputs, outputs, width, top, left, name, height } = property;
-  let element: ReactNode;
   const dispatch = useDispatch();
   const updateFunc = (n: NodeType) => dispatch(updateAction(n));
   const mainRef = useRef<HTMLDivElement>({} as HTMLDivElement);
@@ -94,7 +94,9 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
       onMouseMove={props.onMouseMove}
     >
       <Header {...headerProps(id, name, props.deleteFunc)}/>
-      <Main {...mainProps(element, mainRef)}/>
+      <Main {...mainProps(mainRef)}>
+        <Content mode={property.mode}/>
+      </Main>
       <IOs {...IOsProps(id, inputs, outputs, createIONameUpdate, props.operateNewConnection, props.registerNewConnection)} ref={iosRef}/>
     </div>
   );
@@ -105,5 +107,5 @@ export default Base;
 const calcMainHeight = (height: number, inputs: Array<Socket>, outputs: Array<Socket>): number => (height - optBarHeight * (Math.max(inputs.length, outputs.length)+1));
 
 const headerProps = (id: number, name: string, deleteFunc: ()=>void) => ({ id, name, deleteFunc, });
-const mainProps = (element: ReactNode, fRef: RefObject<HTMLDivElement>) => ({ element, fRef });
+const mainProps = (fRef: RefObject<HTMLDivElement>) => ({ fRef });
 const IOsProps = (id: number, inputs: Socket[], outputs: Socket[], createIONameUpdate: (isInput: boolean, index: number) => (name: string) => void, operateNewConnection: (isInput: boolean ,id: number) => () => void, registerNewConnection: (isInput: boolean ,id: number) => () => void) => ({ id, inputs, outputs, createIONameUpdate, operateNewConnection, registerNewConnection });
