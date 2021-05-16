@@ -99,14 +99,14 @@ const reducer: Reducer<State, Action> = (state = initialState, action) => {
           inputs: action.payload.isInput ? [...n.inputs, {
             id: n.inputsLatestId + 1,
             type: action.payload.type,
-            name: action.payload.type,
+            name: String(action.payload.type),
             counterId: -1,
           }] : n.inputs,
           outputsLatestId: !action.payload.isInput ? n.outputsLatestId + 1 : n.outputsLatestId,
           outputs: !action.payload.isInput ? [...n.outputs, {
             id: n.outputsLatestId + 1,
             type: action.payload.type,
-            name: action.payload.type,
+            name: String(action.payload.type),
             counterId: -1,
           }] : n.outputs,
         } : n),

@@ -1,5 +1,6 @@
-import { DataType, NodeFunc } from './types';
+import { DataType } from './types';
 
+export type NodeFunc = (...args: DataType[]) => DataType[];
 interface BackNodeInfo {
   current: BackNode;
   index: number;

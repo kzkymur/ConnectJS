@@ -6,7 +6,14 @@ export const DataTypes = {
   NumberList: 'NUMBER_LIST',
   Framebuffer: 'FRAMEBUFFER',
 } as const;
-export type DataType = typeof DataTypes.Number | typeof DataTypes.NumberList | typeof DataTypes.Framebuffer;
+
+type Data = {
+  Number: number;
+}
+export type DataType = typeof DataTypes.Number | typeof DataTypes.NumberList | typeof DataTypes.Framebuffer | Data[keyof Data];
+
+const a: DataType = 12;
+
 type SocketId = number;
 export interface Socket {
   type: DataType;
@@ -16,7 +23,6 @@ export interface Socket {
 }
 
 type NodeId = number;
-export type NodeFunc = (...args: DataType[]) => DataType[];
 export interface Node {
   id: NodeId;
   name: string;
@@ -29,7 +35,6 @@ export interface Node {
   inputs: Socket[];
   inputsLatestId: number;
   outputsLatestId: number;
-  func: NodeFunc;
 }
 export interface IgnitionNode extends Node {
   runEngine: () => void;
