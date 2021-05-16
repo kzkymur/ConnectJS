@@ -1,7 +1,7 @@
 import { Action } from 'redux';
-import { ConnectionType, DataType } from './types';
-import NodeType from './nodeTypes';
+import { Node, ConnectionType, DataType } from './types';
 import Vector from '@/utils/vector';
+import { EngineType } from './engine';
 
 export const ActionTypes = {
   add: "ADD",
@@ -27,12 +27,15 @@ export const ActionTypes = {
   updateConnection: "UPDATECONNECTION",
   updateConnectionPos: "UPDATECONNECTIONPOS",
   updateConnectionType: "UPDATECONNECTIONTYPE",
+
+  addEngine: "ADDENGINE",
+  deleteEngine: "DELETEENGINE",
 } as const;
 
 // Actionの型定義
 interface Add extends Action {
   type: typeof ActionTypes.add;
-  payload: { node: NodeType; };
+  payload: { node: Node; };
 }
 interface Delete extends Action {
   type: typeof ActionTypes.delete;
@@ -40,7 +43,7 @@ interface Delete extends Action {
 }
 interface Update extends Action {
   type: typeof ActionTypes.update;
-  payload: { node: NodeType; };
+  payload: { node: Node; };
 }
 interface UpdateName extends Action {
   type: typeof ActionTypes.updateName;
@@ -99,7 +102,9 @@ interface Store extends Action {
 
 interface AddConnection extends Action { 
   type: typeof ActionTypes.addConnection; 
-  payload: ConnectionType;
+  payload: {
+    connection: ConnectionType;
+  };
 }
 interface DeleteConnection extends Action { 
   type: typeof ActionTypes.deleteConnection; 
@@ -107,7 +112,9 @@ interface DeleteConnection extends Action {
 }
 interface UpdateConnection extends Action { 
   type: typeof ActionTypes.updateConnection; 
-  payload: ConnectionType;
+  payload: {
+    connection: ConnectionType;
+  };
 }
 interface UpdateConnectionPos extends Action { 
   type: typeof ActionTypes.updateConnectionPos;
@@ -124,6 +131,14 @@ interface UpdateConnectionType extends Action {
     type: DataType;
   };
 }
+interface AddEngine extends Action { 
+  type: typeof ActionTypes.addEngine; 
+  payload: { engine: EngineType; };
+}
+interface DeleteEngine extends Action { 
+  type: typeof ActionTypes.deleteEngine; 
+  payload: { id: number; };
+}
 
 type NodeAction =
   Add | Delete |
@@ -132,5 +147,6 @@ type NodeAction =
   Undo | Redo | Mult |
   Branch | Forward | Backward | Store |
   AddConnection | DeleteConnection |
-  UpdateConnection | UpdateConnectionPos | UpdateConnectionType;
+  UpdateConnection | UpdateConnectionPos | UpdateConnectionType |
+  AddEngine | DeleteEngine;
 export default NodeAction;

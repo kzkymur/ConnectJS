@@ -1,6 +1,5 @@
 import React, { MutableRefObject } from 'react';
-import { ConnectionType, DataTypes } from '@/store/node/types';
-import NodeType from '@/store/node/nodeTypes';
+import { Node, ConnectionType, DataTypes } from '@/store/node/types';
 import NodeAction from '@/store/node/actionTypes';
 import { multAction, updatePosAction, updateConnectionPosAction } from '@/store/node/actions';
 import { Handler as ConnectionHandler } from '@/component/Connection';
@@ -11,7 +10,7 @@ import { deleteAction, updatePosSizeAction } from '@/utils/actions';
 import { border, optBarHeight } from '@/config';
 
 class Props {
-  #node: NodeType & { ref: MutableRefObject<NodeHandler>; };
+  #node: Node & { ref: MutableRefObject<NodeHandler>; };
   #in: ConnectionInfo[]; 
   #out: ConnectionInfo[];
   #openCP: (id:number) => void;
@@ -20,9 +19,9 @@ class Props {
   #addConnection: (c: ConnectionType) => void;
   #dispatch: (action: NodeAction) => void;
   #isOnBorder: boolean = true;
-  readonly property: NodeType;
+  readonly property: Node;
 
-  constructor ( node: NodeType & { ref: MutableRefObject<NodeHandler>; },
+  constructor ( node: Node & { ref: MutableRefObject<NodeHandler>; },
     inputConnections: ConnectionInfo[],
     outputConnections: ConnectionInfo[],
     openCP: (id:number)=>void,
@@ -175,7 +174,7 @@ class Props {
 }
 
 export default function nodeProps (
-  node: NodeType & { ref: MutableRefObject<NodeHandler>; },
+  node: Node & { ref: MutableRefObject<NodeHandler>; },
   inputConnections: ConnectionInfo[],
   outputConnections: ConnectionInfo[],
   openCP: (id:number)=>void,

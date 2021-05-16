@@ -1,16 +1,18 @@
 import { Reducer } from 'redux';
 import Action, { ActionTypes } from './actionTypes';
-import { ConnectionType } from './types';
-import NodeType from './nodeTypes';
+import { Node, ConnectionType } from './types';
 import ReverseActionBranch, { OperationTypes } from './reverseActionBranch';
+import { EngineType } from './engine';
 
 export interface State {
-  nodes: NodeType[];
+  nodes: Node[];
   nodeLatestId: number;
-  connectionLatestId: number;
   connections: ConnectionType[];
+  connectionLatestId: number;
   reverseActionBranch: ReverseActionBranch;
   curving: number;
+  engines: EngineType[];
+  engineLatestId: number;
 }
 export const initialState: State = {
   nodes: [],
@@ -19,16 +21,17 @@ export const initialState: State = {
   connections: [],
   reverseActionBranch: new ReverseActionBranch(),
   curving: 0.5,
+  engines: [],
+  engineLatestId: 0,
 };
 
 const reducer: Reducer<State, Action> = (state = initialState, action) => {
   console.log(action);
   switch (action.type) {
     case ActionTypes.add: {
-      let latestId = state.nodeLatestId;
-      let node = { ...action.payload.node };
+      const  latestId = state.nodeLatestId + 1;
+      const  node = { ...action.payload.node };
       if (node.id === -1) {
-        latestId++;
         node.id = latestId;
         node.name = 'node' + String(latestId);
       }
@@ -40,8 +43,6 @@ const reducer: Reducer<State, Action> = (state = initialState, action) => {
       break;
     }
     case ActionTypes.delete: {
-      const deletednode = state.nodes.filter(n => n.id === action.payload.id)[0];
-      if (deletednode === undefined) return state;
       state = {
         ...state,
         nodes: state.nodes.filter(n => n.id !== action.payload.id),
@@ -50,8 +51,6 @@ const reducer: Reducer<State, Action> = (state = initialState, action) => {
     }
 
     case ActionTypes.update: {
-      const oldnode = state.nodes.filter(n => n.id === action.payload.node.id)[0];
-      if (oldnode === undefined) return state;
       state = {
         ...state,
         nodes: state.nodes.map(c => c.id === action.payload.node.id ? action.payload.node : c),
@@ -59,8 +58,6 @@ const reducer: Reducer<State, Action> = (state = initialState, action) => {
       break;
     }
     case ActionTypes.updateName: {
-      const oldnode = state.nodes.filter(n => n.id === action.payload.id)[0];
-      if (oldnode === undefined) return state;
       state = {
         ...state,
         nodes: state.nodes.map(c => c.id === action.payload.id ? {
@@ -71,8 +68,6 @@ const reducer: Reducer<State, Action> = (state = initialState, action) => {
       break;
     }
     case ActionTypes.updateSize: {
-      const oldnode = state.nodes.filter(n => n.id === action.payload.id)[0];
-      if (oldnode === undefined) return state;
       state = {
         ...state,
         nodes: state.nodes.map(n => n.id === action.payload.id ? {
@@ -84,8 +79,6 @@ const reducer: Reducer<State, Action> = (state = initialState, action) => {
       break;
     }
     case ActionTypes.updatePos: {
-      const oldnode = state.nodes.filter(n => n.id === action.payload.id)[0];
-      if (oldnode === undefined) return state;
       state = {
         ...state,
         nodes: state.nodes.map(n => n.id === action.payload.id ? {
@@ -133,12 +126,9 @@ const reducer: Reducer<State, Action> = (state = initialState, action) => {
     }
 
     case ActionTypes.addConnection: {
-      let latestId = state.connectionLatestId;
-      let connection = { ...action.payload, }
-      if (connection.id === -1) {
-        latestId++;
-        connection.id = latestId;
-      }
+      const latestId = state.connectionLatestId + 1;
+      const connection = { ...action.payload.connection, }
+      if (connection.id === -1) connection.id = latestId;
       state = {
         ...state,
         connections: [ ...state.connections, connection ],
@@ -147,8 +137,6 @@ const reducer: Reducer<State, Action> = (state = initialState, action) => {
       break;
     }
     case ActionTypes.deleteConnection: {
-      const deletedConnection = state.connections.filter(c => c.id === action.payload.id)[0];
-      if (deletedConnection === undefined) return state;
       state = {
         ...state,
         connections: state.connections.filter(c => c.id !== action.payload.id),
@@ -156,8 +144,6 @@ const reducer: Reducer<State, Action> = (state = initialState, action) => {
       break;
     }
     case ActionTypes.updateConnectionPos: {
-      const oldCon = state.connections.filter(c => c.id === action.payload.id)[0];
-      if (oldCon === undefined) return state;
       state = {
         ...state,
         connections: state.connections.map(c => c.id === action.payload.id ? {
@@ -169,8 +155,6 @@ const reducer: Reducer<State, Action> = (state = initialState, action) => {
       break;
     }
     case ActionTypes.updateConnectionType: {
-      const oldCon = state.connections.filter(c => c.id === action.payload.id)[0];
-      if (oldCon === undefined) return state;
       state = {
         ...state,
         connections: state.connections.map(c => c.id === action.payload.id ? {
@@ -195,6 +179,25 @@ const reducer: Reducer<State, Action> = (state = initialState, action) => {
     }
     case ActionTypes.store: {
       state = { ...state, reverseActionBranch: state.reverseActionBranch.operate(OperationTypes.store, action.payload) };
+      break;
+    }
+
+    case ActionTypes.addEngine: {
+      const latestId = state.engineLatestId + 1;
+      const engine = { ...action.payload.engine };
+      if (engine.id === -1) engine.id = latestId;
+      state = {
+        ...state,
+        engineLatestId: latestId,
+        engines: [ ...state.engines, engine ],
+      };
+      break;
+    }
+    case ActionTypes.deleteEngine: {
+      state = {
+        ...state,
+        engines: state.engines.filter(e => e.id !== action.payload.id),
+      };
       break;
     }
 

@@ -43,6 +43,8 @@ const reverseActionBranchOperator: Middleware = store => next => (action: NodeAc
       next(branchAction());
     }
   }
+
+  console.log("End: "+action.type);
 };
 
 

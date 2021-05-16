@@ -1,4 +1,5 @@
 import Vector from '@/utils/vector';
+import { ModeType } from '@/content/types';
 
 export const DataTypes = {
   Number: 'NUMBER',
@@ -19,7 +20,7 @@ export type NodeFunc = (...args: DataType[]) => DataType[];
 export interface Node {
   id: NodeId;
   name: string;
-  mode: string;
+  mode: ModeType;
   width: string;
   height: string;
   top: string;

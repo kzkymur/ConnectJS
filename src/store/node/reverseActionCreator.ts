@@ -4,10 +4,9 @@ import { State } from './reducer';
 const reverseActionCreator: (state: State, action: Action) => Action[] = (state, action) => {
   switch (action.type) {
     case ActionTypes.add: {
-      let latestId = state.nodeLatestId;
-      let node = { ...action.payload.node };
+      const latestId = state.nodeLatestId + 1;
+      const node = { ...action.payload.node };
       if (node.id === -1) {
-        latestId++;
         node.id = latestId;
         node.name = 'node' + String(latestId);
       }
@@ -91,12 +90,9 @@ const reverseActionCreator: (state: State, action: Action) => Action[] = (state,
     }
 
     case ActionTypes.addConnection: {
-      let latestId = state.connectionLatestId;
-      let connection = { ...action.payload, }
-      if (connection.id === -1) {
-        latestId++;
-        connection.id = latestId;
-      }
+      const latestId = state.connectionLatestId + 1;
+      const connection = { ...action.payload.connection, }
+      if (connection.id === -1) connection.id = latestId;
       return [{
         type: ActionTypes.deleteConnection,
         payload: { id: connection.id, },
@@ -107,7 +103,7 @@ const reverseActionCreator: (state: State, action: Action) => Action[] = (state,
       if (deletedConnection === undefined) return [];
       return [{
         type: ActionTypes.addConnection,
-        payload: deletedConnection, 
+        payload: { connection: deletedConnection}, 
       }];
     }
     case ActionTypes.updateConnectionPos: {
@@ -124,6 +120,24 @@ const reverseActionCreator: (state: State, action: Action) => Action[] = (state,
       return [{
         type: ActionTypes.updateConnectionType,
         payload: { id: action.payload.id, type: oldCon.type },
+      }];
+    }
+
+    case ActionTypes.addEngine: {
+      const latestId = state.nodeLatestId + 1;
+      const engine = { ...action.payload.engine };
+      if (engine.id === -1) engine.id = latestId;
+      return [{
+        type: ActionTypes.deleteEngine,
+        payload: { id: engine.id },
+      }];
+    }
+    case ActionTypes.deleteEngine: {
+      const deletedEngine = state.engines.filter(e => e.id === action.payload.id)[0];
+      if (deletedEngine === undefined) return [];
+      return [{
+        type: ActionTypes.addEngine,
+        payload: { engine: deletedEngine },
       }];
     }
 

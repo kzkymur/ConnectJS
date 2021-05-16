@@ -1,13 +1,13 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { NodeModeType } from '@/store/node/nodeTypes';
+import { ModeType } from '@/content/types';
 import { addAction } from '@/utils/actions';
 import AddWindowForm from './AddWindow';
 import style from '@/style/Header.css';
 
 const Header: React.FC = () => {
   const dispatch = useDispatch();
-  const addRequest = (nm: NodeModeType) => dispatch(addAction(nm));
+  const addRequest = (m: ModeType) => dispatch(addAction(m));
   return (
     <div className={style.header}>
       <AddWindowForm addRequest={addRequest}/>
@@ -16,4 +16,3 @@ const Header: React.FC = () => {
 }
 
 export default Header;
-
