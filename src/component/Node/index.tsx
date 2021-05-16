@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useImperativeHandle, forwardRef, RefObject } from 'react';
 import { useDispatch } from 'react-redux';
-import { Socket } from '@/store/node/types';
-import NodeType from '@/store/node/nodeTypes';
+import { Node, Socket } from '@/store/node/types';
 import { updateAction } from '@/store/node/actions';
 import Header from './Header';
 import Main from './Main';
@@ -21,7 +20,7 @@ export type Handler = {
   updateSizeStyle: (v: Vector) => Vector;
 }
 export type Props = {
-  property: NodeType;
+  property: Node;
   onMouseMove: (e: React.MouseEvent<HTMLDivElement>) => void;
   onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void;
   operateNewConnection: (isInput: boolean, id: number) => () => void;
@@ -35,7 +34,7 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
   const iosRef = useRef({} as IOsHandler);
   const { id, inputs, outputs, width, top, left, name, height } = property;
   const dispatch = useDispatch();
-  const updateFunc = (n: NodeType) => dispatch(updateAction(n));
+  const updateFunc = (n: Node) => dispatch(updateAction(n));
   const mainRef = useRef<HTMLDivElement>({} as HTMLDivElement);
 
   const getJointPos = (isInput: boolean, id: number) => iosRef.current.getJointPos(isInput, id);
@@ -79,7 +78,7 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
   })
 
   const createIONameUpdate = (isInput: boolean, index: number) => (name: string) => {
-    const newProperty: NodeType = {...property};
+    const newProperty: Node = {...property};
     const sockets = isInput ? inputs : outputs;
     const key = isInput ? 'inputs' : 'outputs';
     newProperty[key] = sockets.map((s, i) => {

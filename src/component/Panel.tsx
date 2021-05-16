@@ -1,23 +1,23 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { DataType, DataTypes } from '@/store/node/types';
-import NodeType, { NodeModes } from '@/store/node/nodeTypes';
+import { Node, DataType, DataTypes } from '@/store/node/types';
+import { Modes } from '@/content/types';
 import { updateAction, addSocketAction } from '@/store/node/actions';
 import { closeCPAction, closeAllCPAction } from '@/store/panel/actions';
 import NameBox from './atom/NameBox';
 import style from '@/style/ControllPanel.css';
 
 type Props = {
-  nodes: NodeType[];
+  nodes: Node[];
 }
 
 const Panel: React.FC<Props> = props => {
   const dispatch = useDispatch();
   const [index, setIndex] = useState<number>(0);
-  const updateFunc = (c: NodeType) => dispatch(updateAction(c));
+  const updateFunc = (n: Node) => dispatch(updateAction(n));
 
   const nameUpdate = (name: string) => {
-    const newnodeStyle: NodeType = {
+    const newnodeStyle: Node = {
       ...props.nodes[index],
       name: name,
     };
@@ -48,7 +48,7 @@ const Panel: React.FC<Props> = props => {
   let defaultOutputType: DataType;
   const node = props.nodes[index] ? props.nodes[index] : props.nodes[0];
   switch (node.mode) {
-    case NodeModes.canvas: {
+    case Modes.canvas: {
       defaultOutputType = DataTypes.Framebuffer;
       break;
     }

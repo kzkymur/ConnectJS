@@ -1,16 +1,16 @@
 import React from 'react';
-import { NodeModes, NodeModeType } from '@/store/node/nodeTypes';
+import { Modes, ModeType } from './types';
 import Canvas from './Canvas';
 import Counter from './Counter';
 
 type Props = {
-  mode: NodeModeType;
+  mode: ModeType;
 };
 
 const Content: React.FC<Props> = props => {
   switch (props.mode) {
-    case (NodeModes.canvas): return <Canvas render={()=>{}}/>;
-    case (NodeModes.counter): return <Counter/>;
+    case (Modes.canvas): return <Canvas render={()=>{}}/>;
+    case (Modes.counter): return <Counter/>;
   }
   return (
     <React.Fragment/>

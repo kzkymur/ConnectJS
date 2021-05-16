@@ -1,20 +1,20 @@
 import React from 'react';
-import { NodeModeType, NodeModes } from '@/store/node/nodeTypes'
+import { ModeType, Modes } from '@/content/types';
 
 type Props = {
-  addRequest: (emt: NodeModeType) => void;
+  addRequest: (emt: ModeType) => void;
 }
 type RefNM = {
   ref: React.RefObject<HTMLInputElement>;
-  nodeMode: NodeModeType;
+  mode: ModeType;
 }
 
 const AddWindowForm: React.FC<Props> = ({addRequest}) => {
   let refNMs: RefNM[] = [];
-  for (let nodeMode of Object.values(NodeModes)){ 
+  for (let mode of Object.values(Modes)){ 
     refNMs.push({ 
       ref: React.createRef(),
-      nodeMode,
+      mode,
     })
   }
 
@@ -22,7 +22,7 @@ const AddWindowForm: React.FC<Props> = ({addRequest}) => {
     for (let refNM of refNMs) {
       if(refNM.ref.current !== null){
         if(refNM.ref.current.checked){
-          addRequest(refNM.nodeMode);
+          addRequest(refNM.mode);
         }
       } else {
         console.log("Error at WindowForm");
@@ -33,7 +33,7 @@ const AddWindowForm: React.FC<Props> = ({addRequest}) => {
   return (
     <React.Fragment>
       {refNMs.map((refNM, i)=>{
-        let name = refNM.nodeMode;
+        let name = refNM.mode;
         return (
           <React.Fragment key={i}>
             <input type="radio" name="windowForm" ref={refNM.ref} id={name}/>

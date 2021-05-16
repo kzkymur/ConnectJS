@@ -3,15 +3,14 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store';
 import { addConnectionAction } from '@/store/node/actions';
 import { openCPAction } from '@/store/panel/actions';
-import { ConnectionType, DataType, DataTypes } from '@/store/node/types';
-import NodeType from '@/store/node/nodeTypes';
+import { Node as NodeType, ConnectionType, DataType, DataTypes } from '@/store/node/types';
 import Node, { Handler as NodeHandler } from './Node';
 import nodeProps, { NewConnectionInfo } from './Node/props';
 import Panel from './Panel';
 import Connection, { Handler as ConnectionHandler } from './Connection';
 import useIdRef, { mergeSourceAndIdRefs } from '@/utils/useIdRef';
-import style from '@/style/MainBoard.css'; 
 import Vector from '@/utils/vector';
+import style from '@/style/MainBoard.css'; 
 
 const MainBoard: React.FC = () => {
   const props = useSelector((state: RootState) => state.nodeReducer);
@@ -31,7 +30,7 @@ const MainBoard: React.FC = () => {
       {nodes.map(n=><Node key={n.id} ref={n.ref} {...nodeProps(n, cons.filter(c=>c.iNodeId==n.id), cons.filter(c=>c.oNodeId==n.id), openCPFunc, newConRef, newConInfoRef, addConnection, dispatch)}/>)}
       {cpIdsList.map((ids, i)=>{
         if(ids[0]===undefined) return;
-        let nodes: NodeType[] = [];
+        const nodes: NodeType[] = [];
         ids.forEach(id=>{ nodes.push(props.nodes.filter(c=>c.id===id)[0]); })
         return <Panel key={i} {...pProps(nodes)}/>
       })}

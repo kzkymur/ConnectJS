@@ -1,12 +1,11 @@
 import { Reducer } from 'redux';
 import Action, { ActionTypes } from './actionTypes';
-import { ConnectionType } from './types';
-import NodeType from './nodeTypes';
+import { Node, ConnectionType } from './types';
 import ReverseActionBranch, { OperationTypes } from './reverseActionBranch';
 import { EngineType } from './engine';
 
 export interface State {
-  nodes: NodeType[];
+  nodes: Node[];
   nodeLatestId: number;
   connections: ConnectionType[];
   connectionLatestId: number;
