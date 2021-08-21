@@ -1,10 +1,10 @@
 import { combineReducers, createStore, applyMiddleware } from 'redux';
-import nodeReducer from './node/reducer';
+import mainReducer from './main/reducer';
 import panelReducer from './panel/reducer';
 import middlewares from './middleware';
 
 const rootReducer = combineReducers({
-	nodeReducer,
+	mainReducer,
   panelReducer,
 });
 

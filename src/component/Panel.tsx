@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { Node, DataType, DataTypes } from '@/store/node/types';
-import { Modes } from '@/content/types';
-import { updateAction, addSocketAction } from '@/store/node/actions';
+import { Node, DataType, } from '@/store/main/node';
+import { updateAction, addSocketAction } from '@/store/main/actions';
 import { closeCPAction, closeAllCPAction } from '@/store/panel/actions';
 import NameBox from './atom/NameBox';
 import style from '@/style/ControllPanel.css';
@@ -17,11 +16,11 @@ const Panel: React.FC<Props> = props => {
   const updateFunc = (n: Node) => dispatch(updateAction(n));
 
   const nameUpdate = (name: string) => {
-    const newnodeStyle: Node = {
-      ...props.nodes[index],
-      name: name,
-    };
-    updateFunc(newnodeStyle);
+    // const newnodeStyle: Node = {
+    //   ...props.nodes[index],
+    //   name: name,
+    // };
+    // updateFunc(newnodeStyle);
   }
   const closeAllFunc = () => dispatch(closeAllCPAction());
   const createChangeIndexFunc = (newIndex: number) => {
@@ -47,15 +46,7 @@ const Panel: React.FC<Props> = props => {
 
   let defaultOutputType: DataType;
   const node = props.nodes[index] ? props.nodes[index] : props.nodes[0];
-  switch (node.mode) {
-    case Modes.canvas: {
-      defaultOutputType = DataTypes.Framebuffer;
-      break;
-    }
-    default: {
-      defaultOutputType = DataTypes.Number;
-    }
-  }
+  defaultOutputType = 1;
   const addInput = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     dispatch(addSocketAction(node.id, true, defaultOutputType));

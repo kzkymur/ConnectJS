@@ -1,7 +1,8 @@
 import React, { MutableRefObject } from 'react';
-import { Node, ConnectionType, DataTypes } from '@/store/node/types';
-import NodeAction from '@/store/node/actionTypes';
-import { multAction, updatePosAction, updateConnectionPosAction } from '@/store/node/actions';
+import { Node, isResizable } from '@/store/main/node';
+import { ConnectionType, } from '@/store/main/types';
+import NodeAction from '@/store/main/actionTypes';
+import { multAction, updatePosAction, updateConnectionPosAction } from '@/store/main/actions';
 import { Handler as ConnectionHandler } from '@/component/Connection';
 import { Handler as NodeHandler, Props as NodeProps } from '@/component/Node';
 import { px } from '@/utils';
@@ -20,6 +21,7 @@ class Props {
   #dispatch: (action: NodeAction) => void;
   #isOnBorder: boolean = true;
   readonly property: Node;
+  readonly resizable: boolean;
 
   constructor ( node: Node & { ref: MutableRefObject<NodeHandler>; },
     inputConnections: ConnectionInfo[],
@@ -32,6 +34,7 @@ class Props {
   ) {
     this.#node = node;
     this.property = node;
+    this.resizable = isResizable(this.#node);
     this.#in = inputConnections;
     this.#out = outputConnections;
     this.#openCP = openCP;
@@ -48,7 +51,7 @@ class Props {
     const isLeftSide = left - border < m.x && m.x < left + border, isRightSide = right - border < m.x && m.x < right + border;
     const isUpperSide = top - border < m.y && m.y < top + border, isLowerSide = bottom - border < m.y && m.y < bottom + border;
     let cursor;
-    if (isLeftSide || isRightSide || isUpperSide || isLowerSide) {
+    if (this.resizable && (isLeftSide || isRightSide || isUpperSide || isLowerSide)) {
       cursor = (isLeftSide && isUpperSide) || (isRightSide && isLowerSide) ? 'nwse' :
         (isLeftSide && isLowerSide) || (isRightSide && isUpperSide) ? 'nesw' :
         isLeftSide || isRightSide ? 'ew' : 'ns';
@@ -104,7 +107,9 @@ class Props {
       const v = this.#node.ref.current.getSize();
       const width = px(v.x), height = px(calcMainHeight(v.y, this.#node.inputs.length, this.#node.outputs.length));
       const pos = this.#node.ref.current.getPos();
-      if (this.#node.width !== width || this.#node.height !== height) this.updateSize(px(pos.y), px(pos.x), width, height);
+      if (isResizable(this.#node)) {
+        if (this.#node.width !== width || this.#node.height !== height) this.updateSize(px(pos.y), px(pos.x), width, height);
+      }
     }
     const mouseup = () => {
       updateSizeState();
@@ -146,7 +151,7 @@ class Props {
     if (ncir.nodeId === undefined || ncir.isInput === undefined || ncir.id === undefined || ncir.s === undefined) return;
     const e = this.#node.ref.current.getJointPos(isInput, id);
     this.#addConnection({
-      type: DataTypes.Number,
+      type: 1,
       id: -1,
       iNodeId: isInput ? this.#node.id : ncir.nodeId,
       iId: isInput ? id : ncir.id,

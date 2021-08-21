@@ -1,9 +1,10 @@
 import React, { useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store';
-import { addConnectionAction } from '@/store/node/actions';
+import { addConnectionAction } from '@/store/main/actions';
 import { openCPAction } from '@/store/panel/actions';
-import { Node as NodeType, ConnectionType, DataType, DataTypes } from '@/store/node/types';
+import { Node as NodeType, DataType, } from '@/store/main/node';
+import { ConnectionType, } from '@/store/main/types';
 import Node, { Handler as NodeHandler } from './Node';
 import nodeProps, { NewConnectionInfo } from './Node/props';
 import Panel from './Panel';
@@ -13,7 +14,7 @@ import Vector from '@/utils/vector';
 import style from '@/style/MainBoard.css'; 
 
 const MainBoard: React.FC = () => {
-  const props = useSelector((state: RootState) => state.nodeReducer);
+  const props = useSelector((state: RootState) => state.mainReducer);
   const cpIdsList = useSelector((state: RootState) => state.panelReducer.cpIdsList);
   const nodeIdRefs = useIdRef<NodeHandler>(props.nodes);
   const nodes = mergeSourceAndIdRefs<NodeType, NodeHandler>(props.nodes, nodeIdRefs);
@@ -36,7 +37,7 @@ const MainBoard: React.FC = () => {
       })}
       <svg className={style.connectionPanel}>
         {cons.map(c=><Connection key={c.id} ref={c.ref} {...cProps(c.type, props.curving, c.s, c.e)}/>)}
-        <Connection ref={newConRef} {...cProps(DataTypes.Framebuffer,props.curving,{x:0,y:0},{x:0,y:0})}/>
+        <Connection ref={newConRef} {...cProps(1,props.curving,{x:0,y:0},{x:0,y:0})}/>
       </svg>
     </div>
   )

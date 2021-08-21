@@ -1,5 +1,5 @@
 import React, { useRef, useImperativeHandle, forwardRef } from 'react'; 
-import { DataType } from '@/store/node/types';
+import { DataType } from '@/store/main/node';
 import Vector, { add } from '@/utils/vector';
 import style from '@/style/Connection.scss';
 

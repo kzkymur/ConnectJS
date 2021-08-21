@@ -1,5 +1,6 @@
 import Action, { ActionTypes } from './actionTypes';
 import { State } from './reducer';
+import { isResizable } from './node';
 
 const reverseActionCreator: (state: State, action: Action) => Action[] = (state, action) => {
   switch (action.type) {
@@ -42,7 +43,7 @@ const reverseActionCreator: (state: State, action: Action) => Action[] = (state,
     }
     case ActionTypes.updateSize: {
       const oldNode = state.nodes.filter(n => n.id === action.payload.id)[0];
-      if (oldNode === undefined) return [];
+      if (oldNode === undefined || !isResizable(oldNode)) return [];
       return [{
         type: ActionTypes.updateSize,
         payload: {

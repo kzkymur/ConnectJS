@@ -1,11 +1,11 @@
-import { Middleware } from 'redux';
-import { State } from '../node/reducer';
-import NodeAction, { ActionTypes as NodeActionTypes } from '../node/actionTypes';
-import { branchAction, forwardAction, backwardAction, storeAction } from '../node/actions';
-import reverseActionCreator from '../node/reverseActionCreator';
+import { Middleware, Dispatch, } from 'redux';
+import { RootState } from '..';
+import NodeAction, { ActionTypes as NodeActionTypes } from '../main/actionTypes';
+import { branchAction, forwardAction, backwardAction, storeAction } from '../main/actions';
+import reverseActionCreator from '../main/reverseActionCreator';
 
-const reverseActionBranchOperator: Middleware = store => next => (action: NodeAction) => {
-  const state: State = store.getState().nodeReducer;
+const reverseActionBranchOperator: Middleware<Dispatch, RootState> = store => next => (action: NodeAction) => {
+  const state = store.getState().mainReducer;
   const reccurent = (action: NodeAction) => {
     switch (action.type) {
       case NodeActionTypes.mult: {

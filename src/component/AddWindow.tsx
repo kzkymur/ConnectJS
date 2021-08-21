@@ -1,8 +1,8 @@
 import React from 'react';
-import { ModeType, Modes } from '@/content/types';
+import { ModeType, Modes, } from '@/content/types';
 
 type Props = {
-  addRequest: (emt: ModeType) => void;
+  addRequest: (m: ModeType) => void;
 }
 type RefNM = {
   ref: React.RefObject<HTMLInputElement>;

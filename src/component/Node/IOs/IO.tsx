@@ -1,5 +1,5 @@
 import React, { useRef, forwardRef, useImperativeHandle } from 'react';
-import { Socket } from '@/store/node/types';
+import { Socket } from '@/store/main/node';
 import NameBox from '@/component/atom/NameBox';
 import Vector from '@/utils/vector';
 import style from '@/style/Node/IOs/IO.scss';

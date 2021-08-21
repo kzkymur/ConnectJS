@@ -1,6 +1,7 @@
 import { Reducer } from 'redux';
 import Action, { ActionTypes } from './actionTypes';
-import { Node, ConnectionType } from './types';
+import { isResizable, Node } from './node';
+import { ConnectionType } from './types';
 import ReverseActionBranch, { OperationTypes } from './reverseActionBranch';
 import { EngineType } from './engine';
 
@@ -29,8 +30,8 @@ const reducer: Reducer<State, Action> = (state = initialState, action) => {
   console.log(action);
   switch (action.type) {
     case ActionTypes.add: {
-      const  latestId = state.nodeLatestId + 1;
-      const  node = { ...action.payload.node };
+      const latestId = state.nodeLatestId + 1;
+      const node = action.payload.node;
       if (node.id === -1) {
         node.id = latestId;
         node.name = 'node' + String(latestId);
@@ -60,70 +61,61 @@ const reducer: Reducer<State, Action> = (state = initialState, action) => {
     case ActionTypes.updateName: {
       state = {
         ...state,
-        nodes: state.nodes.map(c => c.id === action.payload.id ? {
-          ...c,
-          name: action.payload.name,
-        } : c),
+        nodes: state.nodes.map(n => n.id === action.payload.id ? n.updateName(action.payload.name) : n),
       };
       break;
     }
     case ActionTypes.updateSize: {
+      const { width, height } = action.payload;
       state = {
         ...state,
-        nodes: state.nodes.map(n => n.id === action.payload.id ? {
-          ...n,
-          width: action.payload.width,
-          height: action.payload.height,
-        } : n),
+        nodes: state.nodes.map(n => n.id === action.payload.id && isResizable(n) ? n.updateSize(width, height) : n),
       };
       break;
     }
     case ActionTypes.updatePos: {
+      const { top, left } = action.payload;
       state = {
         ...state,
-        nodes: state.nodes.map(n => n.id === action.payload.id ? {
-          ...n,
-          top: action.payload.top,
-          left: action.payload.left,
-        } : n),
+        nodes: state.nodes.map(n => n.id === action.payload.id ? n.updatePos(top, left) : n),
       };
       break;
     }
 
-    case ActionTypes.addSocket: {
-      state = {
-        ...state,
-        nodes: state.nodes.map(n => n.id === action.payload.nodeId ? {
-          ...n,
-          inputsLatestId: action.payload.isInput ? n.inputsLatestId + 1 : n.inputsLatestId,
-          inputs: action.payload.isInput ? [...n.inputs, {
-            id: n.inputsLatestId + 1,
-            type: action.payload.type,
-            name: String(action.payload.type),
-            counterId: -1,
-          }] : n.inputs,
-          outputsLatestId: !action.payload.isInput ? n.outputsLatestId + 1 : n.outputsLatestId,
-          outputs: !action.payload.isInput ? [...n.outputs, {
-            id: n.outputsLatestId + 1,
-            type: action.payload.type,
-            name: String(action.payload.type),
-            counterId: -1,
-          }] : n.outputs,
-        } : n),
-      };
-      break;
-    }
-    case ActionTypes.deleteSocket: {
-      state = {
-        ...state,
-        nodes: state.nodes.map(n => n.id === action.payload.nodeId ? {
-          ...n,
-          inputs: action.payload.isInput ? n.inputs.filter(i => i.id !== action.payload.id) : n.inputs,
-          outputs: !action.payload.isInput ? n.outputs.filter(o => o.id !== action.payload.id) : n.outputs,
-        } : n),
-      };
-      break;
-    }
+    // case ActionTypes.addSocket: {
+    //   state = {
+    //     ...state,
+    //     nodes: state.nodes.map(n => n.id === action.payload.nodeId ? {
+    //       ...n,
+    //       inputsLatestId: action.payload.isInput ? n.inputsLatestId + 1 : n.inputsLatestId,
+    //       inputs: action.payload.isInput ? [...n.inputs, {
+    //         id: n.inputsLatestId + 1,
+    //         type: action.payload.type,
+    //         name: String(action.payload.type),
+    //         counterId: -1,
+    //       }] : n.inputs,
+    //       outputsLatestId: !action.payload.isInput ? n.outputsLatestId + 1 : n.outputsLatestId,
+    //       outputs: !action.payload.isInput ? [...n.outputs, {
+    //         id: n.outputsLatestId + 1,
+    //         type: action.payload.type,
+    //         name: String(action.payload.type),
+    //         counterId: -1,
+    //       }] : n.outputs,
+    //     } : n),
+    //   };
+    //   break;
+    // }
+    // case ActionTypes.deleteSocket: {
+    //   state = {
+    //     ...state,
+    //     nodes: state.nodes.map(n => n.id === action.payload.nodeId ? {
+    //       ...n,
+    //       inputs: action.payload.isInput ? n.inputs.filter(i => i.id !== action.payload.id) : n.inputs,
+    //       outputs: !action.payload.isInput ? n.outputs.filter(o => o.id !== action.payload.id) : n.outputs,
+    //     } : n),
+    //   };
+    //   break;
+    // }
 
     case ActionTypes.addConnection: {
       const latestId = state.connectionLatestId + 1;

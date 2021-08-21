@@ -1,6 +1,6 @@
 import { useSelector, useDispatch } from 'react-redux'
 import renderer from 'react-test-renderer';
-import { initialState as initNodeState } from '@/store/node/reducer';
+import { initialState as initNodeState } from '@/store/main/reducer';
 import { initialState as initPanelState } from '@/store/panel/reducer';
 import MainBoard from '@/component/MainBoard';
 

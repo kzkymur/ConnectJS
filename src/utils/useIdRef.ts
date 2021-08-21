@@ -28,4 +28,4 @@ export default function useIdRef <Handler>(sourceObjs: Obj[]): (IdRef<Handler>)[
 }
 
 type MSAIR = <Source extends Obj, Handler>(sources: Source[], idRefs: IdRef<Handler>[]) => (Source & IdRef<Handler>)[];
-export const mergeSourceAndIdRefs: MSAIR = (S, I) => S.filter(s=>getIndex(I, s.id)!==-1).map(s=>({...s, ref: I[getIndex(I, s.id)].ref}));
+export const mergeSourceAndIdRefs: MSAIR = (S, I) => S.filter(s=>getIndex(I, s.id)!==-1).map(s=>Object.assign(s,{ref: I[getIndex(I, s.id)].ref}));

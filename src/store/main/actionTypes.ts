@@ -1,5 +1,6 @@
 import { Action } from 'redux';
-import { Node, ConnectionType, DataType } from './types';
+import { Node, DataType } from './node';
+import { ConnectionType, } from './types';
 import Vector from '@/utils/vector';
 import { EngineType } from './engine';
 

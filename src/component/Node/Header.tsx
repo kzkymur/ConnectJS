@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { updateNameAction } from '@/store/node/actions';
+import { updateNameAction } from '@/store/main/actions';
 import NameBox from '../atom/NameBox';
 import style from '@/style/Node/Header.scss';
 

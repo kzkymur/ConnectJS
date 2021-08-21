@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useImperativeHandle, forwardRef, RefObject } from 'react';
+import React, { useEffect, useRef, useImperativeHandle, forwardRef, RefObject, } from 'react';
 import { useDispatch } from 'react-redux';
-import { Node, Socket } from '@/store/node/types';
-import { updateAction } from '@/store/node/actions';
+import { Node as NodeType, Socket, ResizableNode } from '@/store/main/node';
+import { updateAction } from '@/store/main/actions';
 import Header from './Header';
 import Main from './Main';
 import IOs, { Handler as IOsHandler } from './IOs';
@@ -20,7 +20,8 @@ export type Handler = {
   updateSizeStyle: (v: Vector) => Vector;
 }
 export type Props = {
-  property: Node;
+  property: NodeType;
+  resizable: boolean;
   onMouseMove: (e: React.MouseEvent<HTMLDivElement>) => void;
   onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void;
   operateNewConnection: (isInput: boolean, id: number) => () => void;
@@ -28,13 +29,13 @@ export type Props = {
   deleteFunc: () => void;
 }
 
-const Base = forwardRef<Handler, Props>((props, fRef) => {
-  const { property } = props;
+const Node = forwardRef<Handler, Props>((props, fRef) => {
+  const { property, resizable } = props;
   const ref = useRef<HTMLDivElement>({} as HTMLDivElement);
   const iosRef = useRef({} as IOsHandler);
-  const { id, inputs, outputs, width, top, left, name, height } = property;
+  const { id, inputs, outputs, top, left, name } = property;
   const dispatch = useDispatch();
-  const updateFunc = (n: Node) => dispatch(updateAction(n));
+  const updateFunc = (n: NodeType) => dispatch(updateAction(n));
   const mainRef = useRef<HTMLDivElement>({} as HTMLDivElement);
 
   const getJointPos = (isInput: boolean, id: number) => iosRef.current.getJointPos(isInput, id);
@@ -49,14 +50,15 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
     return true;
   }
   const updateSizeStyle = (v: Vector) => {
-    const f = { x: 1, y: 1 };
+    if (!resizable) return { x: 0, y: 0 };
+    const updated = { x: 1, y: 1 };
     v = { x: Math.max(v.x+px2n(ref.current.style.width), minBaseWidth), y: Math.max(v.y+px2n(ref.current.style.height), minBaseHeight) };
-    if (v.x === minBaseWidth) f.x = 0;
-    if (v.y === minBaseHeight) f.y = 0;
+    if (v.x === minBaseWidth) updated.x = 0;
+    if (v.y === minBaseHeight) updated.y = 0;
     mainRef.current.style.height = px(calcMainHeight(v.y, inputs, outputs));
     ref.current.style.zIndex = String(-1 * v.x * v.y);
     ref.current.style.width = px(v.x), ref.current.style.height = px(v.y);
-    return f;
+    return updated;
   }
   useImperativeHandle(fRef, ()=>({
     getJointPos,
@@ -69,26 +71,29 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
 
   useEffect(()=>{
     const elm = ref.current;
-    elm.style.width = px(px2n(width)-borderWidth*2);
     elm.style.top = top;
     elm.style.left = left;
     elm.style.opacity = '1';
-    mainRef.current.style.height = px(px2n(height) - borderWidth * 2);
-    ref.current.style.height = px(px2n(height) + optBarHeight * (Math.max(inputs.length, outputs.length)+1) - borderWidth * 2);
+    if (resizable) {
+      const { width, height } = property as ResizableNode;
+      elm.style.width = px(px2n(width)-borderWidth*2);
+      mainRef.current.style.height = px(px2n(height) - borderWidth * 2);
+      ref.current.style.height = px(px2n(height) + optBarHeight * (Math.max(inputs.length, outputs.length)+1) - borderWidth * 2);
+    }
   })
 
   const createIONameUpdate = (isInput: boolean, index: number) => (name: string) => {
-    const newProperty: Node = {...property};
-    const sockets = isInput ? inputs : outputs;
-    const key = isInput ? 'inputs' : 'outputs';
-    newProperty[key] = sockets.map((s, i) => {
-      if (i===index) s.name = name;
-      return s;
-    })
-    updateFunc(newProperty);
+    // const newProperty: NodeType = {...property};
+    // const sockets = isInput ? inputs : outputs;
+    // const key = isInput ? 'inputs' : 'outputs';
+    // newProperty[key] = sockets.map((s, i) => {
+    //   if (i===index) s.name = name;
+    //   return s;
+    // })
+    // updateFunc(newProperty);
   }
   return (
-    <div className={style.container} ref={ref}
+    <div className={`${style.container} ${resizable ? style.resizable : ''}`} ref={ref}
       onMouseDown={props.onMouseDown}
       onMouseMove={props.onMouseMove}
     >
@@ -101,7 +106,7 @@ const Base = forwardRef<Handler, Props>((props, fRef) => {
   );
 });
 
-export default Base;
+export default Node;
 
 const calcMainHeight = (height: number, inputs: Array<Socket>, outputs: Array<Socket>): number => (height - optBarHeight * (Math.max(inputs.length, outputs.length)+1));
 

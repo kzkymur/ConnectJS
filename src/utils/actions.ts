@@ -1,22 +1,23 @@
-import NodeAction from '@/store/node/actionTypes';
-import { addAction as orgAddActioin, deleteAction as orgDeleteAction, updatePosAction, updateSizeAction, deleteConnectionAction, multAction } from '@/store/node/actions';
-import { ModeType } from '@/content/types';
-import { initBaseWidth, initBaseHeight } from '@/config';
+import NodeAction from '@/store/main/actionTypes';
+import { Node, } from '@/store/main/node';
+import { Modes, ModeType, } from '@/content/types';
+import { addAction as orgAddActioin, deleteAction as orgDeleteAction, updatePosAction, updateSizeAction, deleteConnectionAction, multAction } from '@/store/main/actions';
+import { Canvas, } from '@/content/types';
 
 type AddAction = (mode: ModeType) => NodeAction;
-export const addAction: AddAction = (mode) => orgAddActioin({
-  id: -1,
-  mode: mode,
-  name: '',
-  width: `${initBaseWidth}px`,
-  height: `${initBaseHeight}px`,
-  top: `${String(40 + 20 * Math.random())}%`,
-  left: `${String(40 + 20 * Math.random())}%`,
-  outputs: [],
-  inputs: [],
-  outputsLatestId: 0,
-  inputsLatestId: 0,
-});
+export const addAction: AddAction = mode => {
+  let content: Node;
+  switch (mode) {
+    case Modes.canvas: {
+      content = new Canvas();
+      break;
+    }
+    default: {
+      content = new Node(mode);
+    }
+  }
+  return orgAddActioin(content);
+}
 
 type DeleteAction = (id: number, cIds: number[]) => NodeAction;
 export const deleteAction: DeleteAction = (id, cIds) => multAction([

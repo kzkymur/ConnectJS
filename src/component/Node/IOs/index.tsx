@@ -1,5 +1,5 @@
 import React, { forwardRef, useImperativeHandle } from 'react';
-import { Socket } from '@/store/node/types';
+import { Socket } from '@/store/main/node';
 import IO, { Handler as IOHandler } from './IO';
 import { getIndex } from '@/utils';
 import Vector from '@/utils/vector';
