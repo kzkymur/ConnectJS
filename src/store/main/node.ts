@@ -5,8 +5,6 @@ export class Node {
   id: number;
   name: string;
   mode: ModeType;
-  top: string;
-  left: string;
   outputs: Socket[];
   inputs: Socket[];
   inputsLatestId: number;
@@ -15,17 +13,10 @@ export class Node {
     this.id = -1;
     this.name = '';
     this.mode = mode;
-    this.top = `${String(40 + 20 * Math.random())}%`;
-    this.left = `${String(40 + 20 * Math.random())}%`;
     this.outputs = [];
     this.inputs = [];
     this.outputsLatestId = 0;
     this.inputsLatestId = 0;
-  }
-  updatePos (top: string, left: string) {
-    this.top = top;
-    this.left = left;
-    return this;
   }
   updateName (name: string) {
     this.name = name;
@@ -33,7 +24,25 @@ export class Node {
   }
 }
 
-export class ResizableNode extends Node {
+export class MovableNode extends Node {
+  top: string;
+  left: string;
+  constructor (mode: ModeType) {
+    super(mode);
+    this.top = `${String(40 + 20 * Math.random())}%`;
+    this.left = `${String(40 + 20 * Math.random())}%`;
+  }
+  updatePos (top: string, left: string) {
+    this.top = top;
+    this.left = left;
+    return this;
+  }
+}
+export function isMovable (arg: Node): arg is MovableNode {
+  return arg instanceof MovableNode;
+}
+
+export class ResizableNode extends MovableNode {
   width: string;
   height: string;
   constructor (mode: ModeType) {
@@ -47,7 +56,6 @@ export class ResizableNode extends Node {
     return this;
   }
 }
-
 export function isResizable (arg: Node): arg is ResizableNode {
   return arg instanceof ResizableNode;
 }

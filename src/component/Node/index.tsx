@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useImperativeHandle, forwardRef, RefObject, } from 'react';
 import { useDispatch } from 'react-redux';
-import { Node as NodeType, Socket, ResizableNode } from '@/store/main/node';
+import { Node as NodeType, Socket, isMovable, isResizable } from '@/store/main/node';
 import { updateAction } from '@/store/main/actions';
 import Header from './Header';
 import Main from './Main';
@@ -21,7 +21,6 @@ export type Handler = {
 }
 export type Props = {
   property: NodeType;
-  resizable: boolean;
   onMouseMove: (e: React.MouseEvent<HTMLDivElement>) => void;
   onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void;
   operateNewConnection: (isInput: boolean, id: number) => () => void;
@@ -30,10 +29,10 @@ export type Props = {
 }
 
 const Node = forwardRef<Handler, Props>((props, fRef) => {
-  const { property, resizable } = props;
+  const { property } = props;
   const ref = useRef<HTMLDivElement>({} as HTMLDivElement);
   const iosRef = useRef({} as IOsHandler);
-  const { id, inputs, outputs, top, left, name } = property;
+  const { id, inputs, outputs, name } = property;
   const dispatch = useDispatch();
   const updateFunc = (n: NodeType) => dispatch(updateAction(n));
   const mainRef = useRef<HTMLDivElement>({} as HTMLDivElement);
@@ -50,7 +49,6 @@ const Node = forwardRef<Handler, Props>((props, fRef) => {
     return true;
   }
   const updateSizeStyle = (v: Vector) => {
-    if (!resizable) return { x: 0, y: 0 };
     const updated = { x: 1, y: 1 };
     v = { x: Math.max(v.x+px2n(ref.current.style.width), minBaseWidth), y: Math.max(v.y+px2n(ref.current.style.height), minBaseHeight) };
     if (v.x === minBaseWidth) updated.x = 0;
@@ -71,15 +69,18 @@ const Node = forwardRef<Handler, Props>((props, fRef) => {
 
   useEffect(()=>{
     const elm = ref.current;
+    elm.style.opacity = '1';
+
+    if (!isMovable(property)) return; 
+    const { top, left } = property;
     elm.style.top = top;
     elm.style.left = left;
-    elm.style.opacity = '1';
-    if (resizable) {
-      const { width, height } = property as ResizableNode;
-      elm.style.width = px(px2n(width)-borderWidth*2);
-      mainRef.current.style.height = px(px2n(height) - borderWidth * 2);
-      ref.current.style.height = px(px2n(height) + optBarHeight * (Math.max(inputs.length, outputs.length)+1) - borderWidth * 2);
-    }
+
+    if (!isResizable(property)) return;
+    const { width, height } = property;
+    elm.style.width = px(px2n(width)-borderWidth*2);
+    mainRef.current.style.height = px(px2n(height) - borderWidth * 2);
+    ref.current.style.height = px(px2n(height) + optBarHeight * (Math.max(inputs.length, outputs.length)+1) - borderWidth * 2);
   })
 
   const createIONameUpdate = (isInput: boolean, index: number) => (name: string) => {
@@ -93,7 +94,7 @@ const Node = forwardRef<Handler, Props>((props, fRef) => {
     // updateFunc(newProperty);
   }
   return (
-    <div className={`${style.container} ${resizable ? style.resizable : ''}`} ref={ref}
+    <div className={`${style.container} ${isResizable(property) ? style.resizable : ''}`} ref={ref}
       onMouseDown={props.onMouseDown}
       onMouseMove={props.onMouseMove}
     >

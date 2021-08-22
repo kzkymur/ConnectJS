@@ -1,6 +1,6 @@
 import { Reducer } from 'redux';
 import Action, { ActionTypes } from './actionTypes';
-import { isResizable, Node } from './node';
+import { isMovable, isResizable, Node } from './node';
 import { ConnectionType } from './types';
 import ReverseActionBranch, { OperationTypes } from './reverseActionBranch';
 import { EngineType } from './engine';
@@ -77,7 +77,7 @@ const reducer: Reducer<State, Action> = (state = initialState, action) => {
       const { top, left } = action.payload;
       state = {
         ...state,
-        nodes: state.nodes.map(n => n.id === action.payload.id ? n.updatePos(top, left) : n),
+        nodes: state.nodes.map(n => n.id === action.payload.id && isMovable(n) ? n.updatePos(top, left) : n),
       };
       break;
     }

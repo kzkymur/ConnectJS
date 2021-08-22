@@ -2,7 +2,7 @@ import NodeAction from '@/store/main/actionTypes';
 import { Node, } from '@/store/main/node';
 import { Modes, ModeType, } from '@/content/types';
 import { addAction as orgAddActioin, deleteAction as orgDeleteAction, updatePosAction, updateSizeAction, deleteConnectionAction, multAction } from '@/store/main/actions';
-import { Canvas, } from '@/content/types';
+import { Canvas, Counter, } from '@/content/types';
 
 type AddAction = (mode: ModeType) => NodeAction;
 export const addAction: AddAction = mode => {
@@ -10,6 +10,10 @@ export const addAction: AddAction = mode => {
   switch (mode) {
     case Modes.canvas: {
       content = new Canvas();
+      break;
+    }
+    case Modes.counter: {
+      content = new Counter();
       break;
     }
     default: {

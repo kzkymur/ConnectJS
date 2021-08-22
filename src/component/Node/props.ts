@@ -1,5 +1,5 @@
 import React, { MutableRefObject } from 'react';
-import { Node, isResizable } from '@/store/main/node';
+import { Node, isResizable, isMovable } from '@/store/main/node';
 import { ConnectionType, } from '@/store/main/types';
 import NodeAction from '@/store/main/actionTypes';
 import { multAction, updatePosAction, updateConnectionPosAction } from '@/store/main/actions';
@@ -21,7 +21,6 @@ class Props {
   #dispatch: (action: NodeAction) => void;
   #isOnBorder: boolean = true;
   readonly property: Node;
-  readonly resizable: boolean;
 
   constructor ( node: Node & { ref: MutableRefObject<NodeHandler>; },
     inputConnections: ConnectionInfo[],
@@ -34,7 +33,6 @@ class Props {
   ) {
     this.#node = node;
     this.property = node;
-    this.resizable = isResizable(this.#node);
     this.#in = inputConnections;
     this.#out = outputConnections;
     this.#openCP = openCP;
@@ -51,7 +49,7 @@ class Props {
     const isLeftSide = left - border < m.x && m.x < left + border, isRightSide = right - border < m.x && m.x < right + border;
     const isUpperSide = top - border < m.y && m.y < top + border, isLowerSide = bottom - border < m.y && m.y < bottom + border;
     let cursor;
-    if (this.resizable && (isLeftSide || isRightSide || isUpperSide || isLowerSide)) {
+    if (isLeftSide || isRightSide || isUpperSide || isLowerSide) {
       cursor = (isLeftSide && isUpperSide) || (isRightSide && isLowerSide) ? 'nwse' :
         (isLeftSide && isLowerSide) || (isRightSide && isUpperSide) ? 'nesw' :
         isLeftSide || isRightSide ? 'ew' : 'ns';
@@ -76,7 +74,7 @@ class Props {
     const isPosUpdate = () => {
       const { x, y } = this.#node.ref.current.getPos();
       const top = px(y), left = px(x);
-      if (left !== this.#node.left || top !== this.#node.top) {
+      if (isMovable(this.#node) && (left !== this.#node.left || top !== this.#node.top)) {
         this.updatePos(top, left);
         return true;
       }
@@ -107,9 +105,7 @@ class Props {
       const v = this.#node.ref.current.getSize();
       const width = px(v.x), height = px(calcMainHeight(v.y, this.#node.inputs.length, this.#node.outputs.length));
       const pos = this.#node.ref.current.getPos();
-      if (isResizable(this.#node)) {
-        if (this.#node.width !== width || this.#node.height !== height) this.updateSize(px(pos.y), px(pos.x), width, height);
-      }
+      if (isResizable(this.#node) && (this.#node.width !== width || this.#node.height !== height)) this.updateSize(px(pos.y), px(pos.x), width, height);
     }
     const mouseup = () => {
       updateSizeState();
@@ -120,7 +116,8 @@ class Props {
     window.addEventListener('mouseup', mouseup);
   }
   onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void = e => {
-    if (this.#isOnBorder) this.sizeChange(e);
+    if (!isMovable(this.#node)) return;
+    if (this.#isOnBorder && isResizable(this.#node)) this.sizeChange(e);
     else this.posChange(e);
   }
 
