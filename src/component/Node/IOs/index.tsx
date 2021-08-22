@@ -3,7 +3,7 @@ import { Socket } from '@/store/main/node';
 import IO, { Handler as IOHandler } from './IO';
 import { getIndex } from '@/utils';
 import Vector from '@/utils/vector';
-import useIdRef, { mergeSourceAndIdRefs } from '@/utils/useIdRef';
+import { useIdRef } from '@/utils/customHooks';
 import style from '@/style/Node/IOs.scss';
 
 export type Handler = {
@@ -20,10 +20,8 @@ type Props = {
 }
 
 const IOs = forwardRef<Handler, Props>((props, fRef) => {
-  const inputIdRefs = useIdRef<IOHandler>(props.inputs);
-  const inputs = mergeSourceAndIdRefs<Socket, IOHandler>(props.inputs, inputIdRefs);
-  const outputIdRefs = useIdRef<IOHandler>(props.outputs);
-  const outputs = mergeSourceAndIdRefs<Socket, IOHandler>(props.outputs, outputIdRefs);
+  const inputs = useIdRef<IOHandler, Socket>(props.inputs);
+  const outputs = useIdRef<IOHandler, Socket>(props.outputs);
 
   const getJointPos = (isInput: boolean, id: number) => {
     const sockets = isInput ? inputs : outputs;

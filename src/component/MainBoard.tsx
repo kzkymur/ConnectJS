@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store';
 import { addConnectionAction } from '@/store/main/actions';
@@ -9,26 +9,30 @@ import Node, { Handler as NodeHandler } from './Node';
 import nodeProps, { NewConnectionInfo } from './Node/props';
 import Panel from './Panel';
 import Connection, { Handler as ConnectionHandler } from './Connection';
-import useIdRef, { mergeSourceAndIdRefs } from '@/utils/useIdRef';
+import { IdRef, useIdRef, usePropsFactory } from '@/utils/customHooks';
 import Vector from '@/utils/vector';
 import style from '@/style/MainBoard.css'; 
+
+const MemorizedNode = React.memo(Node);
+const MemorizedConnection = React.memo(Connection);
 
 const MainBoard: React.FC = () => {
   const props = useSelector((state: RootState) => state.mainReducer);
   const cpIdsList = useSelector((state: RootState) => state.panelReducer.cpIdsList);
-  const nodeIdRefs = useIdRef<NodeHandler>(props.nodes);
-  const nodes = mergeSourceAndIdRefs<NodeType, NodeHandler>(props.nodes, nodeIdRefs);
-  const connectionIdRefs = useIdRef<ConnectionHandler>(props.connections);
-  const cons = mergeSourceAndIdRefs<ConnectionType, ConnectionHandler>(props.connections, connectionIdRefs);
+  const nodes = useIdRef<NodeHandler, NodeType>(props.nodes);
+  const cons = useIdRef<ConnectionHandler, ConnectionType>(props.connections);
   const newConRef = useRef<ConnectionHandler>({} as ConnectionHandler);
   const newConInfoRef = useRef<NewConnectionInfo>({});
   const dispatch = useDispatch();
   const openCPFunc = (id: number) => dispatch(openCPAction(id));
   const addConnection = (c: ConnectionType) => dispatch(addConnectionAction(c));
 
+  const nodePropsFactory = useCallback((node: IdRef<NodeHandler, NodeType>) => nodeProps(node, cons.filter(c=>c.iNodeId===node.id), cons.filter(c=>c.oNodeId===node.id), newConRef, newConInfoRef, addConnection, dispatch), [cons, newConRef, newConInfoRef, addConnection, dispatch]);
+  const nodePropsArray = usePropsFactory(nodes, nodePropsFactory);
+
   return (
     <div className={style.mainBoard}>
-      {nodes.map(n=><Node key={n.id} ref={n.ref} {...nodeProps(n, cons.filter(c=>c.iNodeId==n.id), cons.filter(c=>c.oNodeId==n.id), openCPFunc, newConRef, newConInfoRef, addConnection, dispatch)}/>)}
+      {nodePropsArray.map((n, i) => <MemorizedNode key={nodes[i].id} ref={nodes[i].ref} {...n}/>)}
       {cpIdsList.map((ids, i)=>{
         if(ids[0]===undefined) return;
         const nodes: NodeType[] = [];
@@ -37,7 +41,7 @@ const MainBoard: React.FC = () => {
       })}
       <svg className={style.connectionPanel}>
         {cons.map(c=><Connection key={c.id} ref={c.ref} {...cProps(c.type, props.curving, c.s, c.e)}/>)}
-        <Connection ref={newConRef} {...cProps(1,props.curving,{x:0,y:0},{x:0,y:0})}/>
+        <MemorizedConnection ref={newConRef} {...cProps(1,props.curving,{x:0,y:0},{x:0,y:0})}/>
       </svg>
     </div>
   )

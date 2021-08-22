@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useImperativeHandle, forwardRef, RefObject, } from 'react';
+import React, { useEffect, useRef, useImperativeHandle, forwardRef, RefObject, useCallback, useMemo, } from 'react';
 import { useDispatch } from 'react-redux';
 import { Node as NodeType, Socket, isMovable, isResizable } from '@/store/main/node';
 import { updateAction } from '@/store/main/actions';
@@ -29,35 +29,34 @@ export type Props = {
 }
 
 const Node = forwardRef<Handler, Props>((props, fRef) => {
-  const { property } = props;
+  const property = useMemo(()=>{ return props.property }, [props.property]);
   const ref = useRef<HTMLDivElement>({} as HTMLDivElement);
   const iosRef = useRef({} as IOsHandler);
-  const { id, inputs, outputs, name } = property;
   const dispatch = useDispatch();
   const updateFunc = (n: NodeType) => dispatch(updateAction(n));
   const mainRef = useRef<HTMLDivElement>({} as HTMLDivElement);
 
-  const getJointPos = (isInput: boolean, id: number) => iosRef.current.getJointPos(isInput, id);
-  const getAllJointPos = (isInput: boolean) => iosRef.current.getAllJointPos(isInput);
-  const getPos = () => ({ x: ref.current.offsetLeft, y: ref.current.offsetTop });
-  const getSize = () => ({ x: ref.current.offsetWidth, y: ref.current.offsetHeight });
-  const updatePosStyle = (v: Vector) => {
+  const getJointPos = useCallback((isInput: boolean, id: number) => iosRef.current.getJointPos(isInput, id), [iosRef]);
+  const getAllJointPos = useCallback((isInput: boolean) => iosRef.current.getAllJointPos(isInput), [iosRef]);
+  const getPos = useCallback(() => ({ x: ref.current.offsetLeft, y: ref.current.offsetTop }), [ref]);
+  const getSize = useCallback(() => ({ x: ref.current.offsetWidth, y: ref.current.offsetHeight }), [ref]);
+  const updatePosStyle = useCallback((v: Vector) => {
     const bcr = ref.current.getBoundingClientRect();
     v = { x: v.x+bcr.left, y: v.y+bcr.top, };
     if (px(v.x) == ref.current.style.left && px(v.y) == ref.current.style.top) return false;
     ref.current.style.left = px(v.x), ref.current.style.top = px(v.y);
     return true;
-  }
-  const updateSizeStyle = (v: Vector) => {
+  }, [ref])
+  const updateSizeStyle = useCallback((v: Vector) => {
     const updated = { x: 1, y: 1 };
     v = { x: Math.max(v.x+px2n(ref.current.style.width), minBaseWidth), y: Math.max(v.y+px2n(ref.current.style.height), minBaseHeight) };
     if (v.x === minBaseWidth) updated.x = 0;
     if (v.y === minBaseHeight) updated.y = 0;
-    mainRef.current.style.height = px(calcMainHeight(v.y, inputs, outputs));
+    mainRef.current.style.height = px(calcMainHeight(v.y, property.inputs, property.outputs));
     ref.current.style.zIndex = String(-1 * v.x * v.y);
     ref.current.style.width = px(v.x), ref.current.style.height = px(v.y);
     return updated;
-  }
+  }, [mainRef, ref]);
   useImperativeHandle(fRef, ()=>({
     getJointPos,
     getAllJointPos,
@@ -80,7 +79,7 @@ const Node = forwardRef<Handler, Props>((props, fRef) => {
     const { width, height } = property;
     elm.style.width = px(px2n(width)-borderWidth*2);
     mainRef.current.style.height = px(px2n(height) - borderWidth * 2);
-    ref.current.style.height = px(px2n(height) + optBarHeight * (Math.max(inputs.length, outputs.length)+1) - borderWidth * 2);
+    ref.current.style.height = px(px2n(height) + optBarHeight * (Math.max(property.inputs.length, property.outputs.length)+1) - borderWidth * 2);
   })
 
   const createIONameUpdate = (isInput: boolean, index: number) => (name: string) => {
@@ -98,11 +97,11 @@ const Node = forwardRef<Handler, Props>((props, fRef) => {
       onMouseDown={props.onMouseDown}
       onMouseMove={props.onMouseMove}
     >
-      <Header {...headerProps(id, name, props.deleteFunc)}/>
+      <Header {...headerProps(property.id, property.name, props.deleteFunc)}/>
       <Main {...mainProps(mainRef)}>
         <Content mode={property.mode}/>
       </Main>
-      <IOs {...IOsProps(id, inputs, outputs, createIONameUpdate, props.operateNewConnection, props.registerNewConnection)} ref={iosRef}/>
+      <IOs {...IOsProps(property.id, property.inputs, property.outputs, createIONameUpdate, props.operateNewConnection, props.registerNewConnection)} ref={iosRef}/>
     </div>
   );
 });

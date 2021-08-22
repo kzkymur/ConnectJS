@@ -6,15 +6,17 @@ import { multAction, updatePosAction, updateConnectionPosAction } from '@/store/
 import { Handler as ConnectionHandler } from '@/component/Connection';
 import { Handler as NodeHandler, Props as NodeProps } from '@/component/Node';
 import { px } from '@/utils';
+import { IdRef } from '@/utils/customHooks';
 import Vector, { subtract, multiply, hadamard, signFilter } from '@/utils/vector';
 import { deleteAction, updatePosSizeAction } from '@/utils/actions';
 import { border, optBarHeight } from '@/config';
 
+type NodeIdRef = IdRef<NodeHandler, Node>;
+
 class Props {
-  #node: Node & { ref: MutableRefObject<NodeHandler>; };
+  #node: NodeIdRef;
   #in: ConnectionInfo[]; 
   #out: ConnectionInfo[];
-  #openCP: (id:number) => void;
   #ncr: MutableRefObject<ConnectionHandler>;
   #ncir: MutableRefObject<NewConnectionInfo>;
   #addConnection: (c: ConnectionType) => void;
@@ -22,10 +24,10 @@ class Props {
   #isOnBorder: boolean = true;
   readonly property: Node;
 
-  constructor ( node: Node & { ref: MutableRefObject<NodeHandler>; },
+  constructor (
+    node: NodeIdRef,
     inputConnections: ConnectionInfo[],
     outputConnections: ConnectionInfo[],
-    openCP: (id:number)=>void,
     newConnectionRef: MutableRefObject<ConnectionHandler>,
     newConnectionInfoRef: MutableRefObject<NewConnectionInfo>,
     addConnection: (c: ConnectionType) => void,
@@ -35,7 +37,6 @@ class Props {
     this.property = node;
     this.#in = inputConnections;
     this.#out = outputConnections;
-    this.#openCP = openCP;
     this.#ncr = newConnectionRef;
     this.#ncir = newConnectionInfoRef;
     this.#addConnection = addConnection;
@@ -81,7 +82,7 @@ class Props {
       return false;
     }
     const mouseup = () => {
-      if (!isPosUpdate()) this.#openCP(this.#node.id);
+      isPosUpdate();
       window.removeEventListener('mousemove', mousemove);
       window.removeEventListener('mouseup', mouseup);
     }
@@ -176,20 +177,19 @@ class Props {
 }
 
 export default function nodeProps (
-  node: Node & { ref: MutableRefObject<NodeHandler>; },
+  node: NodeIdRef,
   inputConnections: ConnectionInfo[],
   outputConnections: ConnectionInfo[],
-  openCP: (id:number)=>void,
   newConnectionRef: MutableRefObject<ConnectionHandler>,
   newConnectionInfoRef: MutableRefObject<NewConnectionInfo>,
   addConnection: (c: ConnectionType) => void,
   dispatch: (action: NodeAction) => void,
 ): NodeProps {
-  const obj = new Props(node, inputConnections, outputConnections, openCP, newConnectionRef, newConnectionInfoRef, addConnection, dispatch);
+  const obj = new Props(node, inputConnections, outputConnections, newConnectionRef, newConnectionInfoRef, addConnection, dispatch);
   return { ...obj };
 }
 
-type ConnectionInfo = ConnectionType & { ref: MutableRefObject<ConnectionHandler>; };
+type ConnectionInfo = IdRef<ConnectionHandler, ConnectionType>;
 export type NewConnectionInfo = {
   isInput?: boolean;
   nodeId?: number;
