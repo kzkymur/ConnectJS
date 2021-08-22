@@ -1,6 +1,5 @@
 import React, { useRef, forwardRef, useImperativeHandle } from 'react';
 import { Socket } from '@/store/main/node';
-import NameBox from '@/component/atom/NameBox';
 import Vector from '@/utils/vector';
 import style from '@/style/Node/IOs/IO.scss';
 
@@ -9,7 +8,6 @@ export type Handler = {
 }
 type Props = {
   socket: Socket;
-  socketNameUpdate: (name: string) => void;
   isInput: boolean;
   operateNewConnection: () => void;
   registerNewConnection: () => void;
@@ -41,9 +39,7 @@ const IO = forwardRef<Handler, Props>((props, fRef) => {
           onMouseUp={props.registerNewConnection}
         />
       </div>
-      <NameBox className={style.nameBox}
-        name={props.socket.name}
-        updateFunc={props.socketNameUpdate}/>
+      <p className={style.nameBox}>{props.socket.name}</p>
     </div>
   )
 });

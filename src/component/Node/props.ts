@@ -5,7 +5,7 @@ import NodeAction from '@/store/main/actionTypes';
 import { multAction, updatePosAction, updateConnectionPosAction } from '@/store/main/actions';
 import { Handler as ConnectionHandler } from '@/component/Connection';
 import { Handler as NodeHandler, Props as NodeProps } from '@/component/Node';
-import { px } from '@/utils';
+import { Obj, px } from '@/utils';
 import { IdRef } from '@/utils/customHooks';
 import Vector, { subtract, multiply, hadamard, signFilter } from '@/utils/vector';
 import { deleteAction, updatePosSizeAction } from '@/utils/actions';
@@ -50,7 +50,7 @@ class Props {
     const isLeftSide = left - border < m.x && m.x < left + border, isRightSide = right - border < m.x && m.x < right + border;
     const isUpperSide = top - border < m.y && m.y < top + border, isLowerSide = bottom - border < m.y && m.y < bottom + border;
     let cursor;
-    if (isLeftSide || isRightSide || isUpperSide || isLowerSide) {
+    if (isResizable(this.#node) && (isLeftSide || isRightSide || isUpperSide || isLowerSide)) {
       cursor = (isLeftSide && isUpperSide) || (isRightSide && isLowerSide) ? 'nwse' :
         (isLeftSide && isLowerSide) || (isRightSide && isUpperSide) ? 'nesw' :
         isLeftSide || isRightSide ? 'ew' : 'ns';
@@ -184,9 +184,9 @@ export default function nodeProps (
   newConnectionInfoRef: MutableRefObject<NewConnectionInfo>,
   addConnection: (c: ConnectionType) => void,
   dispatch: (action: NodeAction) => void,
-): NodeProps {
+): NodeProps & Obj {
   const obj = new Props(node, inputConnections, outputConnections, newConnectionRef, newConnectionInfoRef, addConnection, dispatch);
-  return { ...obj };
+  return { ...obj, id: node.id };
 }
 
 type ConnectionInfo = IdRef<ConnectionHandler, ConnectionType>;

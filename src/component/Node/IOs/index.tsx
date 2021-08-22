@@ -14,7 +14,6 @@ type Props = {
   id: number,
   inputs: Socket[];
   outputs: Socket[];
-  createIONameUpdate: (isInput: boolean, index: number) => (name: string) => void;
   operateNewConnection: (isInput: boolean, id: number) => () => void;
   registerNewConnection: (isInput: boolean, id: number) => () => void;
 }
@@ -43,10 +42,9 @@ const IOs = forwardRef<Handler, Props>((props, fRef) => {
   return (
     <div className={style.container}>
       <div className={style.package}>
-        {inputs.map((s, i)=>{
+        {inputs.map(s=>{
           const inputProps = {
             socket: s,
-            socketNameUpdate: props.createIONameUpdate(true, i),
             isInput: true,
             operateNewConnection: props.operateNewConnection(true, s.id),
             registerNewConnection: props.registerNewConnection(true, s.id),
@@ -55,10 +53,9 @@ const IOs = forwardRef<Handler, Props>((props, fRef) => {
         })}
       </div>
       <div className={style.package}>
-        {outputs.map((s, i)=>{
+        {outputs.map(s=>{
           const outputProps = {
             socket: s,
-            socketNameUpdate: props.createIONameUpdate(false, i),
             isInput: false,
             operateNewConnection: props.operateNewConnection(false, s.id),
             registerNewConnection: props.registerNewConnection(false, s.id),

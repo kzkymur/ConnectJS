@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useImperativeHandle, forwardRef, RefObject, useCallback, useMemo, } from 'react';
-import { useDispatch } from 'react-redux';
 import { Node as NodeType, Socket, isMovable, isResizable } from '@/store/main/node';
-import { updateAction } from '@/store/main/actions';
 import Header from './Header';
 import Main from './Main';
 import IOs, { Handler as IOsHandler } from './IOs';
@@ -32,8 +30,6 @@ const Node = forwardRef<Handler, Props>((props, fRef) => {
   const property = useMemo(()=>{ return props.property }, [props.property]);
   const ref = useRef<HTMLDivElement>({} as HTMLDivElement);
   const iosRef = useRef({} as IOsHandler);
-  const dispatch = useDispatch();
-  const updateFunc = (n: NodeType) => dispatch(updateAction(n));
   const mainRef = useRef<HTMLDivElement>({} as HTMLDivElement);
 
   const getJointPos = useCallback((isInput: boolean, id: number) => iosRef.current.getJointPos(isInput, id), [iosRef]);
@@ -82,16 +78,6 @@ const Node = forwardRef<Handler, Props>((props, fRef) => {
     ref.current.style.height = px(px2n(height) + optBarHeight * (Math.max(property.inputs.length, property.outputs.length)+1) - borderWidth * 2);
   })
 
-  const createIONameUpdate = (isInput: boolean, index: number) => (name: string) => {
-    // const newProperty: NodeType = {...property};
-    // const sockets = isInput ? inputs : outputs;
-    // const key = isInput ? 'inputs' : 'outputs';
-    // newProperty[key] = sockets.map((s, i) => {
-    //   if (i===index) s.name = name;
-    //   return s;
-    // })
-    // updateFunc(newProperty);
-  }
   return (
     <div className={`${style.container} ${isResizable(property) ? style.resizable : ''}`} ref={ref}
       onMouseDown={props.onMouseDown}
@@ -101,7 +87,7 @@ const Node = forwardRef<Handler, Props>((props, fRef) => {
       <Main {...mainProps(mainRef)}>
         <Content mode={property.mode}/>
       </Main>
-      <IOs {...IOsProps(property.id, property.inputs, property.outputs, createIONameUpdate, props.operateNewConnection, props.registerNewConnection)} ref={iosRef}/>
+      <IOs {...IOsProps(property.id, property.inputs, property.outputs, props.operateNewConnection, props.registerNewConnection)} ref={iosRef}/>
     </div>
   );
 });
@@ -112,4 +98,4 @@ const calcMainHeight = (height: number, inputs: Array<Socket>, outputs: Array<So
 
 const headerProps = (id: number, name: string, deleteFunc: ()=>void) => ({ id, name, deleteFunc, });
 const mainProps = (fRef: RefObject<HTMLDivElement>) => ({ fRef });
-const IOsProps = (id: number, inputs: Socket[], outputs: Socket[], createIONameUpdate: (isInput: boolean, index: number) => (name: string) => void, operateNewConnection: (isInput: boolean ,id: number) => () => void, registerNewConnection: (isInput: boolean ,id: number) => () => void) => ({ id, inputs, outputs, createIONameUpdate, operateNewConnection, registerNewConnection });
+const IOsProps = (id: number, inputs: Socket[], outputs: Socket[], operateNewConnection: (isInput: boolean ,id: number) => () => void, registerNewConnection: (isInput: boolean ,id: number) => () => void) => ({ id, inputs, outputs, operateNewConnection, registerNewConnection });

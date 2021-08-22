@@ -16,10 +16,10 @@ export function useIdRef <Handler, Source extends Obj>(sourceObjs: Source[]): (I
       }
     })
 
-    newIdRefs.forEach(ir => {
+    idRefs.forEach(ir => {
       if (!sourceObjs.some(e => e.id === ir.id)) {
         updateFlag = true;
-        newIdRefs = newIdRefs.filter(idRef=>idRef.id!==ir.id);
+        newIdRefs = newIdRefs.filter(idRef => idRef.id !== ir.id);
       }
     })
 
@@ -30,25 +30,28 @@ export function useIdRef <Handler, Source extends Obj>(sourceObjs: Source[]): (I
   return idRefs;
 }
 
-export function usePropsFactory <Props, T> (sourceObjs: T[], factory: (obj: T) => Props): Props[] {
+export function usePropsFactory <Props extends Obj, T extends Obj> (sourceObjs: T[], factory: (obj: T) => Props): Props[] {
   const [props, setProps] = useState<Props[]>([]);
-  const [oldSources, setOldSources] = useState<Object[]>([]);
 
   useEffect(()=>{
     let newProps = [...props];
     let updateFlag = false;
 
-    sourceObjs.forEach((so, i) => {
-      if (oldSources[i]!==so) { 
+    sourceObjs.forEach(so => {
+      if (!props.some(e => e.id === so.id)) { 
         updateFlag = true;
-        newProps.splice(i, 1, factory(so));
+        newProps.push(factory(so));
       }
     })
 
-    if (updateFlag) {
-      setProps(newProps);
-      setOldSources(sourceObjs);
-    }
+    props.forEach(p => {
+      if (!sourceObjs.some(e => e.id === p.id)) {
+        updateFlag = true;
+        newProps = newProps.filter(np => np.id !== p.id);
+      }
+    })
+
+    if (updateFlag) setProps(newProps);
   }, [sourceObjs]);
 
   return props;
