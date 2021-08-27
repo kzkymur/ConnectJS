@@ -23,7 +23,7 @@ const MainBoard: React.FC = () => {
     <div className={style.mainBoard}>
       {nodes.map((node, i) =>
         <MemorizedNode key={node.id}
-          property={node}
+          node={node}
           inputConnections={inputConnectionsArray[i]}
           outputConnections={outputConnectionsArray[i]}
           newConnectionInfoRef={newConInfoRef}

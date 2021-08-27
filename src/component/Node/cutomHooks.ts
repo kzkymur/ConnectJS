@@ -14,7 +14,7 @@ const border = px2n(pxBoder);
 const optBarHeight = px2n(pxOptBarHeight);
 
 export const useFunctions = (
-  property: Node,
+  node: Node,
   inputConnections: ConnectionInfo[],
   outputConnections: ConnectionInfo[],
   ref: MutableRefObject<HTMLDivElement>,
@@ -38,7 +38,7 @@ export const useFunctions = (
     v = { x: Math.max(v.x+px2n(ref.current.style.width), minBaseWidth), y: Math.max(v.y+px2n(ref.current.style.height), minBaseHeight) };
     if (v.x === minBaseWidth) updated.x = 0;
     if (v.y === minBaseHeight) updated.y = 0;
-    mainRef.current.style.height = px(calcMainHeight(v.y, property.inputs, property.outputs));
+    mainRef.current.style.height = px(calcMainHeight(v.y, node.inputs, node.outputs));
     ref.current.style.zIndex = String(-1 * v.x * v.y);
     ref.current.style.width = px(v.x), ref.current.style.height = px(v.y);
     return updated;
@@ -47,14 +47,14 @@ export const useFunctions = (
   // const getAllJointPos = useCallback((isInput: boolean) => iosRef.current.getAllJointPos(isInput), [iosRef]);
 
    const updateSize = useCallback((top: string, left: string, width: string, height: string) => {
-    const actions = [ updatePosSizeAction(property.id, top, left, width, height), ];
+    const actions = [ updatePosSizeAction(node.id, top, left, width, height), ];
     inputConnections.forEach(c => actions.push(updateConnectionPosAction(c.id, c.s, getJointPos(true, c.fromSocketId))));
     outputConnections.forEach(c => actions.push(updateConnectionPosAction(c.id, getJointPos(false, c.toSocketId), c.e)));
     dispatch(multAction(actions));
   }, [inputConnections, outputConnections, getJointPos]);
 
   const updatePos = useCallback((top: string, left: string) => {
-    const actions = [ updatePosAction(property.id, top, left), ];
+    const actions = [ updatePosAction(node.id, top, left), ];
     inputConnections.forEach(c => actions.push(updateConnectionPosAction(c.id, c.s, getJointPos(true, c.fromSocketId))));
     outputConnections.forEach(c => actions.push(updateConnectionPosAction(c.id, getJointPos(false, c.toSocketId), c.e)));
     dispatch(multAction(actions));
@@ -72,7 +72,7 @@ export const useFunctions = (
     const isPosUpdate = () => {
       const { x, y } = getPos();
       const top = px(y), left = px(x);
-      if (isMovable(property) && (left !== property.left || top !== property.top)) {
+      if (isMovable(node) && (left !== node.left || top !== node.top)) {
         updatePos(top, left);
         return true;
       }
@@ -102,9 +102,9 @@ export const useFunctions = (
     }
     const updateSizeState = () => {
       const v = getSize();
-      const width = px(v.x), height = px(calcMainHeight(v.y, property.inputs, property.outputs));
+      const width = px(v.x), height = px(calcMainHeight(v.y, node.inputs, node.outputs));
       const pos = getPos();
-      if (isResizable(property) && (property.width !== width || property.height !== height)) updateSize(px(pos.y), px(pos.x), width, height);
+      if (isResizable(node) && (node.width !== width || node.height !== height)) updateSize(px(pos.y), px(pos.x), width, height);
     }
     const mouseup = () => {
       updateSizeState();
@@ -124,7 +124,7 @@ export const useFunctions = (
     const isLeftSide = left - border < m.x && m.x < left + border, isRightSide = right - border < m.x && m.x < right + border;
     const isUpperSide = top - border < m.y && m.y < top + border, isLowerSide = bottom - border < m.y && m.y < bottom + border;
     let cursor;
-    if (isResizable(property) && (isLeftSide || isRightSide || isUpperSide || isLowerSide)) {
+    if (isResizable(node) && (isLeftSide || isRightSide || isUpperSide || isLowerSide)) {
       cursor = (isLeftSide && isUpperSide) || (isRightSide && isLowerSide) ? 'nwse' :
         (isLeftSide && isLowerSide) || (isRightSide && isUpperSide) ? 'nesw' :
         isLeftSide || isRightSide ? 'ew' : 'ns';
@@ -135,18 +135,18 @@ export const useFunctions = (
       onBorderRef.current = false;
     }
     e.currentTarget.style.cursor = cursor;
-  }, [property]);
+  }, [node]);
 
   const onMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (!isMovable(property)) return;
-    if (onBorderRef.current && isResizable(property)) sizeChange(e);
+    if (!isMovable(node)) return;
+    if (onBorderRef.current && isResizable(node)) sizeChange(e);
     else posChange(e);
-  }, [property, posChange, sizeChange]);
+  }, [node, posChange, sizeChange]);
 
   const operateNewConnection = useCallback((isInput: boolean, id: number) => () => {
     const s = getJointPos(isInput, id);
     newConnectionInfoRef.current.isInput = isInput;
-    newConnectionInfoRef.current.nodeId = property.id;
+    newConnectionInfoRef.current.nodeId = node.id;
     newConnectionInfoRef.current.id = id;
     newConnectionInfoRef.current.s = s;
     const mousemove = (e: MouseEvent) => {
@@ -167,23 +167,23 @@ export const useFunctions = (
   const registerNewConnection = useCallback((isInput: boolean, id: number) => () => {
     const ncir = newConnectionInfoRef.current;
     if (isInput === ncir.isInput) return;
-    if (property.id === ncir.nodeId) return;
+    if (node.id === ncir.nodeId) return;
     if (ncir.nodeId === undefined || ncir.isInput === undefined || ncir.id === undefined || ncir.s === undefined) return;
     const e = getJointPos(isInput, id);
     dispatch(addConnectionAction({
       type: 1,
       id: -1,
-      fromNodeId: isInput ? property.id : ncir.nodeId,
+      fromNodeId: isInput ? node.id : ncir.nodeId,
       fromSocketId: isInput ? id : ncir.id,
-      toNodeId: !isInput ? property.id : ncir.nodeId,
+      toNodeId: !isInput ? node.id : ncir.nodeId,
       toSocketId: !isInput ? id : ncir.id,
       s: !isInput ?  e : ncir.s,
       e: isInput ?  e : ncir.s,
     }));
-  }, [newConnectionInfoRef, getJointPos, property.id]);
+  }, [newConnectionInfoRef, getJointPos, node.id]);
 
   const deleteFunc = useCallback(() => {
-    dispatch(deleteAction(property.id, [ ...inputConnections.map(c=>c.id), ...outputConnections.map(c=>c.id), ])); }, [property.id, inputConnections, outputConnections]);
+    dispatch(deleteAction(node.id, [ ...inputConnections.map(c=>c.id), ...outputConnections.map(c=>c.id), ])); }, [node.id, inputConnections, outputConnections]);
 
   return {
     onMouseDown,
@@ -194,26 +194,26 @@ export const useFunctions = (
   };
 }
 
-export const useStyleEffect = (property: Node, ref: MutableRefObject<HTMLDivElement>, mainRef: MutableRefObject<HTMLDivElement>) => {
+export const useStyleEffect = (node: Node, ref: MutableRefObject<HTMLDivElement>, mainRef: MutableRefObject<HTMLDivElement>) => {
   useEffect(()=>{
     const elm = ref.current;
     elm.style.opacity = '1';
   })
 
-  if (isMovable(property)) useEffect(()=>{
+  if (isMovable(node)) useEffect(()=>{
     const elm = ref.current;
-    const { top, left } = property;
+    const { top, left } = node;
     elm.style.top = top;
     elm.style.left = left;
-  }, [property.top, property.left]);
+  }, [node.top, node.left]);
 
-  if (isResizable(property)) useEffect(()=>{
+  if (isResizable(node)) useEffect(()=>{
     const elm = ref.current;
-    const { width, height } = property;
+    const { width, height } = node;
     elm.style.width = px(px2n(width) - border * 2);
     mainRef.current.style.height = px(px2n(height) - border * 2 + 2);
-    elm.style.height = px(px2n(height) + optBarHeight * (Math.max(property.inputs.length, property.outputs.length)+1) - border * 2 + 2);
-  }, [property.width, property.height]);
+    elm.style.height = px(px2n(height) + optBarHeight * (Math.max(node.inputs.length, node.outputs.length)+1) - border * 2 + 2);
+  }, [node.width, node.height]);
 }
 
 const calcMainHeight = (height: number, inputs: Array<Socket>, outputs: Array<Socket>): number => (height - optBarHeight * (Math.max(inputs.length, outputs.length)+1));

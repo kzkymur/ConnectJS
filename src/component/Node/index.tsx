@@ -10,7 +10,7 @@ import { NewConnectionInfo, ConnectionInfo } from '@/component/MainBoard';
 import style from '@/style/Node.scss';
 
 export type Props = {
-  property: NodeType;
+  node: NodeType;
   inputConnections: ConnectionInfo[];
   outputConnections: ConnectionInfo[];
   newConnectionRef: MutableRefObject<ConnectionHandler>,
@@ -18,30 +18,35 @@ export type Props = {
 }
 
 const Node: React.FC<Props> = props => {
-  const { property, inputConnections, outputConnections, newConnectionRef, newConnectionInfoRef } = props;
   const ref = useRef<HTMLDivElement>({} as HTMLDivElement);
   const iosRef = useRef({} as IOsHandler);
   const mainRef = useRef<HTMLDivElement>({} as HTMLDivElement);
 
-  const { onMouseDown, onMouseMove, deleteFunc, operateNewConnection, registerNewConnection } = useFunctions(property, inputConnections, outputConnections, ref, mainRef, iosRef, newConnectionRef, newConnectionInfoRef);
-  useStyleEffect(property, ref, mainRef);
+  const {
+    onMouseDown,
+    onMouseMove,
+    deleteFunc,
+    operateNewConnection,
+    registerNewConnection
+  } = useFunctions(props.node, props.inputConnections, props.outputConnections, ref, mainRef, iosRef, props.newConnectionRef, props.newConnectionInfoRef);
+  useStyleEffect(props.node, ref, mainRef);
 
   return (
-    <div className={`${style.container} ${isResizable(property) ? style.resizable : ''}`} ref={ref}
+    <div className={`${style.container} ${isResizable(props.node) ? style.resizable : ''}`}
+      ref={ref}
       onMouseDown={onMouseDown}
       onMouseMove={onMouseMove}
     >
-      <Header {...headerProps(property.id, property.name, deleteFunc)}/>
+      <Header {...headerProps(props.node.id, props.node.name, deleteFunc)}/>
       <Main {...mainProps(mainRef)}>
-        <Content mode={property.mode}/>
+        <Content mode={props.node.mode}/>
       </Main>
-      <IOs {...IOsProps(property.id, property.inputs, property.outputs, operateNewConnection, registerNewConnection)} ref={iosRef}/>
+      <IOs {...IOsProps(props.node.id, props.node.inputs, props.node.outputs, operateNewConnection, registerNewConnection)} ref={iosRef}/>
     </div>
   );
 };
 
 export default Node;
-
 
 const headerProps = (id: number, name: string, deleteFunc: ()=>void) => ({ id, name, deleteFunc, });
 const mainProps = (fRef: RefObject<HTMLDivElement>) => ({ fRef });
