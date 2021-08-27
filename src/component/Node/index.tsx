@@ -1,16 +1,13 @@
-import React, { useEffect, useRef, RefObject, MutableRefObject, } from 'react';
-import { Node as NodeType, Socket, isMovable, isResizable, } from '@/store/main/node';
+import React, { useRef, RefObject, MutableRefObject, } from 'react';
+import { Node as NodeType, Socket, isResizable, } from '@/store/main/node';
 import Header from './Header';
 import Main from './Main';
 import IOs, { Handler as IOsHandler } from './IOs';
 import { Handler as ConnectionHandler } from '../Connection';
-import useFunctions from './cutomHooks';
+import { useFunctions, useStyleEffect, } from './cutomHooks';
 import Content from '@/content';
-import { px, px2n } from '@/utils';
 import { NewConnectionInfo, ConnectionInfo } from '@/component/MainBoard';
-import style, { border as pxBoder, optionalbarHeight as pxOptBarHeight } from '@/style/Node.scss';
-const border = px2n(pxBoder);
-const optBarHeight = px2n(pxOptBarHeight);
+import style from '@/style/Node.scss';
 
 export type Props = {
   property: NodeType;
@@ -26,27 +23,8 @@ const Node: React.FC<Props> = props => {
   const iosRef = useRef({} as IOsHandler);
   const mainRef = useRef<HTMLDivElement>({} as HTMLDivElement);
 
-  useEffect(()=>{
-    const elm = ref.current;
-    elm.style.opacity = '1';
-  })
-
-  if (isMovable(property)) useEffect(()=>{
-    const elm = ref.current;
-    const { top, left } = property;
-    elm.style.top = top;
-    elm.style.left = left;
-  }, [property.top, property.left]);
-
-  if (isResizable(property)) useEffect(()=>{
-    const elm = ref.current;
-    const { width, height } = property;
-    elm.style.width = px(px2n(width) - border * 2);
-    mainRef.current.style.height = px(px2n(height) - border * 2 + 2);
-    elm.style.height = px(px2n(height) + optBarHeight * (Math.max(property.inputs.length, property.outputs.length)+1) - border * 2 + 2);
-  }, [property.width, property.height]);
-
   const { onMouseDown, onMouseMove, deleteFunc, operateNewConnection, registerNewConnection } = useFunctions(property, inputConnections, outputConnections, ref, mainRef, iosRef, newConnectionRef, newConnectionInfoRef);
+  useStyleEffect(property, ref, mainRef);
 
   return (
     <div className={`${style.container} ${isResizable(property) ? style.resizable : ''}`} ref={ref}
@@ -64,7 +42,6 @@ const Node: React.FC<Props> = props => {
 
 export default Node;
 
-export const calcMainHeight = (height: number, inputs: Array<Socket>, outputs: Array<Socket>): number => (height - optBarHeight * (Math.max(inputs.length, outputs.length)+1));
 
 const headerProps = (id: number, name: string, deleteFunc: ()=>void) => ({ id, name, deleteFunc, });
 const mainProps = (fRef: RefObject<HTMLDivElement>) => ({ fRef });

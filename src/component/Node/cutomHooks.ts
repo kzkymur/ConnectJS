@@ -1,6 +1,6 @@
-import { MutableRefObject, useCallback, useRef } from 'react';
+import { MutableRefObject, useCallback, useEffect, useRef } from 'react';
 import {useDispatch} from 'react-redux';
-import { Node, isMovable, isResizable, } from '@/store/main/node';
+import { Node, isMovable, isResizable, Socket, } from '@/store/main/node';
 import { Handler as ConnectionHandler } from '@/component/Connection';
 import { NewConnectionInfo, ConnectionInfo } from '@/component/MainBoard';
 import { Handler as IOsHandler } from './IOs';
@@ -9,11 +9,11 @@ import Vector, { subtract, multiply, hadamard, signFilter } from '@/utils/vector
 import { minBaseWidth, minBaseHeight, } from '@/config';
 import { px, px2n } from '@/utils';
 import { deleteAction, updatePosSizeAction } from '@/utils/actions';
-import { calcMainHeight } from '.';
-import { border as pxBoder } from '@/style/Node.scss';
+import { border as pxBoder, optionalbarHeight as pxOptBarHeight } from '@/style/Node.scss';
 const border = px2n(pxBoder);
+const optBarHeight = px2n(pxOptBarHeight);
 
-export default (
+export const useFunctions = (
   property: Node,
   inputConnections: ConnectionInfo[],
   outputConnections: ConnectionInfo[],
@@ -193,3 +193,27 @@ export default (
     deleteFunc,
   };
 }
+
+export const useStyleEffect = (property: Node, ref: MutableRefObject<HTMLDivElement>, mainRef: MutableRefObject<HTMLDivElement>) => {
+  useEffect(()=>{
+    const elm = ref.current;
+    elm.style.opacity = '1';
+  })
+
+  if (isMovable(property)) useEffect(()=>{
+    const elm = ref.current;
+    const { top, left } = property;
+    elm.style.top = top;
+    elm.style.left = left;
+  }, [property.top, property.left]);
+
+  if (isResizable(property)) useEffect(()=>{
+    const elm = ref.current;
+    const { width, height } = property;
+    elm.style.width = px(px2n(width) - border * 2);
+    mainRef.current.style.height = px(px2n(height) - border * 2 + 2);
+    elm.style.height = px(px2n(height) + optBarHeight * (Math.max(property.inputs.length, property.outputs.length)+1) - border * 2 + 2);
+  }, [property.width, property.height]);
+}
+
+const calcMainHeight = (height: number, inputs: Array<Socket>, outputs: Array<Socket>): number => (height - optBarHeight * (Math.max(inputs.length, outputs.length)+1));
