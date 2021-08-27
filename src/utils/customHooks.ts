@@ -1,9 +1,9 @@
-import { MutableRefObject, useEffect, useState } from 'react'; 
+import { MutableRefObject, useEffect, useMemo, useState } from 'react'; 
 import { Obj } from '../utils'; 
 
 export type IdRef<Handler, Source extends Obj> = Source & { ref: MutableRefObject<Handler>; }
 export function useIdRef <Handler, Source extends Obj>(sourceObjs: Source[]): (IdRef<Handler, Source>)[] {
-  const [idRefs, setIdRefs] = useState<(IdRef<Handler, Source>)[]>([]);
+  const [idRefs, setIdRefs] = useState<(IdRef<Handler, Obj>)[]>([]);
 
   useEffect(()=>{
     let newIdRefs = [...idRefs];
@@ -12,7 +12,7 @@ export function useIdRef <Handler, Source extends Obj>(sourceObjs: Source[]): (I
     sourceObjs.forEach(so => {
       if (!idRefs.some(e => e.id === so.id)) { 
         updateFlag = true;
-        newIdRefs.push(Object.assign(so, { ref: { current: ({} as Handler) }}));
+        newIdRefs.push({ id: so.id, ref: { current: ({} as Handler) }});
       }
     })
 
@@ -27,7 +27,11 @@ export function useIdRef <Handler, Source extends Obj>(sourceObjs: Source[]): (I
 
   }, [sourceObjs]);
 
-  return idRefs;
+  const sourceRefs = useMemo(
+    ()=>sourceObjs.map(s => Object.assign(s, idRefs.filter(ir => ir.id === s.id)[0])),
+    [sourceObjs, idRefs]);
+
+  return sourceRefs;
 }
 
 export function usePropsFactory <Props extends Obj, T extends Obj> (sourceObjs: T[], factory: (obj: T) => Props): Props[] {

@@ -7,9 +7,10 @@ import { Handler as ConnectionHandler } from '../Connection';
 import useFunctions from './cutomHooks';
 import Content from '@/content';
 import { px, px2n } from '@/utils';
-import { optBarHeight, borderWidth, } from '@/config';
 import { NewConnectionInfo, ConnectionInfo } from '@/component/MainBoard';
-import style from '@/style/Node.scss';
+import style, { border as pxBoder, optionalbarHeight as pxOptBarHeight } from '@/style/Node.scss';
+const border = px2n(pxBoder);
+const optBarHeight = px2n(pxOptBarHeight);
 
 export type Props = {
   property: NodeType;
@@ -40,9 +41,9 @@ const Node: React.FC<Props> = props => {
   if (isResizable(property)) useEffect(()=>{
     const elm = ref.current;
     const { width, height } = property;
-    elm.style.width = px(px2n(width)-borderWidth*2);
-    mainRef.current.style.height = px(px2n(height) - borderWidth * 2);
-    ref.current.style.height = px(px2n(height) + optBarHeight * (Math.max(property.inputs.length, property.outputs.length)+1) - borderWidth * 2);
+    elm.style.width = px(px2n(width) - border * 2);
+    mainRef.current.style.height = px(px2n(height) - border * 2 + 2);
+    elm.style.height = px(px2n(height) + optBarHeight * (Math.max(property.inputs.length, property.outputs.length)+1) - border * 2 + 2);
   }, [property.width, property.height]);
 
   const { onMouseDown, onMouseMove, deleteFunc, operateNewConnection, registerNewConnection } = useFunctions(property, inputConnections, outputConnections, ref, mainRef, iosRef, newConnectionRef, newConnectionInfoRef);

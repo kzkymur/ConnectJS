@@ -1,5 +1,6 @@
 import { ModeType, } from '@/content/types';
 import { initBaseWidth, initBaseHeight } from '@/config';
+import { ConnectionType } from './types';
 
 export class Node {
   id: number;
@@ -73,5 +74,5 @@ export interface Socket {
   type: DataType;
   id: number;
   name: string;
-  counterId: number;
+  connection?: ConnectionType;
 }

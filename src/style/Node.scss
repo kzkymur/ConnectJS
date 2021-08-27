@@ -1,6 +1,6 @@
 $base-color: gray;
 $optionalbar-height: 20px;
-$border: 5px;
+$border: 3px;
 
 .container {
   position: absolute;
@@ -9,6 +9,7 @@ $border: 5px;
   opacity: 0;
   border-radius: 5px;
   border: $border solid rgba(0,0,0,0);
+  border-top: 1px solid rgba(0,0,0,0);
   &.resizable {
     min-height: 30px;
     min-width: 40px;
@@ -18,4 +19,5 @@ $border: 5px;
 
 :export {
  optionalbarHeight: $optionalbar-height;
+ border: $border;
 }

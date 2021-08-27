@@ -1,4 +1,4 @@
-import { Node, IgnitionNode, ResizableNode, MovableNode } from '@/store/main/node';
+import { Node, ResizableNode, MovableNode } from '@/store/main/node';
 
 export const Modes = {
   canvas: 'CANVAS',
@@ -13,6 +13,11 @@ export type ModeType =
 export class Canvas extends ResizableNode {
   constructor () {
     super(Modes.canvas);
+    this.inputs = [{
+      type: 1,
+      id: 1,
+      name: 'canvas',
+    }]
   }
 }
 
@@ -22,6 +27,11 @@ interface Processor extends Node {
 export class Counter extends MovableNode {
   constructor () {
     super(Modes.counter);
+    this.outputs = [{
+      type: 1,
+      id: 1,
+      name: 'counter',
+    }]
   }
 }
 

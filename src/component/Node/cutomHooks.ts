@@ -1,4 +1,5 @@
 import { MutableRefObject, useCallback, useRef } from 'react';
+import {useDispatch} from 'react-redux';
 import { Node, isMovable, isResizable, } from '@/store/main/node';
 import { Handler as ConnectionHandler } from '@/component/Connection';
 import { NewConnectionInfo, ConnectionInfo } from '@/component/MainBoard';
@@ -8,9 +9,9 @@ import Vector, { subtract, multiply, hadamard, signFilter } from '@/utils/vector
 import { minBaseWidth, minBaseHeight, } from '@/config';
 import { px, px2n } from '@/utils';
 import { deleteAction, updatePosSizeAction } from '@/utils/actions';
-import { border } from '@/config';
 import { calcMainHeight } from '.';
-import {useDispatch} from 'react-redux';
+import { border as pxBoder } from '@/style/Node.scss';
+const border = px2n(pxBoder);
 
 export default (
   property: Node,

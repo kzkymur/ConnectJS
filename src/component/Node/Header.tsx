@@ -15,7 +15,7 @@ const Header: React.FC<Props> = props => {
   const nameUpdate = (name: string) => dispatch(updateNameAction(props.id, name));
 
   return (
-    <div className={style.container}>
+    <div className={style.header}>
       <NameBox className={style.nameBox}
         name={props.name}
         updateFunc={nameUpdate}/>
