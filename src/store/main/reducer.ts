@@ -1,12 +1,13 @@
 import { Reducer } from 'redux';
 import Action, { ActionTypes } from './actionTypes';
-import { isMovable, isResizable, Node } from './node';
+import { isMovable, isResizable } from './node';
 import { ConnectionType } from './types';
 import ReverseActionBranch, { OperationTypes } from './reverseActionBranch';
 import { EngineType } from './engine';
+import ContentType from '@/content/types';
 
 export interface State {
-  nodes: Node[];
+  nodes: ContentType[];
   nodeLatestId: number;
   connections: ConnectionType[];
   connectionLatestId: number;
@@ -121,10 +122,17 @@ const reducer: Reducer<State, Action> = (state = initialState, action) => {
       const latestId = state.connectionLatestId + 1;
       const connection = { ...action.payload.connection, }
       if (connection.id === -1) connection.id = latestId;
+      const setTo = (node: ContentType) => {
+        const toNode = state.nodes.find(node => node.id === connection.toNodeId);
+        console.log({toNode});
+        if (toNode !== undefined) return node.addTos(toNode, toNode.keys[connection.toSocketId-1]);
+        return node;
+      }
       state = {
         ...state,
         connections: [ ...state.connections, connection ],
         connectionLatestId: latestId,
+        nodes: state.nodes.map(node => node.id === connection.fromNodeId ? setTo(node) : node)
       }
       break;
     }

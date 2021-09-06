@@ -1,16 +1,17 @@
 import React, { useRef, RefObject, MutableRefObject, } from 'react';
-import { Node as NodeType, Socket, isResizable, } from '@/store/main/node';
+import { Socket, isResizable, } from '@/store/main/node';
 import Header from './Header';
 import Main from './Main';
 import IOs, { Handler as IOsHandler } from './IOs';
 import { Handler as ConnectionHandler } from '../Connection';
 import { useFunctions, useStyleEffect, } from './cutomHooks';
 import Content from '@/content';
+import ContentType from '@/content/types';
 import { NewConnectionInfo, ConnectionInfo } from '@/component/MainBoard';
 import style from '@/style/Node.scss';
 
 export type Props = {
-  node: NodeType;
+  node: ContentType;
   inputConnections: ConnectionInfo[];
   outputConnections: ConnectionInfo[];
   newConnectionRef: MutableRefObject<ConnectionHandler>,
@@ -39,7 +40,7 @@ const Node: React.FC<Props> = props => {
     >
       <Header {...headerProps(props.node.id, props.node.name, deleteFunc)}/>
       <Main {...mainProps(mainRef)}>
-        <Content mode={props.node.mode}/>
+        <Content node={props.node}/>
       </Main>
       <IOs {...IOsProps(props.node.id, props.node.inputs, props.node.outputs, operateNewConnection, registerNewConnection)} ref={iosRef}/>
     </div>

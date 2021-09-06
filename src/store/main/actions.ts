@@ -1,10 +1,11 @@
 import Action, { ActionTypes } from './actionTypes';
-import { Node, DataType } from './node';
+import { DataType } from './node';
 import { ConnectionType, } from './types';
 import Vector from '@/utils/vector';
 import { EngineType } from './engine'
+import ContentType from '@/content/types';
 
-export const addAction = (node: Node): Action => ({
+export const addAction = (node: ContentType): Action => ({
   type: ActionTypes.add,
   payload: { node, },
 });
@@ -13,7 +14,7 @@ export const deleteAction = (nodeId: number): Action => ({
   payload: { id: nodeId, },
 });
 
-export const updateAction = (node: Node): Action => ({
+export const updateAction = (node: ContentType): Action => ({
   type: ActionTypes.update,
   payload: { node, },
 });

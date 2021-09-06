@@ -1,5 +1,6 @@
 import path from 'path'
 import HtmlWebpackPlugin from 'html-webpack-plugin';
+import keysTransformer from 'ts-transformer-keys/transformer';
 
 const src  = path.resolve(__dirname, 'src')
 const dist = path.resolve(__dirname, 'dist')
@@ -35,7 +36,16 @@ export default {
         exclude: /node_modules/,
         use: [
           'babel-loader',
-          'ts-loader',
+          {
+            loader: 'ts-loader',
+            options: {
+              getCustomTransformers: program => ({
+                before: [
+                  keysTransformer(program)
+                ]
+              })
+            }
+          }
         ],
       },
     ]

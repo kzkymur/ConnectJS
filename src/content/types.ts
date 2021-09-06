@@ -1,39 +1,42 @@
-import { Node, ResizableNode, MovableNode } from '@/store/main/node';
+import { keys } from 'ts-transformer-keys';
+import { ResizableNode, MovableNode } from '@/store/main/node';
 
 export const Modes = {
   canvas: 'CANVAS',
-  processor: 'PROCESSOR',
   counter: 'COUNTER',
 } as const;
 export type ModeType = 
   typeof Modes.canvas |
-  typeof Modes.processor |
   typeof Modes.counter;
 
-export class Canvas extends ResizableNode {
+type CanvasArgs = { number: number; };
+export class Canvas extends ResizableNode<void, CanvasArgs> {
+  readonly mode: typeof Modes.canvas = Modes.canvas;
   constructor () {
-    super(Modes.canvas);
+    super(() => {}, keys<CanvasArgs>());
     this.inputs = [{
       type: 1,
       id: 1,
       name: 'canvas',
-    }]
+    }];
+    this.function = function () { console.log(this.args); }
   }
 }
 
-interface Processor extends Node {
-  mode: typeof Modes.processor;
-}
-export class Counter extends MovableNode {
+export class Counter extends MovableNode<number, {}> {
+  readonly mode: typeof Modes.counter = Modes.counter;
+  counter: number;
   constructor () {
-    super(Modes.counter);
+    super(() => 0, keys());
+    this.counter = 0;
     this.outputs = [{
       type: 1,
       id: 1,
       name: 'counter',
-    }]
+    }];
+    this.function = function () { return ++this.counter; }
   }
 }
 
-type ContentType = Canvas | Processor | Counter;
+type ContentType = Canvas | Counter;
 export default ContentType;

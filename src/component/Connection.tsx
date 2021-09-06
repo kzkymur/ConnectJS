@@ -17,7 +17,6 @@ type Props = {
 }
 
 const Connection = forwardRef<Handler, Props>((props, fRef) => {
-  console.log(props);
   const ref = useRef<SVGPathElement>(null);
   let s = props.s, e = props.e;
   useImperativeHandle(fRef, ()=>({

@@ -173,10 +173,10 @@ export const useFunctions = (
     dispatch(addConnectionAction({
       type: 1,
       id: -1,
-      fromNodeId: isInput ? node.id : ncir.nodeId,
-      fromSocketId: isInput ? id : ncir.id,
-      toNodeId: !isInput ? node.id : ncir.nodeId,
-      toSocketId: !isInput ? id : ncir.id,
+      fromNodeId: !isInput ? node.id : ncir.nodeId,
+      fromSocketId: !isInput ? id : ncir.id,
+      toNodeId: isInput ? node.id : ncir.nodeId,
+      toSocketId: isInput ? id : ncir.id,
       s: !isInput ?  e : ncir.s,
       e: isInput ?  e : ncir.s,
     }));

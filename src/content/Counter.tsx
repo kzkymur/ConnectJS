@@ -1,12 +1,17 @@
-import React, { useState } from 'react';
+import React, { useCallback } from 'react';
+import { Counter as Class } from './types';
 
 type Props = {
+  node: Class;
 };
 
 const Counter: React.FC<Props> = props => {
-  const [ count, setCount ] = useState(0);
+  const increment = useCallback(() => {
+    props.node.setArg({});
+  },[]);
+  console.log(props);
   return (
-    <button/>
+    <button onClick={increment}/>
   );
 }
 

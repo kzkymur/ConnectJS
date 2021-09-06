@@ -1,8 +1,9 @@
 import { Action } from 'redux';
-import { Node, DataType } from './node';
+import { DataType } from './node';
 import { ConnectionType, } from './types';
 import Vector from '@/utils/vector';
 import { EngineType } from './engine';
+import ContentType from '@/content/types';
 
 export const ActionTypes = {
   add: "ADD",
@@ -36,7 +37,7 @@ export const ActionTypes = {
 // Actionの型定義
 interface Add extends Action {
   type: typeof ActionTypes.add;
-  payload: { node: Node; };
+  payload: { node: ContentType; };
 }
 interface Delete extends Action {
   type: typeof ActionTypes.delete;
@@ -44,7 +45,7 @@ interface Delete extends Action {
 }
 interface Update extends Action {
   type: typeof ActionTypes.update;
-  payload: { node: Node; };
+  payload: { node: ContentType; };
 }
 interface UpdateName extends Action {
   type: typeof ActionTypes.updateName;

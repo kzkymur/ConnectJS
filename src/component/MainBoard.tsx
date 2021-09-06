@@ -51,11 +51,11 @@ export default MainBoard;
 
 const useConnectionsArg = (nodes: NodeType[], connectionInfos: ConnectionInfo[]) => {
   const inputConnectionsArray = useMemo(
-    () => nodes.map(node => connectionInfos.filter(c => c.fromNodeId === node.id)),
+    () => nodes.map(node => connectionInfos.filter(c => c.toNodeId === node.id)),
     [connectionInfos, nodes]
   );
   const outputConnectionsArray = useMemo(
-    () => nodes.map(node => connectionInfos.filter(c => c.toNodeId === node.id)),
+    () => nodes.map(node => connectionInfos.filter(c => c.fromNodeId === node.id)),
     [connectionInfos, nodes]
   );
   return [inputConnectionsArray, outputConnectionsArray];
