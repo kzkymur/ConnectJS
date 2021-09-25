@@ -1,4 +1,5 @@
 import React from 'react';
+import { hot } from 'react-hot-loader/root';
 import Header from '@/component/Header';
 import MainBoard from '@/component/MainBoard';
 import Keybind from'@/component/Keybind';
@@ -15,5 +16,4 @@ function App() {
   );
 }
 
-export default App;
-
+export default hot(App);
