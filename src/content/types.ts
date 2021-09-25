@@ -19,7 +19,7 @@ export class Canvas extends ResizableNode<void, CanvasArgs> {
       id: 1,
       name: 'canvas',
     }];
-    this.function = function () { console.log(this.args); }
+    this.function = (args) => { console.log(args.number); }
   }
 }
 
@@ -34,7 +34,7 @@ export class Counter extends MovableNode<number, {}> {
       id: 1,
       name: 'counter',
     }];
-    this.function = function () { return ++this.counter; }
+    this.function = () => { return ++this.counter; }
   }
 }
 

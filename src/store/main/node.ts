@@ -4,10 +4,11 @@ import { ConnectionType } from './types';
 
 export class Node<To = any, Args extends { [arg: string]: unknown; } = any> {
   id: number;
-  func: (args: Args) => To;
+  func: (args: Args) => void;
   name: string;
   outputs: Socket[];
   inputs: Socket[];
+  output?: To;
   inputsLatestId: number;
   outputsLatestId: number;
   args: { [Key in keyof Args]?: Args[Key]; };
@@ -33,19 +34,32 @@ export class Node<To = any, Args extends { [arg: string]: unknown; } = any> {
     return this;
   }
   set function (func: (args: Args) => To) {
-    this.func = func;
+    this.func = function (args: Args) {
+      this.output = func(args);
+      this.emit();
+    };
+  }
+  emit (...ids: number[]) {
+    let targets;
+    if (ids.length === 0) targets = this.tos;
+    else {
+      targets = {};
+      ids.forEach(id => targets[id] = {});
+    };
+    for (const i in targets) {
+      const obj = {};
+      Object.defineProperty(obj, this.tos[i].key, { value: this.output, enumerable: true, });
+      this.tos[i].node.setArg(obj);
+    };
+  }
+  setOutput (output: To) {
+    this.output = output;
   }
   setArg (args: { [key in keyof Args]?: Args[key] }) {
     for (const key in args) {
       this.args[key] = args[key];
     }
-    if (!this.isFullArgs(this.args)) return;
-    const result = this.func!(this.args);
-    for (const i in this.tos) {
-      const obj = {};
-      Object.defineProperty(obj, this.tos[i].key, { value: result, enumerable: true, });
-      this.tos[i].node.setArg(obj);
-    };
+    if (this.isFullArgs(this.args)) this.func!(this.args);
   }
   isFullArgs (args: { [Key in keyof Args]?: Args[Key] }): args is Args {
     for (const key of this.keys) if (args[key] === undefined) return false;
@@ -54,6 +68,7 @@ export class Node<To = any, Args extends { [arg: string]: unknown; } = any> {
   addTos (node: ContentType, key: string) {
     if (this.tos[node.id] !== undefined) throw new Error('This node id has already been registered');
     this.tos[node.id] = { key, node };
+    this.emit(node.id);
     return this;
   }
   updateTos (node: Node) {
