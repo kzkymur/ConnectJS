@@ -1,25 +1,12 @@
 import NodeAction from '@/store/main/actionTypes';
-import ContentType, { Modes, ModeType, } from '@/content/types';
+import { ModeType, } from '@/content/types';
 import { addAction as orgAddActioin, deleteAction as orgDeleteAction, updatePosAction, updateSizeAction, deleteConnectionAction, multAction } from '@/store/main/actions';
-import { Canvas, Counter, } from '@/content/types';
+import { Content } from '@/content/types';
 
 type AddAction = (mode: ModeType) => NodeAction;
 export const addAction: AddAction = mode => {
-  let content: ContentType;
-  switch (mode) {
-    case Modes.canvas: {
-      content = new Canvas();
-      break;
-    }
-    case Modes.counter: {
-      content = new Counter();
-      break;
-    }
-    default: {
-      return multAction([]);
-    }
-  }
-  return orgAddActioin(content);
+  if (Content[mode] !== undefined) return orgAddActioin(Content[mode]());
+  return multAction([]);
 }
 
 type DeleteAction = (id: number, cIds: number[]) => NodeAction;

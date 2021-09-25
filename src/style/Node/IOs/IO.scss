@@ -41,6 +41,8 @@ $joint-width: 5px;
   display: block;
   height: 100%;
   width: calc(100% - #{$optionalbar-height});
+  margin: 0 auto;
+  line-height: $optionalbar-height;
   border: 0;
   padding: 0;
 }
