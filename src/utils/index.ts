@@ -12,3 +12,8 @@ export const getIndex = (objs: Obj[], id: number): number => {
   }
   return -1;
 }
+
+export const logger = (value: any) => {
+  console.log(value);
+  return value;
+}

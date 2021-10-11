@@ -7,7 +7,7 @@ import { Handler as IOsHandler } from './IOs';
 import { multAction, updatePosAction, updateConnectionPosAction, addConnectionAction } from '@/store/main/actions';
 import Vector, { subtract, multiply, hadamard, signFilter } from '@/utils/vector';
 import { minBaseWidth, minBaseHeight, } from '@/config';
-import { px, px2n, logger } from '@/utils';
+import { px, px2n } from '@/utils';
 import { deleteAction, updatePosSizeAction } from '@/utils/actions';
 import { border as pxBoder, optionalbarHeight as pxOptBarHeight } from '@/style/Node.scss';
 const border = px2n(pxBoder);
