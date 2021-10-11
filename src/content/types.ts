@@ -5,11 +5,13 @@ export const Modes = {
   canvas: 'canvas',
   counter: 'counter',
   sum: 'sum',
+  timmer: 'timmer',
 } as const;
 export type ModeType = 
   typeof Modes.canvas |
   typeof Modes.counter |
-  typeof Modes.sum;
+  typeof Modes.sum |
+  typeof Modes.timmer;
 
 type CanvasArgs = { number: number; };
 export class Canvas extends ResizableNode<void, CanvasArgs> {
@@ -66,11 +68,30 @@ export class Sum extends MovableNode<number, SumArgs> {
   }
 }
 
-type ContentType = Canvas | Counter | Sum;
+export class Timmer extends MovableNode<number, {}> {
+  readonly mode: typeof Modes.timmer = Modes.timmer;
+  time: number;
+  constructor () {
+    super(() => 0, []);
+    this.time = 0;
+    this.outputs = [{
+      type: 1,
+      id: 1,
+      name: 'timmer',
+    }];
+    this.function = () => { return this.time++; }
+    setInterval(()=>{
+      this.setArg({});
+    }, 1000);
+  }
+}
+
+type ContentType = Canvas | Counter | Sum | Timmer;
 export default ContentType;
 
 export const Content: { [mode in ModeType]: () => ContentType } = {
   canvas: () => { return new Canvas() },
   counter: () => { return new Counter() },
   sum: () => { return new Sum() },
+  timmer: () => { return new Timmer() },
 };
