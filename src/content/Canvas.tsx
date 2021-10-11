@@ -1,4 +1,21 @@
 import React from 'react';
+import { keys } from 'ts-transformer-keys';
+import { ResizableNode } from '@/store/main/node';
+import { Modes } from './types';
+
+type CanvasArgs = { number: number; };
+export class Class extends ResizableNode<void, CanvasArgs> {
+  readonly mode: typeof Modes.canvas = Modes.canvas;
+  constructor () {
+    super(() => {}, keys<CanvasArgs>());
+    this.inputs = [{
+      type: 1,
+      id: 1,
+      name: 'canvas',
+    }];
+    this.function = args => { console.log(args.number); }
+  }
+}
 
 type Props = {
   render: (gl: WebGLRenderingContext)	 => void;

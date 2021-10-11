@@ -1,6 +1,23 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import styled from 'styled-components';
-import { Counter as Class } from './types';
+import { keys } from 'ts-transformer-keys';
+import { MovableNode } from '@/store/main/node';
+import { Modes } from './types';
+
+export class Class extends MovableNode<number, {}> {
+  readonly mode: typeof Modes.counter = Modes.counter;
+  counter: number;
+  constructor () {
+    super(() => 0, keys());
+    this.counter = 0;
+    this.outputs = [{
+      type: 1,
+      id: 1,
+      name: 'counter',
+    }];
+    this.function = () => { return ++this.counter; }
+  }
+}
 
 type Props = {
   node: Class;

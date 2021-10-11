@@ -1,6 +1,34 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Sum as Class } from './types';
+import { keys } from 'ts-transformer-keys';
+import { MovableNode } from '@/store/main/node';
+import { Modes } from './types';
+
+type SumArgs = { a: number; b: number; };
+export class Class extends MovableNode<number, SumArgs> {
+  readonly mode: typeof Modes.sum = Modes.sum;
+  constructor () {
+    super(() => 0, keys<SumArgs>());
+    this.inputs = [
+      {
+        type: 1,
+        id: 1,
+        name: 'a',
+      },
+      {
+        type: 1,
+        id: 2,
+        name: 'b',
+      }
+    ];
+    this.outputs = [{
+      type: 1,
+      id: 1,
+      name: 'sum',
+    }];
+    this.function = ({a, b}) => { return a + b; }
+  }
+}
 
 type Props = {
   node: Class;
