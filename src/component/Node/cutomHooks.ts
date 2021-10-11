@@ -7,7 +7,7 @@ import { Handler as IOsHandler } from './IOs';
 import { multAction, updatePosAction, updateConnectionPosAction, addConnectionAction } from '@/store/main/actions';
 import Vector, { subtract, multiply, hadamard, signFilter } from '@/utils/vector';
 import { minBaseWidth, minBaseHeight, } from '@/config';
-import { px, px2n } from '@/utils';
+import { px, px2n, logger } from '@/utils';
 import { deleteAction, updatePosSizeAction } from '@/utils/actions';
 import { border as pxBoder, optionalbarHeight as pxOptBarHeight } from '@/style/Node.scss';
 const border = px2n(pxBoder);
@@ -46,17 +46,17 @@ export const useFunctions = (
   const getJointPos = useCallback((isInput: boolean, id: number) => iosRef.current.getJointPos(isInput, id), [iosRef]);
   // const getAllJointPos = useCallback((isInput: boolean) => iosRef.current.getAllJointPos(isInput), [iosRef]);
 
-   const updateSize = useCallback((top: string, left: string, width: string, height: string) => {
+  const updateSize = useCallback((top: string, left: string, width: string, height: string) => {
     const actions = [ updatePosSizeAction(node.id, top, left, width, height), ];
-    inputConnections.forEach(c => actions.push(updateConnectionPosAction(c.id, c.s, getJointPos(true, c.fromSocketId))));
-    outputConnections.forEach(c => actions.push(updateConnectionPosAction(c.id, getJointPos(false, c.toSocketId), c.e)));
+    inputConnections.forEach(c => actions.push(updateConnectionPosAction(c.id, c.s, getJointPos(true, c.toSocketId))));
+    outputConnections.forEach(c => actions.push(updateConnectionPosAction(c.id, getJointPos(false, c.fromSocketId), c.e)));
     dispatch(multAction(actions));
   }, [inputConnections, outputConnections, getJointPos]);
 
   const updatePos = useCallback((top: string, left: string) => {
     const actions = [ updatePosAction(node.id, top, left), ];
-    inputConnections.forEach(c => actions.push(updateConnectionPosAction(c.id, c.s, getJointPos(true, c.fromSocketId))));
-    outputConnections.forEach(c => actions.push(updateConnectionPosAction(c.id, getJointPos(false, c.toSocketId), c.e)));
+    inputConnections.forEach(c => actions.push(updateConnectionPosAction(c.id, c.s, getJointPos(true, c.toSocketId))));
+    outputConnections.forEach(c => actions.push(updateConnectionPosAction(c.id, getJointPos(false, c.fromSocketId), c.e)));
     dispatch(multAction(actions));
   }, [inputConnections, outputConnections, getJointPos]);
 
