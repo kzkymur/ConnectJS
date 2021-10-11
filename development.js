@@ -16,6 +16,8 @@ export default {
     filename: 'bundle.js'
   },
 
+  devtool: 'eval-source-map',
+
   module: {
     rules: [
       {
