@@ -1,6 +1,8 @@
 import { initBaseWidth, initBaseHeight } from '@/config';
 import ContentType from '@/content/types';
 import { ConnectionType } from './types';
+import Action from './actionTypes';
+import {updateAction} from './actions';
 
 export class Node<To = any, Args extends { [arg: string]: unknown; } = any> {
   id: number;
@@ -13,9 +15,10 @@ export class Node<To = any, Args extends { [arg: string]: unknown; } = any> {
   outputsLatestId: number;
   args: { [Key in keyof Args]?: Args[Key]; };
   readonly keys: Array<keyof Args>;
+  updateStore?: () => void;
   tos: Record<number, {
-    node: Node<any, any>;
-    key: keyof Node['args'];
+    node: ContentType;
+    key: string;
   }>;
   constructor (dummyFunc: (args: Args) => To, keys: Array<keyof Args>) {
     this.id = -1;
@@ -35,7 +38,10 @@ export class Node<To = any, Args extends { [arg: string]: unknown; } = any> {
   }
   set function (func: (args: Args) => To) {
     this.func = function (args: Args) {
-      this.output = func(args);
+      const output = func(args);
+      if (this.output === output) return;
+      this.output = output;
+      this.updateStore!();
       this.emit();
     };
   }
@@ -49,13 +55,10 @@ export class Node<To = any, Args extends { [arg: string]: unknown; } = any> {
     for (const i in targets) {
       const obj = {};
       Object.defineProperty(obj, this.tos[i].key, { value: this.output, enumerable: true, });
-      this.tos[i].node.setArg(obj);
+      this.tos[i].node.arg = obj;
     };
   }
-  setOutput (output: To) {
-    this.output = output;
-  }
-  setArg (args: { [key in keyof Args]?: Args[key] }) {
+  set arg (args: { [key in keyof Args]?: Args[key] }) {
     for (const key in args) {
       this.args[key] = args[key];
     }
@@ -71,13 +74,16 @@ export class Node<To = any, Args extends { [arg: string]: unknown; } = any> {
     this.emit(node.id);
     return this;
   }
-  updateTos (node: Node) {
+  updateTos (node: ContentType) {
     if (this.tos[node.id] === undefined) throw new Error('This node id has been unused');
     this.tos[node.id] = { key: this.tos[node.id].key, node };
   }
-  delTos (node: Node) {
+  delTos (node: ContentType) {
     if (this.tos[node.id] === undefined) throw new Error('This node id has been unused');
     delete this.tos[node.id];
+  }
+  set dispatch (dispatch: (action: Action) => void) {
+    this.updateStore = () => dispatch(updateAction(this as any as ContentType));
   }
 }
 

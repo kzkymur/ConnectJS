@@ -16,7 +16,7 @@ export class Class extends MovableNode<number, {}> {
     }];
     this.function = () => { return this.time++; }
     setInterval(()=>{
-      this.setArg({});
+      this.arg = {};
     }, 1000);
   }
 }

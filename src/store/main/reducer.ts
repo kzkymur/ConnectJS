@@ -124,7 +124,6 @@ const reducer: Reducer<State, Action> = (state = initialState, action) => {
       if (connection.id === -1) connection.id = latestId;
       const setTo = (node: ContentType) => {
         const toNode = state.nodes.find(node => node.id === connection.toNodeId);
-        console.log({toNode});
         if (toNode !== undefined) return node.addTos(toNode, toNode.keys[connection.toSocketId-1]);
         return node;
       }

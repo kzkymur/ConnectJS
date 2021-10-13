@@ -45,7 +45,7 @@ const Indicator = styled.span`
 const Counter: React.FC<Props> = ({ node }) => {
   const [count, setCount] = useState(node.counter);
   const increment = useCallback(() => {
-    node.setArg({});
+    node.arg = {};
     setCount(count+1);
   }, [count]);
   useEffect(()=>{
