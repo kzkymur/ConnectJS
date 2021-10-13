@@ -2,7 +2,7 @@ import { initBaseWidth, initBaseHeight } from '@/config';
 import ContentType from '@/content/types';
 import { ConnectionType } from './types';
 import Action from './actionTypes';
-import {updateAction} from './actions';
+import { rerenderAction } from './actions';
 
 export class Node<To = any, Args extends { [arg: string]: unknown; } = any> {
   id: number;
@@ -83,8 +83,9 @@ export class Node<To = any, Args extends { [arg: string]: unknown; } = any> {
     delete this.tos[node.id];
   }
   set dispatch (dispatch: (action: Action) => void) {
-    this.updateStore = () => dispatch(updateAction(this as any as ContentType));
+    this.updateStore = () => dispatch(rerenderAction(this.id));
   }
+  rerender () { return this; }
 }
 
 export class MovableNode<To = any, Args extends { [arg: string]: unknown; } = { [arg: string]: unknown; }> extends Node<To, Args> {

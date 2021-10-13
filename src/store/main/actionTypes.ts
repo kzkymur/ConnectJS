@@ -12,6 +12,7 @@ export const ActionTypes = {
   updateName: "UPDATENAME",
   updateSize: "UPDATESIZE",
   updatePos: "UPDATEPOS",
+  rerender: "RERENDER",
   addSocket: "ADDSOCKET",
   deleteSocket: "DELETESOCKET",
 
@@ -69,6 +70,10 @@ interface UpdatePos extends Action {
     top: string;
     left: string;
   };
+}
+interface Rerender extends Action {
+  type: typeof ActionTypes.rerender;
+  payload: { id: number; };
 }
 interface AddSocket extends Action {
   type: typeof ActionTypes.addSocket;
@@ -144,7 +149,7 @@ interface DeleteEngine extends Action {
 
 type NodeAction =
   Add | Delete |
-  Update | UpdateName | UpdateSize | UpdatePos |
+  Update | UpdateName | UpdateSize | UpdatePos | Rerender |
   AddSocket | DeleteSocket |
   Undo | Redo | Mult |
   Branch | Forward | Backward | Store |

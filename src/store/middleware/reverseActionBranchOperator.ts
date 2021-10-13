@@ -28,7 +28,8 @@ const reverseActionBranchOperator: Middleware<Dispatch, RootState> = store => ne
     }
   }
 
-  reccurent(action);
+  if (action.type === NodeActionTypes.rerender) next(action);
+  else reccurent(action);
 
   switch (action.type) {
     case NodeActionTypes.undo: {
