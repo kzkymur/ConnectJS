@@ -34,28 +34,14 @@ export const rerenderAction = (id: number): Action => ({
   type: ActionTypes.rerender,
   payload: { id, },
 });
-export const addSocketAction = (nodeId: number, isInput: boolean, type: DataType): Action => ({
-  type: ActionTypes.addSocket,
-  payload: { nodeId, isInput, type },
-});
-export const deleteSocketAction = (nodeId: number, isInput: boolean, id: number): Action => ({
-  type: ActionTypes.deleteSocket,
-  payload: { nodeId, isInput, id },
-});
-export const undoAction = (): Action => ({ type: ActionTypes.undo, });
-export const redoAction = (): Action => ({ type: ActionTypes.redo, });
-export const multAction = (actions: Action[]): Action => ({
-  type: ActionTypes.mult,
-  payload: actions,
-});
-
-export const branchAction = (): Action => ({ type: ActionTypes.branch, });
-export const forwardAction = (): Action => ({ type: ActionTypes.forward, });
-export const backwardAction = (): Action => ({ type: ActionTypes.backward, });
-export const storeAction = (actions: Action[]): Action => ({
-  type: ActionTypes.store,
-  payload: actions,
-});
+// export const addSocketAction = (nodeId: number, isInput: boolean, type: DataType): Action => ({
+//   type: ActionTypes.addSocket,
+//   payload: { nodeId, isInput, type },
+// });
+// export const deleteSocketAction = (nodeId: number, isInput: boolean, id: number): Action => ({
+//   type: ActionTypes.deleteSocket,
+//   payload: { nodeId, isInput, id },
+// });
 
 export const addConnectionAction = (connection: ConnectionType): Action => ({
   type: ActionTypes.addConnection,

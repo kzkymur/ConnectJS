@@ -77,10 +77,12 @@ export class Node<To = any, Args extends { [arg: string]: unknown; } = any> {
   updateTos (node: ContentType) {
     if (this.tos[node.id] === undefined) throw new Error('This node id has been unused');
     this.tos[node.id] = { key: this.tos[node.id].key, node };
+    return this;
   }
-  delTos (node: ContentType) {
-    if (this.tos[node.id] === undefined) throw new Error('This node id has been unused');
-    delete this.tos[node.id];
+  delTos (id: number) {
+    if (this.tos[id] === undefined) throw new Error('This node id has been unused');
+    delete this.tos[id];
+    return this;
   }
   set dispatch (dispatch: (action: Action) => void) {
     this.updateStore = () => dispatch(rerenderAction(this.id));

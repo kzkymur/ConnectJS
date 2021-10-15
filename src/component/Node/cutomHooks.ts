@@ -4,12 +4,14 @@ import { Node, isMovable, isResizable, Socket, } from '@/store/main/node';
 import { Handler as ConnectionHandler } from '@/component/Connection';
 import { NewConnectionInfo, ConnectionInfo } from '@/component/MainBoard';
 import { Handler as IOsHandler } from './IOs';
-import { multAction, updatePosAction, updateConnectionPosAction, addConnectionAction } from '@/store/main/actions';
+import { updatePosAction, updateConnectionPosAction, addConnectionAction } from '@/store/main/actions';
+import { multAction } from '@/store/ui/actions';
 import Vector, { subtract, multiply, hadamard, signFilter } from '@/utils/vector';
 import { minBaseWidth, minBaseHeight, } from '@/config';
 import { px, px2n } from '@/utils';
 import { deleteAction, updatePosSizeAction } from '@/utils/actions';
 import { border as pxBoder, optionalbarHeight as pxOptBarHeight } from '@/style/Node.scss';
+import {MultArray} from '@/store/ui/actionTypes';
 const border = px2n(pxBoder);
 const optBarHeight = px2n(pxOptBarHeight);
 
@@ -47,7 +49,7 @@ export const useFunctions = (
   // const getAllJointPos = useCallback((isInput: boolean) => iosRef.current.getAllJointPos(isInput), [iosRef]);
 
   const updateSize = useCallback((top: string, left: string, width: string, height: string) => {
-    const actions = [ updatePosSizeAction(node.id, top, left, width, height), ];
+    const actions: MultArray = [ updatePosSizeAction(node.id, top, left, width, height), ];
     inputConnections.forEach(c => actions.push(updateConnectionPosAction(c.id, c.s, getJointPos(true, c.toSocketId))));
     outputConnections.forEach(c => actions.push(updateConnectionPosAction(c.id, getJointPos(false, c.fromSocketId), c.e)));
     dispatch(multAction(actions));

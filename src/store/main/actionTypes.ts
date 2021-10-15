@@ -13,17 +13,8 @@ export const ActionTypes = {
   updateSize: "UPDATESIZE",
   updatePos: "UPDATEPOS",
   rerender: "RERENDER",
-  addSocket: "ADDSOCKET",
-  deleteSocket: "DELETESOCKET",
-
-  undo: "UNDO",
-  redo: "REDO",
-  mult: "MULT",
-
-  branch: "BRANCH",
-  forward: "FORWARD",
-  backward: "BACKWARD",
-  store: "STORE",
+  // addSocket: "ADDSOCKET",
+  // deleteSocket: "DELETESOCKET",
 
   addConnection: "ADDCONNECTION",
   deleteConnection: "DELETECONNECTION",
@@ -75,37 +66,22 @@ interface Rerender extends Action {
   type: typeof ActionTypes.rerender;
   payload: { id: number; };
 }
-interface AddSocket extends Action {
-  type: typeof ActionTypes.addSocket;
-  payload: {
-    nodeId: number;
-    isInput: boolean;
-    type: DataType;
-  };
-}
-interface DeleteSocket extends Action {
-  type: typeof ActionTypes.deleteSocket;
-  payload: {
-    nodeId: number;
-    isInput: boolean;
-    id: number;
-  };
-}
-
-interface Undo extends Action { type: typeof ActionTypes.undo; }
-interface Redo extends Action { type: typeof ActionTypes.redo; }
-interface Mult extends Action {
-  type: typeof ActionTypes.mult;
-  payload: Action[];
-}
-
-interface Branch extends Action { type: typeof ActionTypes.branch; }
-interface Forward extends Action { type: typeof ActionTypes.forward; }
-interface Backward extends Action { type: typeof ActionTypes.backward; }
-interface Store extends Action {
-  type: typeof ActionTypes.store;
-  payload: Action[];
-}
+// interface AddSocket extends Action {
+//   type: typeof ActionTypes.addSocket;
+//   payload: {
+//     nodeId: number;
+//     isInput: boolean;
+//     type: DataType;
+//   };
+// }
+// interface DeleteSocket extends Action {
+//   type: typeof ActionTypes.deleteSocket;
+//   payload: {
+//     nodeId: number;
+//     isInput: boolean;
+//     id: number;
+//   };
+// }
 
 interface AddConnection extends Action { 
   type: typeof ActionTypes.addConnection; 
@@ -150,10 +126,10 @@ interface DeleteEngine extends Action {
 type NodeAction =
   Add | Delete |
   Update | UpdateName | UpdateSize | UpdatePos | Rerender |
-  AddSocket | DeleteSocket |
-  Undo | Redo | Mult |
-  Branch | Forward | Backward | Store |
   AddConnection | DeleteConnection |
   UpdateConnection | UpdateConnectionPos | UpdateConnectionType |
   AddEngine | DeleteEngine;
 export default NodeAction;
+
+console.log(Object.values(ActionTypes));
+export const isMainActionTypes = (action: Action): action is NodeAction => Object.values(ActionTypes).some(type => type === action.type);

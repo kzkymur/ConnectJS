@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { undoAction, redoAction } from '@/store/main/actions';
+import { undoAction, redoAction } from '@/store/ui/actions';
 
 interface keybindCombo {
   condition: (e: KeyboardEvent) => boolean;

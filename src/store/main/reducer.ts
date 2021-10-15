@@ -2,7 +2,6 @@ import { Reducer } from 'redux';
 import Action, { ActionTypes } from './actionTypes';
 import { isMovable, isResizable } from './node';
 import { ConnectionType } from './types';
-import ReverseActionBranch, { OperationTypes } from './reverseActionBranch';
 import { EngineType } from './engine';
 import ContentType from '@/content/types';
 
@@ -11,7 +10,6 @@ export interface State {
   nodeLatestId: number;
   connections: ConnectionType[];
   connectionLatestId: number;
-  reverseActionBranch: ReverseActionBranch;
   curving: number;
   engines: EngineType[];
   engineLatestId: number;
@@ -21,7 +19,6 @@ export const initialState: State = {
   nodeLatestId: 0,
   connectionLatestId: 0,
   connections: [],
-  reverseActionBranch: new ReverseActionBranch(),
   curving: 0.5,
   engines: [],
   engineLatestId: 0,
@@ -143,9 +140,13 @@ const reducer: Reducer<State, Action> = (state = initialState, action) => {
       break;
     }
     case ActionTypes.deleteConnection: {
+      const deleteInex = state.connections.findIndex(c => c.id === action.payload.id);
+      const { fromNodeId, toNodeId } = state.connections[deleteInex];
+      state.connections.splice(deleteInex, 1);
       state = {
         ...state,
-        connections: state.connections.filter(c => c.id !== action.payload.id),
+        connections: [ ...state.connections ],
+        nodes: state.nodes.map(n => n.id === fromNodeId ? n.delTos(toNodeId) : n),
       };
       break;
     }
@@ -171,41 +172,24 @@ const reducer: Reducer<State, Action> = (state = initialState, action) => {
       break;
     }
 
-    case ActionTypes.branch: {
-      state = { ...state, reverseActionBranch: state.reverseActionBranch.operate(OperationTypes.branch) };
-      break;
-    }
-    case ActionTypes.forward: {
-      state = { ...state, reverseActionBranch: state.reverseActionBranch.operate(OperationTypes.forward) };
-      break;
-    }
-    case ActionTypes.backward: {
-      state = { ...state, reverseActionBranch: state.reverseActionBranch.operate(OperationTypes.backward) };
-      break;
-    }
-    case ActionTypes.store: {
-      state = { ...state, reverseActionBranch: state.reverseActionBranch.operate(OperationTypes.store, action.payload) };
-      break;
-    }
-
-    case ActionTypes.addEngine: {
-      const latestId = state.engineLatestId + 1;
-      const engine = { ...action.payload.engine };
-      if (engine.id === -1) engine.id = latestId;
-      state = {
-        ...state,
-        engineLatestId: latestId,
-        engines: [ ...state.engines, engine ],
-      };
-      break;
-    }
-    case ActionTypes.deleteEngine: {
-      state = {
-        ...state,
-        engines: state.engines.filter(e => e.id !== action.payload.id),
-      };
-      break;
-    }
+    // case ActionTypes.addEngine: {
+    //   const latestId = state.engineLatestId + 1;
+    //   const engine = { ...action.payload.engine };
+    //   if (engine.id === -1) engine.id = latestId;
+    //   state = {
+    //     ...state,
+    //     engineLatestId: latestId,
+    //     engines: [ ...state.engines, engine ],
+    //   };
+    //   break;
+    // }
+    // case ActionTypes.deleteEngine: {
+    //   state = {
+    //     ...state,
+    //     engines: state.engines.filter(e => e.id !== action.payload.id),
+    //   };
+    //   break;
+    // }
 
     default: return state; // 再描画しない〜〜
   }

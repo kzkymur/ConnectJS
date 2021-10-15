@@ -66,29 +66,29 @@ const reverseActionCreator: (state: State, action: Action) => Action[] = (state,
       }];
     }
 
-    case ActionTypes.addSocket: {
-      const node = state.nodes.filter(n=>n.id===action.payload.nodeId)[0];
-      return [{
-        type: ActionTypes.deleteSocket,
-        payload: {
-          nodeId: action.payload.nodeId,
-          isInput: action.payload.isInput,
-          id: action.payload.isInput ? node.inputsLatestId : node.outputsLatestId,
-        },
-      }];
-    }
-    case ActionTypes.deleteSocket: {
-      const node = state.nodes.filter(n=>n.id===action.payload.nodeId)[0];
-      const deletedSocket = action.payload.isInput ? node.inputs.filter(i => i.id === action.payload.id)[0] : node.outputs.filter(o => o.id === action.payload.id)[0];
-      return [{
-        type: ActionTypes.addSocket,
-        payload: {
-          nodeId: action.payload.nodeId,
-          isInput: action.payload.isInput,
-          type: deletedSocket.type,
-        },
-      }];
-    }
+    // case ActionTypes.addSocket: {
+    //   const node = state.nodes.filter(n=>n.id===action.payload.nodeId)[0];
+    //   return [{
+    //     type: ActionTypes.deleteSocket,
+    //     payload: {
+    //       nodeId: action.payload.nodeId,
+    //       isInput: action.payload.isInput,
+    //       id: action.payload.isInput ? node.inputsLatestId : node.outputsLatestId,
+    //     },
+    //   }];
+    // }
+    // case ActionTypes.deleteSocket: {
+    //   const node = state.nodes.filter(n=>n.id===action.payload.nodeId)[0];
+    //   const deletedSocket = action.payload.isInput ? node.inputs.filter(i => i.id === action.payload.id)[0] : node.outputs.filter(o => o.id === action.payload.id)[0];
+    //   return [{
+    //     type: ActionTypes.addSocket,
+    //     payload: {
+    //       nodeId: action.payload.nodeId,
+    //       isInput: action.payload.isInput,
+    //       type: deletedSocket.type,
+    //     },
+    //   }];
+    // }
 
     case ActionTypes.addConnection: {
       const latestId = state.connectionLatestId + 1;
