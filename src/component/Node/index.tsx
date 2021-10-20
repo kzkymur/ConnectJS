@@ -1,5 +1,6 @@
 import React, { useRef, RefObject, MutableRefObject, } from 'react';
-import { Socket, isResizable, } from '@/store/main/node';
+import { Sockets, isResizable, } from '@/store/main/node';
+import { NewConnectionInfo, } from '@/store/main/types';
 import Header from './Header';
 import Main from './Main';
 import IOs, { Handler as IOsHandler } from './IOs';
@@ -7,7 +8,7 @@ import { Handler as ConnectionHandler } from '../Connection';
 import { useFunctions, useStyleEffect, } from './cutomHooks';
 import Content from '@/content';
 import ContentType from '@/content/types';
-import { NewConnectionInfo, ConnectionInfo } from '@/component/MainBoard';
+import { ConnectionInfo } from '@/component/MainBoard';
 import style from '@/style/Node.scss';
 
 export type Props = {
@@ -51,4 +52,4 @@ export default Node;
 
 const headerProps = (id: number, name: string, deleteFunc: ()=>void) => ({ id, name, deleteFunc, });
 const mainProps = (fRef: RefObject<HTMLDivElement>) => ({ fRef });
-const IOsProps = (id: number, inputs: Socket[], outputs: Socket[], operateNewConnection: (isInput: boolean ,id: number) => () => void, registerNewConnection: (isInput: boolean ,id: number) => () => void) => ({ id, inputs, outputs, operateNewConnection, registerNewConnection });
+const IOsProps = (id: number, inputs: Sockets, outputs: Sockets, operateNewConnection: (isInput: boolean, key: string) => () => void, registerNewConnection: (isInput: boolean, key: string) => () => void) => ({ id, inputs, outputs, operateNewConnection, registerNewConnection });

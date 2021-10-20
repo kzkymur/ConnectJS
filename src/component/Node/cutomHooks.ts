@@ -1,8 +1,9 @@
 import { MutableRefObject, useCallback, useEffect, useRef } from 'react';
 import {useDispatch} from 'react-redux';
-import { Node, isMovable, isResizable, Socket, } from '@/store/main/node';
+import { isMovable, isResizable, Sockets, } from '@/store/main/node';
+import { ConnectionType, NewConnectionInfo, connectionInfoStatus } from '@/store/main/types';
 import { Handler as ConnectionHandler } from '@/component/Connection';
-import { NewConnectionInfo, ConnectionInfo } from '@/component/MainBoard';
+import { ConnectionInfo } from '@/component/MainBoard';
 import { Handler as IOsHandler } from './IOs';
 import { updatePosAction, updateConnectionPosAction, addConnectionAction } from '@/store/main/actions';
 import { multAction } from '@/store/ui/actions';
@@ -12,11 +13,12 @@ import { px, px2n } from '@/utils';
 import { deleteAction, updatePosSizeAction } from '@/utils/actions';
 import { border as pxBoder, optionalbarHeight as pxOptBarHeight } from '@/style/Node.scss';
 import {MultArray} from '@/store/ui/actionTypes';
+import ContentType from '@/content/types';
 const border = px2n(pxBoder);
 const optBarHeight = px2n(pxOptBarHeight);
 
 export const useFunctions = (
-  node: Node,
+  node: ContentType,
   inputConnections: ConnectionInfo[],
   outputConnections: ConnectionInfo[],
   ref: MutableRefObject<HTMLDivElement>,
@@ -45,20 +47,20 @@ export const useFunctions = (
     ref.current.style.width = px(v.x), ref.current.style.height = px(v.y);
     return updated;
   }, [mainRef, ref]);
-  const getJointPos = useCallback((isInput: boolean, id: number) => iosRef.current.getJointPos(isInput, id), [iosRef]);
+  const getJointPos = useCallback((isInput: boolean, key: string) => iosRef.current.getJointPos(isInput, key), [iosRef]);
   // const getAllJointPos = useCallback((isInput: boolean) => iosRef.current.getAllJointPos(isInput), [iosRef]);
 
   const updateSize = useCallback((top: string, left: string, width: string, height: string) => {
     const actions: MultArray = [ updatePosSizeAction(node.id, top, left, width, height), ];
-    inputConnections.forEach(c => actions.push(updateConnectionPosAction(c.id, c.s, getJointPos(true, c.toSocketId))));
-    outputConnections.forEach(c => actions.push(updateConnectionPosAction(c.id, getJointPos(false, c.fromSocketId), c.e)));
+    inputConnections.forEach(c => actions.push(updateConnectionPosAction(c.id, c.s, getJointPos(true, c.toSocketKey))));
+    outputConnections.forEach(c => actions.push(updateConnectionPosAction(c.id, getJointPos(false, c.fromSocketKey), c.e)));
     dispatch(multAction(actions));
   }, [inputConnections, outputConnections, getJointPos]);
 
   const updatePos = useCallback((top: string, left: string) => {
     const actions = [ updatePosAction(node.id, top, left), ];
-    inputConnections.forEach(c => actions.push(updateConnectionPosAction(c.id, c.s, getJointPos(true, c.toSocketId))));
-    outputConnections.forEach(c => actions.push(updateConnectionPosAction(c.id, getJointPos(false, c.fromSocketId), c.e)));
+    inputConnections.forEach(c => actions.push(updateConnectionPosAction(c.id, c.s, getJointPos(true, c.toSocketKey))));
+    outputConnections.forEach(c => actions.push(updateConnectionPosAction(c.id, getJointPos(false, c.fromSocketKey), c.e)));
     dispatch(multAction(actions));
   }, [inputConnections, outputConnections, getJointPos]);
 
@@ -145,16 +147,29 @@ export const useFunctions = (
     else posChange(e);
   }, [node, posChange, sizeChange]);
 
-  const operateNewConnection = useCallback((isInput: boolean, id: number) => () => {
-    const s = getJointPos(isInput, id);
-    newConnectionInfoRef.current.isInput = isInput;
-    newConnectionInfoRef.current.nodeId = node.id;
-    newConnectionInfoRef.current.id = id;
-    newConnectionInfoRef.current.s = s;
+  const operateNewConnection = useCallback((isInput: boolean, key: string) => () => {
+    newConnectionInfoRef.current.id = -1;
+    const v = getJointPos(isInput, key);
+    if (isInput) {
+      newConnectionInfoRef.current = {
+        ...incompleteConnection,
+        to: node,
+        toSocketKey: key,
+        e: v,
+      };
+    } else {
+      isInput = false;
+      newConnectionInfoRef.current = {
+        ...incompleteConnection,
+        fromNodeId: node.id,
+        fromSocketKey: key,
+        s: v,
+      };
+    }
     const mousemove = (e: MouseEvent) => {
       const eClient = { x: e.clientX, y: e.clientY, };
-      if (isInput) newConnectionRef.current.changeView(eClient, s);
-      else newConnectionRef.current.changeView(s, eClient);
+      if (isInput) newConnectionRef.current.changeView(eClient, v);
+      else newConnectionRef.current.changeView(v, eClient);
     }
     const mouseup = () => {
       const zeroV = { x: 0, y:0 };
@@ -166,22 +181,27 @@ export const useFunctions = (
     window.addEventListener('mouseup', mouseup);
   }, [getJointPos, newConnectionRef]);
 
-  const registerNewConnection = useCallback((isInput: boolean, id: number) => () => {
-    const ncir = newConnectionInfoRef.current;
-    if (isInput === ncir.isInput) return;
-    if (node.id === ncir.nodeId) return;
-    if (ncir.nodeId === undefined || ncir.isInput === undefined || ncir.id === undefined || ncir.s === undefined) return;
-    const e = getJointPos(isInput, id);
-    dispatch(addConnectionAction({
-      type: 1,
-      id: -1,
-      fromNodeId: !isInput ? node.id : ncir.nodeId,
-      fromSocketId: !isInput ? id : ncir.id,
-      toNodeId: isInput ? node.id : ncir.nodeId,
-      toSocketId: isInput ? id : ncir.id,
-      s: !isInput ?  e : ncir.s,
-      e: isInput ?  e : ncir.s,
-    }));
+  const registerNewConnection = useCallback((isInput: boolean, key: string) => () => {
+    let ncir = newConnectionInfoRef.current as any as ConnectionType;
+    const v = getJointPos(isInput, key);
+    if (isInput) {
+      if (ncir.fromNodeId === undefined) throw new Error("From node is not registered");
+      ncir = {
+        ...ncir,
+        to: node,
+        toSocketKey: key,
+        e: v,
+      };
+    } else {
+      if (ncir.to === undefined) throw new Error("To node is not registered");
+      ncir = {
+        ...ncir,
+        fromNodeId: node.id,
+        fromSocketKey: key,
+        s: v,
+      };
+    }
+    dispatch(addConnectionAction(ncir));
   }, [newConnectionInfoRef, getJointPos, node.id]);
 
   const deleteFunc = useCallback(() => {
@@ -196,7 +216,7 @@ export const useFunctions = (
   };
 }
 
-export const useStyleEffect = (node: Node, ref: MutableRefObject<HTMLDivElement>, mainRef: MutableRefObject<HTMLDivElement>) => {
+export const useStyleEffect = (node: ContentType, ref: MutableRefObject<HTMLDivElement>, mainRef: MutableRefObject<HTMLDivElement>) => {
   useEffect(()=>{
     const elm = ref.current;
     elm.style.opacity = '1';
@@ -214,8 +234,10 @@ export const useStyleEffect = (node: Node, ref: MutableRefObject<HTMLDivElement>
     const { width, height } = node;
     elm.style.width = px(px2n(width) - border * 2);
     mainRef.current.style.height = px(px2n(height) - border * 2 + 2);
-    elm.style.height = px(px2n(height) + optBarHeight * (Math.max(node.inputs.length, node.outputs.length)+1) - border * 2 + 2);
+    elm.style.height = px(px2n(height) + optBarHeight * (Math.max(objectLength(node.inputs), objectLength(node.outputs))+1) - border * 2 + 2);
   }, [node.width, node.height]);
 }
 
-const calcMainHeight = (height: number, inputs: Array<Socket>, outputs: Array<Socket>): number => (height - optBarHeight * (Math.max(inputs.length, outputs.length)+1));
+const calcMainHeight = (height: number, inputs: Sockets, outputs: Sockets): number => (height - optBarHeight * (Math.max(objectLength(inputs), objectLength(outputs))+1));
+const objectLength = (obj: Object) => Object.keys(obj).length;
+const incompleteConnection = { id: -1, type: 1, status: connectionInfoStatus.incomplete, };

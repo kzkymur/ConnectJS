@@ -5,28 +5,12 @@ import { MovableNode } from '@/store/main/node';
 import { Modes } from './types';
 
 type SumArgs = { a: number; b: number; };
-export class Class extends MovableNode<number, SumArgs> {
+type To = { sum: number; };
+export class Class extends MovableNode<To, SumArgs> {
   readonly mode: typeof Modes.sum = Modes.sum;
   constructor () {
-    super(() => 0, keys<SumArgs>());
-    this.inputs = [
-      {
-        type: 1,
-        id: 1,
-        name: 'a',
-      },
-      {
-        type: 1,
-        id: 2,
-        name: 'b',
-      }
-    ];
-    this.outputs = [{
-      type: 1,
-      id: 1,
-      name: 'sum',
-    }];
-    this.function = ({a, b}) => { return a + b; }
+    super(keys<SumArgs>(), keys<To>());
+    this.function = ({a, b}) => { return { sum: a + b }; }
   }
 }
 
@@ -49,7 +33,7 @@ const Indicator = styled.span`
 const Sum: React.FC<Props> = ({ node }) => {
   return (
     <Container>
-      <Indicator>{ node.output }</Indicator>
+      <Indicator>{ node.value.sum }</Indicator>
     </Container>
   );
 }

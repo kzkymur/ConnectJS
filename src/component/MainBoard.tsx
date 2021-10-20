@@ -2,11 +2,10 @@ import React, { useMemo, useRef } from 'react';
 import { useSelector, shallowEqual } from 'react-redux';
 import { RootState } from '@/store';
 import { Node as NodeType, } from '@/store/main/node';
-import { ConnectionType, } from '@/store/main/types';
+import { ConnectionType, NewConnectionInfo, } from '@/store/main/types';
 import Node from './Node';
 import Connection, { Handler as ConnectionHandler } from './Connection';
 import { IdRef, useIdRef } from '@/utils/customHooks';
-import Vector from '@/utils/vector';
 import style from '@/style/MainBoard.css'; 
 
 const MemorizedNode = React.memo(Node);
@@ -51,7 +50,7 @@ export default MainBoard;
 
 const useConnectionsArg = (nodes: NodeType[], connectionInfos: ConnectionInfo[]) => {
   const inputConnectionsArray = useMemo(
-    () => nodes.map(node => connectionInfos.filter(c => c.toNodeId === node.id)),
+    () => nodes.map(node => connectionInfos.filter(c => c.to.id === node.id)),
     [connectionInfos, nodes]
   );
   const outputConnectionsArray = useMemo(
@@ -62,10 +61,3 @@ const useConnectionsArg = (nodes: NodeType[], connectionInfos: ConnectionInfo[])
 }
 
 export type ConnectionInfo = IdRef<ConnectionHandler, ConnectionType>;
-
-export type NewConnectionInfo = {
-  isInput?: boolean;
-  nodeId?: number;
-  id?: number;
-  s?: Vector;
-};

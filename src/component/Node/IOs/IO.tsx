@@ -1,7 +1,7 @@
 import React, { useRef, forwardRef, useImperativeHandle } from 'react';
-import { Socket } from '@/store/main/node';
 import Vector from '@/utils/vector';
 import style from '@/style/Node/IOs/IO.scss';
+import { Socket } from '.';
 
 export type Handler = {
   getPos: () => Vector;

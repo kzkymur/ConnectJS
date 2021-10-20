@@ -1,32 +1,45 @@
-import React, { forwardRef, useImperativeHandle } from 'react';
-import { Socket } from '@/store/main/node';
+import React, { forwardRef, useImperativeHandle, useMemo } from 'react';
+import { Sockets } from '@/store/main/node';
 import IO, { Handler as IOHandler } from './IO';
-import { getIndex } from '@/utils';
 import Vector from '@/utils/vector';
 import { useIdRef } from '@/utils/customHooks';
 import style from '@/style/Node/IOs.scss';
 
 export type Handler = {
-  getJointPos: (isInput: boolean, id: number) => Vector;
+  getJointPos: (isInput: boolean, key: string) => Vector;
   getAllJointPos: (isInput: boolean) => Vector[];
 }
 type Props = {
   id: number,
-  inputs: Socket[];
-  outputs: Socket[];
-  operateNewConnection: (isInput: boolean, id: number) => () => void;
-  registerNewConnection: (isInput: boolean, id: number) => () => void;
+  inputs: Sockets;
+  outputs: Sockets;
+  operateNewConnection: (isInput: boolean, key: string) => () => void;
+  registerNewConnection: (isInput: boolean, key: string) => () => void;
+}
+
+export type Socket = {
+  id: number;
+  name: keyof Sockets;
+}; 
+type SocketList = Socket[];
+const toSocketList = (sockets: Sockets): SocketList => {
+  const socketList: SocketList = [];
+  const keys = Object.keys(sockets);
+  keys.sort();
+  keys.forEach((key, i) => socketList.push({ name: key, id: i, }));
+  return socketList;
 }
 
 const IOs = forwardRef<Handler, Props>((props, fRef) => {
-  const inputs = useIdRef<IOHandler, Socket>(props.inputs);
-  const outputs = useIdRef<IOHandler, Socket>(props.outputs);
+  const inputList = useMemo<SocketList>(() => toSocketList(props.inputs), []);
+  const outputList = useMemo<SocketList>(() => toSocketList(props.outputs), []);
+  const inputs = useIdRef<IOHandler, Socket>(inputList);
+  const outputs = useIdRef<IOHandler, Socket>(outputList);
 
-  const getJointPos = (isInput: boolean, id: number) => {
-    const sockets = isInput ? inputs : outputs;
-    const i = getIndex(sockets, id);
-    if (i!==-1) return sockets[i].ref.current.getPos();
-    return { x:0, y:0 };
+  const getJointPos = (isInput: boolean, key: string) => {
+    const socket = (isInput ? inputs : outputs).find(s => s.name === key);
+    if (socket === undefined) throw new Error(`invalid key = ${key}`);
+    return socket.ref.current.getPos();
   }
   const getAllJointPos = (isInput: boolean) => {
     const sockets = isInput ? inputs : outputs;
@@ -44,10 +57,9 @@ const IOs = forwardRef<Handler, Props>((props, fRef) => {
       <div className={style.package}>
         {inputs.map(s=>{
           const inputProps = {
-            socket: s,
-            isInput: true,
-            operateNewConnection: props.operateNewConnection(true, s.id),
-            registerNewConnection: props.registerNewConnection(true, s.id),
+            socket: s, isInput: true,
+            operateNewConnection: props.operateNewConnection(true, s.name),
+            registerNewConnection: props.registerNewConnection(true, s.name),
           }
           return <IO {...inputProps} ref={s.ref} key={s.id}/>
         })}
@@ -57,8 +69,8 @@ const IOs = forwardRef<Handler, Props>((props, fRef) => {
           const outputProps = {
             socket: s,
             isInput: false,
-            operateNewConnection: props.operateNewConnection(false, s.id),
-            registerNewConnection: props.registerNewConnection(false, s.id),
+            operateNewConnection: props.operateNewConnection(false, s.name),
+            registerNewConnection: props.registerNewConnection(false, s.name),
           }
           return <IO {...outputProps} ref={s.ref} key={s.id}/>
         })}

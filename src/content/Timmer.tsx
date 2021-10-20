@@ -1,20 +1,17 @@
 import React from 'react';
 import styled from 'styled-components';
+import { keys } from 'ts-transformer-keys';
 import { MovableNode } from '@/store/main/node';
 import { Modes } from './types';
 
-export class Class extends MovableNode<number, {}> {
+type To = { time: number };
+export class Class extends MovableNode<To, {}> {
   readonly mode: typeof Modes.timmer = Modes.timmer;
   time: number;
   constructor () {
-    super(() => 0, []);
+    super(keys(), keys<To>());
     this.time = 0;
-    this.outputs = [{
-      type: 1,
-      id: 1,
-      name: 'timmer',
-    }];
-    this.function = () => { return this.time++; }
+    this.function = () => { return { time: this.time++, } };
     setInterval(()=>{
       this.arg = {};
     }, 1000);

@@ -124,29 +124,30 @@ const reducer: Reducer<State, Action> = (state = initialState, action) => {
 
     case ActionTypes.addConnection: {
       const latestId = state.connectionLatestId + 1;
-      const connection = { ...action.payload.connection, }
+      let connection = { ...action.payload.connection, }
       if (connection.id === -1) connection.id = latestId;
       const setTo = (node: ContentType) => {
-        const toNode = state.nodes.find(node => node.id === connection.toNodeId);
-        if (toNode !== undefined) return node.addTos(toNode, toNode.keys[connection.toSocketId-1]);
-        return node;
+        const toNode = state.nodes.find(node => node.id === connection.to.id);
+        if (toNode === undefined) throw new Error(`node.id = ${connection.to.id} is invalid`);
+        connection = { ...connection, to: toNode, };
+        return node.addTos(connection);
       }
       state = {
         ...state,
+        nodes: state.nodes.map(node => node.id === connection.fromNodeId ? setTo(node) : node),
         connections: [ ...state.connections, connection ],
         connectionLatestId: latestId,
-        nodes: state.nodes.map(node => node.id === connection.fromNodeId ? setTo(node) : node)
       }
       break;
     }
     case ActionTypes.deleteConnection: {
       const deleteInex = state.connections.findIndex(c => c.id === action.payload.id);
-      const { fromNodeId, toNodeId } = state.connections[deleteInex];
+      const { fromNodeId, fromSocketKey, id } = state.connections[deleteInex];
       state.connections.splice(deleteInex, 1);
       state = {
         ...state,
         connections: [ ...state.connections ],
-        nodes: state.nodes.map(n => n.id === fromNodeId ? n.delTos(toNodeId) : n),
+        nodes: state.nodes.map(n => n.id === fromNodeId ? n.delTos(fromSocketKey, id) : n),
       };
       break;
     }

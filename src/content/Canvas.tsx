@@ -4,16 +4,12 @@ import { ResizableNode } from '@/store/main/node';
 import { Modes } from './types';
 
 type CanvasArgs = { number: number; };
-export class Class extends ResizableNode<void, CanvasArgs> {
+type CanvasTo = {};
+export class Class extends ResizableNode<CanvasTo, CanvasArgs> {
   readonly mode: typeof Modes.canvas = Modes.canvas;
   constructor () {
-    super(() => {}, keys<CanvasArgs>());
-    this.inputs = [{
-      type: 1,
-      id: 1,
-      name: 'canvas',
-    }];
-    this.function = args => { console.log(args.number); }
+    super(keys<CanvasArgs>(), keys<CanvasTo>());
+    this.function = args => { console.log(args.number); return {} }
   }
 }
 

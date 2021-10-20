@@ -4,18 +4,14 @@ import { keys } from 'ts-transformer-keys';
 import { MovableNode } from '@/store/main/node';
 import { Modes } from './types';
 
-export class Class extends MovableNode<number, {}> {
+type To = { count: number };
+export class Class extends MovableNode<To, {}> {
   readonly mode: typeof Modes.counter = Modes.counter;
   counter: number;
   constructor () {
-    super(() => 0, keys());
+    super(keys(), keys<To>());
     this.counter = 0;
-    this.outputs = [{
-      type: 1,
-      id: 1,
-      name: 'counter',
-    }];
-    this.function = () => { return ++this.counter; }
+    this.function = () => { return { count: ++this.counter, } }
   }
 }
 
