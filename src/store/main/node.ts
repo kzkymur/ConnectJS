@@ -96,9 +96,10 @@ export class Node<To extends { [arg: string]: unknown; } = any, Args extends { [
     return this;
   }
   delTos (key: string, id: number) {
-    if (this.outputs[key].connections[id] === undefined)
-      throw new Error(`This connection where stringId = ${id} has been unused`);
-    delete this.outputs[key].connections[id];
+    const strid = stringId(id, key);
+    if (this.outputs[key].connections[strid] === undefined)
+      throw new Error(`This connection where stringId = ${strid} has been unused`);
+    delete this.outputs[key].connections[strid];
     return this;
   }
 }

@@ -10,7 +10,7 @@ export class Class extends MovableNode<To, Args> {
   readonly mode: typeof Modes.minus = Modes.minus;
   constructor () {
     super(keys<Args>(), keys<To>());
-    this.function = ({a, b}) => { return { difference: a + b }; }
+    this.function = ({a, b}) => { return { difference: a - b }; }
   }
 }
 
