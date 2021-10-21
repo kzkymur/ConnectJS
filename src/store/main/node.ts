@@ -1,7 +1,5 @@
 import { initBaseWidth, initBaseHeight } from '@/config';
 import { ConnectionType } from './types';
-import Action from './actionTypes';
-import { rerenderAction } from './actions';
 
 export class Node<To extends { [arg: string]: unknown; } = any, Args extends { [arg: string]: unknown; } = any> {
   id: number;
@@ -14,8 +12,8 @@ export class Node<To extends { [arg: string]: unknown; } = any, Args extends { [
   args: { [Key in keyof Args]?: Args[Key]; };
   readonly inputKeys: Array<keyof Args>;
   readonly outputKeys: Array<keyof To>;
-  updateStore?: () => void;
   value: To;
+  rerender: () => void;
   constructor (inputKeys: Array<keyof Args>, outputKeys: Array<keyof To>) {
     this.id = -1;
     this.name = '';
@@ -32,6 +30,7 @@ export class Node<To extends { [arg: string]: unknown; } = any, Args extends { [
     this.args = {};
     this.func =  (() => 0) as any as (args: Args) => To;
     this.value = {} as To;
+    this.rerender = () => {};
   }
   updateName (name: string) {
     this.name = name;
@@ -43,7 +42,7 @@ export class Node<To extends { [arg: string]: unknown; } = any, Args extends { [
       console.log(outputs);
       if (outputShallowEqual(this.outputs, outputs)) return;
       this.outputsObj = outputs;
-      this.updateStore!();
+      this.rerender();
       this.emit();
     };
   }
@@ -102,10 +101,6 @@ export class Node<To extends { [arg: string]: unknown; } = any, Args extends { [
     delete this.outputs[key].connections[id];
     return this;
   }
-  set dispatch (dispatch: (action: Action) => void) {
-    this.updateStore = () => dispatch(rerenderAction(this.id));
-  }
-  rerender () { return this; }
 }
 
 export class MovableNode<To extends { [arg: string]: unknown; } = any, Args extends { [arg: string]: unknown; } = any> extends Node<To, Args>{

@@ -30,10 +30,6 @@ export const updatePosAction = (id: number, top: string, left: string): Action =
   type: ActionTypes.updatePos,
   payload: { id, top, left, },
 });
-export const rerenderAction = (id: number): Action => ({
-  type: ActionTypes.rerender,
-  payload: { id, },
-});
 // export const addSocketAction = (nodeId: number, isInput: boolean, type: DataType): Action => ({
 //   type: ActionTypes.addSocket,
 //   payload: { nodeId, isInput, type },

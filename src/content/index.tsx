@@ -1,18 +1,16 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import ContentType, { Modes } from './types';
 import Canvas from './Canvas';
 import Counter from './Counter';
 import Sum from './Sum';
 import Timmer from './Timmer';
-import {useDispatch} from 'react-redux';
 
 type Props = {
   node: ContentType;
 };
-
 const Content: React.FC<Props> = ({ node }) => {
-  const dispatch = useDispatch();
-  useEffect(()=>{ node.dispatch = dispatch; }, []);
+  const forceUpdate = useForceUpdate();
+  useEffect(()=>{ node.rerender = forceUpdate; }, []);
 
   switch (node.mode) {
     case (Modes.canvas): return <Canvas render={()=>{}}/>;
@@ -23,3 +21,8 @@ const Content: React.FC<Props> = ({ node }) => {
 }
 
 export default Content;
+
+const useForceUpdate = () => {
+  const [, setValue] = useState(0);
+  return () => setValue(value => value + 1);
+}

@@ -79,13 +79,6 @@ const reducer: Reducer<State, Action> = (state = initialState, action) => {
       };
       break;
     }
-    case ActionTypes.rerender: {
-      state = {
-        ...state,
-        nodes: state.nodes.map(n => n.id === action.payload.id ? n.rerender() : n),
-      };
-      break;
-    }
 
     // case ActionTypes.addSocket: {
     //   state = {
