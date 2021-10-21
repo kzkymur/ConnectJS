@@ -2,7 +2,10 @@ import React, {useEffect, useState} from 'react';
 import ContentType, { Modes } from './types';
 import Canvas from './Canvas';
 import Counter from './Counter';
-import Sum from './Sum';
+import Plus from './Plus';
+import Minus from './Minus';
+import Multiply from './Multiply';
+import Divide from './Divide';
 import Timmer from './Timmer';
 
 type Props = {
@@ -15,7 +18,10 @@ const Content: React.FC<Props> = ({ node }) => {
   switch (node.mode) {
     case (Modes.canvas): return <Canvas render={()=>{}}/>;
     case (Modes.counter): return <Counter node={node}/>;
-    case (Modes.sum): return <Sum node={node}/>;
+    case (Modes.plus): return <Plus node={node}/>;
+    case (Modes.minus): return <Minus node={node}/>;
+    case (Modes.multiply): return <Multiply node={node}/>;
+    case (Modes.divide): return <Divide node={node}/>;
     case (Modes.timmer): return <Timmer node={node}/>;
   }
 }

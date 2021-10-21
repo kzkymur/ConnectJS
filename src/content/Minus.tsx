@@ -4,13 +4,13 @@ import { keys } from 'ts-transformer-keys';
 import { MovableNode } from '@/store/main/node';
 import { Modes } from './types';
 
-type SumArgs = { a: number; b: number; };
-type To = { sum: number; };
-export class Class extends MovableNode<To, SumArgs> {
-  readonly mode: typeof Modes.sum = Modes.sum;
+type Args = { a: number; b: number; };
+type To = { difference: number; };
+export class Class extends MovableNode<To, Args> {
+  readonly mode: typeof Modes.minus = Modes.minus;
   constructor () {
-    super(keys<SumArgs>(), keys<To>());
-    this.function = ({a, b}) => { return { sum: a + b }; }
+    super(keys<Args>(), keys<To>());
+    this.function = ({a, b}) => { return { difference: a + b }; }
   }
 }
 
@@ -30,12 +30,12 @@ const Indicator = styled.span`
   display: inline-block;
 `;
 
-const Sum: React.FC<Props> = ({ node }) => {
+const Minus: React.FC<Props> = ({ node }) => {
   return (
     <Container>
-      <Indicator>{ node.value.sum }</Indicator>
+      <Indicator>{ node.value.difference }</Indicator>
     </Container>
   );
 }
 
-export default Sum;
+export default Minus;
